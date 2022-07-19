@@ -98,9 +98,9 @@ public class RequestHandler {
         return null;
     }
 
-    public String POST(String path, JsonObject body) {
+    public JsonObject POST(String path, JsonObject body) {
         try {
-            HttpURLConnection con = createConnection(this.BASE_URL + path, "POST");
+            HttpURLConnection con = createConnection(this.BASE_URL + path + "?key=" + ROOT_KEY, "POST");
 
             OutputStream out = con.getOutputStream();
             out.write(body.toString().getBytes());
@@ -123,7 +123,7 @@ public class RequestHandler {
             in.close();
             con.disconnect();
 
-            return content.toString();
+            return JsonParser.parseString(content.toString()).getAsJsonObject();
         } catch (SocketTimeoutException e) {
             Bukkit.getLogger().warning("Read timed out! Is the API offline?");
         } catch (ConnectException e) {
