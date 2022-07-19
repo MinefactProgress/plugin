@@ -1,1 +1,0 @@
-D:\jan-niklas\Programme\Java\jdk-18.0.1\bin\java.exe -Xmx2G -jar paper-1.19-41.jar nogui
