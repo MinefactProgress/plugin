@@ -1,4 +1,3 @@
-
 package de.minefactprogress.progressplugin.utils.conversion.projection.airocean;
 
 import de.minefactprogress.progressplugin.utils.MathUtils;

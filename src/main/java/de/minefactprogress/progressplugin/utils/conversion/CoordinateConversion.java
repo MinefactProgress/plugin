@@ -44,7 +44,7 @@ public class CoordinateConversion {
         DecimalFormatSymbols usSymbols = new DecimalFormatSymbols(Locale.US);
         decFormat1.setDecimalFormatSymbols(usSymbols);
 
-        projection = GeographicProjection.projections.get("bteairocean");
+        projection  = GeographicProjection.projections.get("bteairocean");
         projection = GeographicProjection.orientProjection(projection, GeographicProjection.Orientation.upright);
         projection = new ScaleProjectionTransform(projection, 7318261.522857145, 7318261.522857145);
         projection = new OffsetProjectionTransform(projection, 0, 0);
@@ -58,7 +58,8 @@ public class CoordinateConversion {
      * @return - WG84 EPSG:4979 coordinates as double array {lon,lat} in degrees
      */
     public static double[] convertToGeo(double xCords, double yCords) throws OutOfProjectionBoundsException {
-        return projection.toGeo(xCords, yCords);
+        double[] res = projection.toGeo(xCords, yCords);
+        return new double[]{res[1], res[0]};
     }
 
     /**
@@ -68,7 +69,7 @@ public class CoordinateConversion {
      * @param lat Geographic Latitude
      * @return The in-game coordinates (x, z)
      */
-    public static double[] convertFromGeo(double lon, double lat) throws OutOfProjectionBoundsException {
+    public static double[] convertFromGeo(double lat, double lon) throws OutOfProjectionBoundsException {
         return projection.fromGeo(lon, lat);
     }
 

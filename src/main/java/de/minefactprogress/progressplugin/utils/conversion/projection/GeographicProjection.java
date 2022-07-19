@@ -1,6 +1,4 @@
-
 package de.minefactprogress.progressplugin.utils.conversion.projection;
-
 
 import de.minefactprogress.progressplugin.utils.conversion.projection.airocean.Airocean;
 import de.minefactprogress.progressplugin.utils.conversion.projection.airocean.ConformalEstimate;

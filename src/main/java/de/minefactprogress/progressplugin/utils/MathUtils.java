@@ -1,7 +1,6 @@
 package de.minefactprogress.progressplugin.utils;
 
 public class MathUtils {
-
     /**
      * Square root of 3
      */
@@ -12,17 +11,19 @@ public class MathUtils {
      */
     public static final double TAU = 2 * Math.PI;
 
+
     /**
      * Converts geographic latitude and longitude coordinates to spherical coordinates on a sphere of radius 1.
      *
      * @param geo - geographic coordinates as a double array of length 2, {longitude, latitude}, in degrees
-     * @return the corresponding spherical coordinates in radians: {longitude, latitude}
+     * @return the corresponding spherical coordinates in radians: {longitude, colatitude}
      */
     public static double[] geo2Spherical(double[] geo) {
         double lambda = Math.toRadians(geo[0]);
         double phi = Math.toRadians(90 - geo[1]);
         return new double[]{ lambda, phi };
     }
+
 
     /**
      * Converts spherical coordinates to geographic coordinates on a sphere of radius 1.
@@ -36,6 +37,7 @@ public class MathUtils {
         return new double[]{ lon, lat };
     }
 
+
     /**
      * Converts spherical coordinates to Cartesian coordinates on a sphere of radius 1.
      *
@@ -47,7 +49,7 @@ public class MathUtils {
         double x = sinphi * Math.cos(spherical[0]);
         double y = sinphi * Math.sin(spherical[0]);
         double z = Math.cos(spherical[1]);
-        return new double[]{ x, y, z};
+        return new double[]{ x, y, z };
     }
 
     /**
@@ -62,7 +64,17 @@ public class MathUtils {
         return new double[]{ lambda, phi };
     }
 
+
+    /**
+     * TODO produceZYZRotationMatrix javadoc
+     *
+     * @param a
+     * @param b
+     * @param c
+     * @return
+     */
     public static double[][] produceZYZRotationMatrix(double a, double b, double c) {
+
         double sina = Math.sin(a);
         double cosa = Math.cos(a);
         double sinb = Math.sin(b);
@@ -86,10 +98,18 @@ public class MathUtils {
         return mat;
     }
 
+    /**
+     * Multiples the given matrix with the given vector.
+     * The matrix is assumed to be square and the vector is assumed to be of the same dimension as the matrix.
+     *
+     * @param matrix - the matrix as a n*n double array
+     * @param vector - the vector as double array of length n
+     * @return the result of the multiplication as an array of double on length n
+     */
     public static double[] matVecProdD(double[][] matrix, double[] vector) {
         double[] result = new double[vector.length];
-        for(int i = 0; i < result.length; i++) {
-            for(int j = 0; j < matrix[i].length; j++) {
+        for (int i = 0; i < result.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
                 result[i] += matrix[i][j] * vector[j];
             }
         }
@@ -99,5 +119,4 @@ public class MathUtils {
     public static double roundTo2Decimals(double val) {
         return Math.round(val * 100.) / 100.;
     }
-
 }

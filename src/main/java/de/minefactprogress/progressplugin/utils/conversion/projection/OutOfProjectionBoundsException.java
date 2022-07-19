@@ -1,4 +1,3 @@
-
 package de.minefactprogress.progressplugin.utils.conversion.projection;
 
 public final class OutOfProjectionBoundsException extends Exception {

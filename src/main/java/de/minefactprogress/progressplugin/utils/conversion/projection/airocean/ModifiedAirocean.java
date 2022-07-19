@@ -1,6 +1,4 @@
-
 package de.minefactprogress.progressplugin.utils.conversion.projection.airocean;
-
 
 import de.minefactprogress.progressplugin.utils.MathUtils;
 import de.minefactprogress.progressplugin.utils.conversion.projection.OutOfProjectionBoundsException;

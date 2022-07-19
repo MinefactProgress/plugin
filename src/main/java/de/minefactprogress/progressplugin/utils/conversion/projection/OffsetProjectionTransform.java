@@ -1,5 +1,5 @@
-
 package de.minefactprogress.progressplugin.utils.conversion.projection;
+
 import com.google.common.base.Preconditions;
 
 /**
