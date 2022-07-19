@@ -5,6 +5,9 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
+import java.awt.*;
+import java.awt.geom.Point2D;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Utils {
@@ -36,5 +39,21 @@ public class Utils {
         return null;
     }
 
+    public static boolean inside(Point2D.Double p, ArrayList<Point2D.Double> polygon) {
+        int intersections = 0;
+        Point2D.Double prev = polygon.get(polygon.size() - 1);
+        for (Point2D.Double next : polygon) {
+            if ((prev.y <= p.y && p.y < next.y) || (prev.y >= p.y && p.y > next.y)) {
+                double dy = next.y - prev.y;
+                double dx = next.x - prev.x;
+                double x = (p.y - prev.y) / dy * dx + prev.x;
+                if (x > p.x) {
+                    intersections++;
+                }
+            }
+            prev = next;
+        }
+        return intersections % 2 == 1;
+    }
 
 }
