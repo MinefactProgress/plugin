@@ -113,8 +113,4 @@ buildNumber.properties
 run/
 
 # Server directory
-server/logs
-server/world_nether
-server/world_the_end
-server/*.json
-server/start.bat
+server/
