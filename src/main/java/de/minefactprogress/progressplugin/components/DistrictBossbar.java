@@ -4,6 +4,8 @@ import com.google.gson.*;
 import de.minefactprogress.progressplugin.Main;
 import de.minefactprogress.progressplugin.api.RequestHandler;
 import de.minefactprogress.progressplugin.utils.Utils;
+import de.minefactprogress.progressplugin.utils.conversion.CoordinateConversion;
+import de.minefactprogress.progressplugin.utils.conversion.projection.OutOfProjectionBoundsException;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
@@ -51,12 +53,17 @@ public class DistrictBossbar {
 
         HashMap<String, ArrayList<Point2D.Double>> areaArray = convertToArray(jsonArray);
         for(Player p:players) {
-            int x = p.getLocation().getBlockX();
-            int y = p.getLocation().getBlockY();
-            Point2D.Double playerPos = new Point2D.Double(x,y);
+            double x = p.getLocation().getX();
+            double y = p.getLocation().getY();
+            double[] playerPos = new double[0];
+            try {
+                playerPos = CoordinateConversion.convertToGeo(x,y);
+            } catch (OutOfProjectionBoundsException e) {
+                e.printStackTrace();
+            }
 
-            System.out.println("player: "+playerPos);
-            if(Utils.inside(playerPos,areaArray.get("New York City"))) {
+            System.out.println("player: "+playerPos[0]+","+playerPos[1]);
+            if(Utils.inside(new Point2D.Double(playerPos[0],playerPos[1]),areaArray.get("New York City"))) {
                 p.sendMessage("i");
                 System.out.println("Inside nyc");
             } else {
