@@ -3,6 +3,7 @@ package de.minefactprogress.progressplugin.components;
 import com.google.gson.*;
 import de.minefactprogress.progressplugin.Main;
 import de.minefactprogress.progressplugin.api.RequestHandler;
+import de.minefactprogress.progressplugin.entities.city.District;
 import de.minefactprogress.progressplugin.utils.Utils;
 import de.minefactprogress.progressplugin.utils.conversion.CoordinateConversion;
 import de.minefactprogress.progressplugin.utils.conversion.projection.OutOfProjectionBoundsException;
@@ -35,26 +36,12 @@ public class DistrictBossbar {
     }
 
     private void update() {
-        String resp = RequestHandler.getInstance().GET("api/districts/get");
+        ArrayList<District> districts = District.districts;
+        HashMap<Integer, ArrayList<Point2D.Double>> areas = convertToAreas(districts);
 
-        if(resp == null) return;
-
-        JsonElement jsonElement;
-        try {
-            jsonElement = JsonParser.parseString(resp);
-        } catch (JsonSyntaxException e) {
-            Bukkit.getLogger().warning("Could not parse users API response to JSON!");
-            return;
-        }
-
-        if(!jsonElement.isJsonArray()) return;
-
-        JsonArray jsonArray = jsonElement.getAsJsonArray();
-
-        HashMap<String, ArrayList<Point2D.Double>> areaArray = convertToArray(jsonArray);
         for(Player p:players) {
             double x = p.getLocation().getX();
-            double y = p.getLocation().getY();
+            double y = p.getLocation().getZ();
             double[] playerPos = new double[0];
             try {
                 playerPos = CoordinateConversion.convertToGeo(x,y);
@@ -63,29 +50,20 @@ public class DistrictBossbar {
             }
 
             System.out.println("player: "+playerPos[0]+","+playerPos[1]);
-            if(Utils.inside(new Point2D.Double(playerPos[0],playerPos[1]),areaArray.get("New York City"))) {
-                p.sendMessage("i");
-                System.out.println("Inside nyc");
-            } else {
-                p.sendMessage("o");
-                System.out.println("outside nyc");
-
+            for(int i = 1; i <= areas.size();i++) {
+                if(areas.get(i).size()==0) continue;
+                if(Utils.inside(new Point2D.Double(playerPos[0],playerPos[1]),areas.get(i))) {
+                    p.sendMessage("inside "+District.getDistrictByID(i).getName());
+                    System.out.println("Inside "+District.getDistrictByID(i).getName());
+                }
             }
         }
     }
 
-    private HashMap<String, ArrayList<Point2D.Double>> convertToArray(JsonArray object) {
-        HashMap<String,ArrayList<Point2D.Double>> result = new HashMap<>();
-        for(JsonElement e:object) {
-            JsonObject el = e.getAsJsonObject();
-            ArrayList<Point2D.Double> area = new ArrayList<>();
-            for(JsonElement point:el.get("area").getAsJsonArray()) {
-                String x = point.getAsJsonArray().get(0).getAsString();
-                String y = point.getAsJsonArray().get(1).getAsString();
-                Point2D.Double p = new Point2D.Double(Double.parseDouble(x),Double.parseDouble(y));
-                area.add(p);
-            }
-            result.put(el.get("name").getAsString(),area);
+    private HashMap<Integer, ArrayList<Point2D.Double>> convertToAreas(ArrayList<District> object) {
+        HashMap<Integer,ArrayList<Point2D.Double>> result = new HashMap<>();
+        for(District e: object) {
+            result.put(e.getId(),e.getArea());
         }
         return result;
     }

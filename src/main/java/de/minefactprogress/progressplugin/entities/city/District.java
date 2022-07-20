@@ -1,5 +1,6 @@
 package de.minefactprogress.progressplugin.entities.city;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import de.minefactprogress.progressplugin.utils.DateUtils;
 import de.minefactprogress.progressplugin.utils.Item;
@@ -10,6 +11,7 @@ import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.stream.Collectors;
@@ -27,6 +29,7 @@ public class District implements Comparable<District> {
     private final int blocksLeft;
     private final String date;
     private final District parent;
+    private final ArrayList<Point2D.Double> area;
 
     public District(JsonObject json) {
         this.id = json.get("id").getAsInt();
@@ -37,6 +40,13 @@ public class District implements Comparable<District> {
         this.blocksLeft = json.get("blocks").getAsJsonObject().get("left").getAsInt();
         this.date = json.get("completionDate").isJsonNull() ? null : DateUtils.formatDateFromISOString(json.get("completionDate").getAsString());
         this.parent = json.get("parent").isJsonNull() ? null : getDistrictByID(json.get("parent").getAsInt());
+        this.area =  new ArrayList<>();
+        for(JsonElement point:json.get("area").getAsJsonArray()) {
+            String x = point.getAsJsonArray().get(0).getAsString();
+            String y = point.getAsJsonArray().get(1).getAsString();
+            Point2D.Double p = new Point2D.Double(Double.parseDouble(x),Double.parseDouble(y));
+            this.area.add(p);
+        }
     }
 
     public static District getDistrictByID(int id) {

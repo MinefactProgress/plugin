@@ -76,7 +76,7 @@ public class JoinListener implements Listener {
         p.sendMessage("welcome");
         try {
             double[] pos = CoordinateConversion.convertFromGeo(40.740699535030515,-73.98937085087103);
-            p.sendMessage(pos[0]+","+pos[1]);
+            p.sendMessage("New york: "+pos[0]+","+pos[1]);
         } catch (OutOfProjectionBoundsException outOfProjectionBoundsException) {
             outOfProjectionBoundsException.printStackTrace();
         }
