@@ -6,3 +6,5 @@ website: https://progress.minefact.de
 commands:
   district:
     usage: <show|hide|toggle|info>
+  progress:
+    usage: /progress
