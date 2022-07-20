@@ -33,27 +33,13 @@ public class DistrictBossbar {
     }
 
     private void update() {
-        ArrayList<District> districts = District.districts;
-        HashMap<Integer, ArrayList<Point2D.Double>> areas = convertToAreas(districts);
 
         for(Player p:bars.keySet()) {
-            double x = p.getLocation().getX();
-            double y = p.getLocation().getZ();
-            double[] playerPos = new double[0];
-            try {
-                playerPos = CoordinateConversion.convertToGeo(x,y);
-            } catch (OutOfProjectionBoundsException e) {
-                e.printStackTrace();
-            }
-            for(int i = 1; i <= areas.size();i++) {
-                if(areas.get(i).size()==0) continue;
-                if(Utils.inside(new Point2D.Double(playerPos[0],playerPos[1]),areas.get(i))) {
-                    District district = District.getDistrictByID(i);
-                    bars.get(p).name(Component.text(district.getName()));
-                    bars.get(p).progress((float)(district.getProgress()/100));
-                    bars.get(p).color(BossBar.Color.valueOf(district.getStatus().getColor().replace("GOLD","YELLOW")));
-                }
-            }
+            District district = getCurrentDistrict(p);
+
+            bars.get(p).name(Component.text(district.getName()));
+            bars.get(p).progress((float)(district.getProgress()/100));
+            bars.get(p).color(BossBar.Color.valueOf(district.getStatus().getColor().replace("GOLD","YELLOW")));
         }
     }
 
@@ -63,6 +49,29 @@ public class DistrictBossbar {
             result.put(e.getId(),e.getArea());
         }
         return result;
+    }
+
+    public District getCurrentDistrict(Player player) {
+        if(bars.containsKey(player)) {
+            ArrayList<District> districts = District.districts;
+            HashMap<Integer, ArrayList<Point2D.Double>> areas = convertToAreas(districts);
+
+            double x = player.getLocation().getX();
+            double y = player.getLocation().getZ();
+            double[] playerPos = new double[0];
+            try {
+                playerPos = CoordinateConversion.convertToGeo(x,y);
+            } catch (OutOfProjectionBoundsException e) {
+                e.printStackTrace();
+            }
+            for(int i = areas.size(); i >= 1;i--) {
+                if(areas.get(i).size()==0) continue;
+                if(Utils.inside(new Point2D.Double(playerPos[0],playerPos[1]),areas.get(i))) {
+                    return District.getDistrictByID(i);
+                }
+            }
+        }
+        return null;
     }
 
     public void togglePlayer(Player player) {

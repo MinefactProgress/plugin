@@ -33,6 +33,8 @@ public class DistrictCommand implements CommandExecutor {
             }
         } else {
             p.sendMessage(Main.getPREFIX()+ ChatColor.GRAY+"Valid Subcommands: <<district name>|show|hide|toggle>");
+            if(Main.getDistrictBossbar().getBars().containsKey(p))
+                Main.getDistrictBossbar().getCurrentDistrict(p).sendInfoMessage(p);
         }
         return true;
     }
