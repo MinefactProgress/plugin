@@ -1,6 +1,8 @@
 package de.minefactprogress.progressplugin.menusystem;
 
 import de.minefactprogress.progressplugin.utils.Item;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -12,8 +14,8 @@ public abstract class ConfirmMenu extends Menu {
     }
 
     @Override
-    public String menuName() {
-        return "§cUpdate this block?";
+    public Component menuName() {
+        return Component.text("Update this block?", NamedTextColor.RED);
     }
 
     @Override

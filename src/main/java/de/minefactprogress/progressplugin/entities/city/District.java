@@ -7,11 +7,6 @@ import de.minefactprogress.progressplugin.utils.MathUtils;
 import de.minefactprogress.progressplugin.utils.ProgressUtils;
 import de.minefactprogress.progressplugin.utils.time.DateUtils;
 import lombok.Getter;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.Style;
-import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -82,16 +77,16 @@ public class District implements Comparable<District> {
                 : Material.BOOK;
 
         ArrayList<String> lore = new ArrayList<>();
-        lore.add("§7Status: " + status.getColor() + "§l" + status.getName());
-        lore.add("§7Progress: " + ProgressUtils.progressToColor(progress) + progress + "%");
-        lore.add("§7Blocks Done: §e" + blocksDone);
-        lore.add("§7Blocks Left: §e" + blocksLeft);
+        lore.add(ChatColor.GRAY + "Status: " + ChatColor.valueOf(status.getColor()) + ChatColor.BOLD + status.getName());
+        lore.add(ChatColor.GRAY + "Progress: " + ProgressUtils.progressToColor(progress) + progress + "%");
+        lore.add(ChatColor.GRAY + "Blocks Done: " + ChatColor.YELLOW + blocksDone);
+        lore.add(ChatColor.GRAY + "Blocks Left: " + ChatColor.YELLOW + blocksLeft);
 
         if (date != null) {
-            lore.add("§7Completion Date: §e" + date);
+            lore.add(ChatColor.GRAY + "Completion Date: " + ChatColor.YELLOW + date);
         }
 
-        Item item = new Item(mat).setDisplayName("§b" + name).setLore(lore);
+        Item item = new Item(mat).setDisplayName(ChatColor.AQUA + name).setLore(lore);
         if (status == Status.DONE) {
             item.addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
             item.hideEnchantments(true);
@@ -102,17 +97,17 @@ public class District implements Comparable<District> {
 
     public void sendInfoMessage(Player player) {
         player.sendMessage("");
-        player.sendMessage(ChatColor.GRAY+"------- "+ChatColor.BOLD+"District Overview"+ChatColor.GRAY+" -------");
+        player.sendMessage(ChatColor.GRAY + "------- " + ChatColor.BOLD + "District Overview" + ChatColor.GRAY + " -------");
         player.sendMessage("");
-        player.sendMessage(ChatColor.GRAY+"Name: "+ChatColor.YELLOW+name);
-        player.sendMessage(ChatColor.GRAY+"Status: "+ChatColor.valueOf(status.getColor())+status.getName());
-        player.sendMessage(ChatColor.GRAY+"Progress: "+ChatColor.valueOf(status.getColor())+progress);
-        player.sendMessage(ChatColor.GRAY+"Blocks: "+ChatColor.YELLOW+(blocksDone+blocksLeft)+" ("+blocksDone +" done)");
-        if(progress==100) {
-            player.sendMessage(ChatColor.GRAY+"Completion Date: "+ChatColor.YELLOW+date);
+        player.sendMessage(ChatColor.GRAY + "Name: " + ChatColor.YELLOW + name);
+        player.sendMessage(ChatColor.GRAY + "Status: " + ChatColor.valueOf(status.getColor()) + status.getName());
+        player.sendMessage(ChatColor.GRAY + "Progress: " + ChatColor.valueOf(status.getColor()) + progress);
+        player.sendMessage(ChatColor.GRAY + "Blocks: " + ChatColor.YELLOW + (blocksDone + blocksLeft) + " (" + blocksDone + " done)");
+        if (progress == 100) {
+            player.sendMessage(ChatColor.GRAY + "Completion Date: " + ChatColor.YELLOW + date);
         }
         player.sendMessage("");
-        player.sendMessage(ChatColor.GRAY+"----------------------------");
+        player.sendMessage(ChatColor.GRAY + "----------------------------");
         player.sendMessage("");
     }
 

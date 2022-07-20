@@ -5,6 +5,7 @@ import de.minefactprogress.progressplugin.utils.Item;
 import de.minefactprogress.progressplugin.utils.time.TimeCalculator;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -26,7 +27,7 @@ public abstract class Menu implements InventoryHolder {
     @Getter
     protected Inventory inventory;
 
-    public abstract String menuName();
+    public abstract Component menuName();
 
     public abstract int rows();
 
