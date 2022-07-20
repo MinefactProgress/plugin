@@ -2,6 +2,7 @@ package de.minefactprogress.progressplugin.api;
 
 import com.google.gson.*;
 import de.minefactprogress.progressplugin.Main;
+import de.minefactprogress.progressplugin.entities.city.Block;
 import de.minefactprogress.progressplugin.entities.city.District;
 import de.minefactprogress.progressplugin.entities.users.User;
 import lombok.Getter;
@@ -31,6 +32,7 @@ public class RequestHandler {
     private final String BASE_URL = "https://progressbackend.minefact.de/";
     private final String ROOT_KEY = "e9299168-9a87-4a44-801b-4214449e46be";
     private long lastUpdatedDistricts = 0;
+    private long lastUpdatedBlocks = 0;
 
     private RequestHandler() {
     }
@@ -93,7 +95,27 @@ public class RequestHandler {
     }
 
     public void requestBlocks() {
+        if(Bukkit.getOnlinePlayers().size() == 0) return;
 
+        String jsonString = GET("api/blocks/get");
+
+        if(jsonString == null) return;
+
+        JsonElement jsonElement;
+        try {
+            jsonElement = JsonParser.parseString(jsonString);
+        } catch (JsonSyntaxException e) {
+            Bukkit.getLogger().warning("Could not parse blocks API response to JSON!");
+            return;
+        }
+
+        if(!jsonElement.isJsonArray()) return;
+
+        JsonArray jsonArray = jsonElement.getAsJsonArray();
+        for(JsonElement e : jsonArray) {
+            Block.blocks.add(new Block(e.getAsJsonObject()));
+        }
+        lastUpdatedBlocks = System.currentTimeMillis();
     }
 
     public String GET(String path) {

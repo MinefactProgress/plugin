@@ -11,7 +11,7 @@ public abstract class PaginatedMenu extends Menu {
     public static final String NAME_PREVIOUS = "§8<< §bPrevious Page";
 
     protected int currentPage = 0;
-    protected int maxItemsPerPage = (rows() - 2) * 7;
+    protected int maxItemsPerPage = ((slots() / 9) - 2) * 7;
     protected int index = 0;
 
     public PaginatedMenu(MenuStorage menuStorage, Menu previousMenu) {
@@ -25,12 +25,12 @@ public abstract class PaginatedMenu extends Menu {
         this.addDynamicItems();
     }
 
-    public void previousPage() {
+    public void nextPage() {
         this.currentPage++;
         open();
     }
 
-    public void nextPage() {
+    public void previousPage() {
         this.currentPage--;
         open();
     }
@@ -39,8 +39,9 @@ public abstract class PaginatedMenu extends Menu {
         List<ItemStack> items = items();
         for (int i = 0; i < maxItemsPerPage; i++) {
             index = maxItemsPerPage * currentPage + i;
-            if (index >= items.size())
+            if (index >= items.size()) {
                 break;
+            }
             if (items.get(index) != null) {
                 ItemStack item = items.get(index);
                 this.inventory.addItem(item);

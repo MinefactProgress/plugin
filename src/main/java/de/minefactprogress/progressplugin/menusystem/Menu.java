@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
@@ -33,7 +34,8 @@ public abstract class Menu implements InventoryHolder {
 
     public ItemStack titleItem() {
         ArrayList<String> lore = new ArrayList<>();
-        lore.add("§7Districts: §e" + new TimeCalculator(RequestHandler.getInstance().getLastUpdatedDistricts()).formatTimeAgo());
+        lore.add(ChatColor.GRAY + "Districts: " + ChatColor.YELLOW + new TimeCalculator(RequestHandler.getInstance().getLastUpdatedDistricts()).formatTimeAgo());
+        lore.add(ChatColor.GRAY + "Blocks: " + ChatColor.YELLOW + new TimeCalculator(RequestHandler.getInstance().getLastUpdatedBlocks()).formatTimeAgo());
 
         return new Item(Material.CLOCK).setDisplayName("§bLast updated:").setLore(lore).build();
     }
