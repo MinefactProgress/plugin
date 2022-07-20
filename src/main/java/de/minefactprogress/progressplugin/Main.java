@@ -1,6 +1,7 @@
 package de.minefactprogress.progressplugin;
 
 import de.minefactprogress.progressplugin.api.RequestHandler;
+import de.minefactprogress.progressplugin.commands.DistrictCommand;
 import de.minefactprogress.progressplugin.components.DistrictBossbar;
 import de.minefactprogress.progressplugin.listeners.InventoryClickListener;
 import de.minefactprogress.progressplugin.listeners.JoinListener;
@@ -42,6 +43,7 @@ public final class Main extends JavaPlugin {
 
 
     private void registerCommands() {
+        getCommand("district").setExecutor(new DistrictCommand());
 
     }
 

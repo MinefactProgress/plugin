@@ -9,13 +9,11 @@ import de.minefactprogress.progressplugin.utils.conversion.CoordinateConversion;
 import de.minefactprogress.progressplugin.utils.conversion.projection.OutOfProjectionBoundsException;
 import lombok.Getter;
 import lombok.Setter;
+import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
-import org.bukkit.boss.BarColor;
-import org.bukkit.boss.BarStyle;
-import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 
-import java.awt.*;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,23 +21,22 @@ import java.util.HashMap;
 public class DistrictBossbar {
 
     @Getter @Setter
-    private ArrayList<Player> players;
-    private BossBar bar;
+    private HashMap<Player, BossBar> bars;
+    private int UPDATE_INTERVAL = 2;
 
     public DistrictBossbar() {
-        bar = Bukkit.createBossBar("New York City", BarColor.BLUE, BarStyle.SOLID);
-        players = new ArrayList<>();
+        bars = new HashMap<>();
     }
 
     public void startSchedulers() {
-        Bukkit.getScheduler().runTaskTimerAsynchronously(Main.getInstance(),this::update, 0,30*20);
+        Bukkit.getScheduler().runTaskTimerAsynchronously(Main.getInstance(),this::update, 0,UPDATE_INTERVAL* 20L);
     }
 
     private void update() {
         ArrayList<District> districts = District.districts;
         HashMap<Integer, ArrayList<Point2D.Double>> areas = convertToAreas(districts);
 
-        for(Player p:players) {
+        for(Player p:bars.keySet()) {
             double x = p.getLocation().getX();
             double y = p.getLocation().getZ();
             double[] playerPos = new double[0];
@@ -48,13 +45,13 @@ public class DistrictBossbar {
             } catch (OutOfProjectionBoundsException e) {
                 e.printStackTrace();
             }
-
-            System.out.println("player: "+playerPos[0]+","+playerPos[1]);
             for(int i = 1; i <= areas.size();i++) {
                 if(areas.get(i).size()==0) continue;
                 if(Utils.inside(new Point2D.Double(playerPos[0],playerPos[1]),areas.get(i))) {
-                    p.sendMessage("inside "+District.getDistrictByID(i).getName());
-                    System.out.println("Inside "+District.getDistrictByID(i).getName());
+                    District district = District.getDistrictByID(i);
+                    bars.get(p).name(Component.text(district.getName()));
+                    bars.get(p).progress((float)(district.getProgress()/100));
+                    bars.get(p).color(BossBar.Color.valueOf(district.getStatus().getColor().replace("GOLD","YELLOW")));
                 }
             }
         }
@@ -69,17 +66,19 @@ public class DistrictBossbar {
     }
 
     public void togglePlayer(Player player) {
-        if(players.contains(player)) {
+        if(bars.containsKey(player)) {
             removePlayer(player);
             return;
         }
         addPlayer(player);
     }
     public void addPlayer(Player player) {
-        players.add(player);
+        bars.put(player, BossBar.bossBar(Component.text("New York City"),0, BossBar.Color.BLUE, BossBar.Overlay.PROGRESS));
+        player.showBossBar(bars.get(player));
     }
     public void removePlayer(Player player) {
-        players.remove(player);
+        player.hideBossBar(bars.get(player));
+        bars.remove(player);
     }
 
 }

@@ -3,3 +3,6 @@ version: '${project.version}'
 main: de.minefactprogress.progressplugin.Main
 api-version: 1.18
 website: https://progress.minefact.de
+commands:
+  district:
+    usage: <show|hide|toggle|info>
