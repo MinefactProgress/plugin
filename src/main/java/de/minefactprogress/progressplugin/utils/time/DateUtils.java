@@ -1,4 +1,4 @@
-package de.minefactprogress.progressplugin.utils;
+package de.minefactprogress.progressplugin.utils.time;
 
 public class DateUtils {
 

@@ -2,7 +2,7 @@ package de.minefactprogress.progressplugin.entities.city;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import de.minefactprogress.progressplugin.utils.DateUtils;
+import de.minefactprogress.progressplugin.utils.time.DateUtils;
 import de.minefactprogress.progressplugin.utils.Item;
 import de.minefactprogress.progressplugin.utils.MathUtils;
 import de.minefactprogress.progressplugin.utils.ProgressUtils;

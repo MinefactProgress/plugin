@@ -16,6 +16,7 @@ import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 
+@Getter
 public class RequestHandler {
 
     @Getter
