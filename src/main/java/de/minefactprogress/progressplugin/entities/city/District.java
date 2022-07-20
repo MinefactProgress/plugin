@@ -2,13 +2,20 @@ package de.minefactprogress.progressplugin.entities.city;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import de.minefactprogress.progressplugin.utils.time.DateUtils;
 import de.minefactprogress.progressplugin.utils.Item;
 import de.minefactprogress.progressplugin.utils.MathUtils;
 import de.minefactprogress.progressplugin.utils.ProgressUtils;
+import de.minefactprogress.progressplugin.utils.time.DateUtils;
 import lombok.Getter;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.Style;
+import net.kyori.adventure.text.format.TextDecoration;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.awt.geom.Point2D;
@@ -40,11 +47,11 @@ public class District implements Comparable<District> {
         this.blocksLeft = json.get("blocks").getAsJsonObject().get("left").getAsInt();
         this.date = json.get("completionDate").isJsonNull() ? null : DateUtils.formatDateFromISOString(json.get("completionDate").getAsString());
         this.parent = json.get("parent").isJsonNull() ? null : getDistrictByID(json.get("parent").getAsInt());
-        this.area =  new ArrayList<>();
-        for(JsonElement point:json.get("area").getAsJsonArray()) {
+        this.area = new ArrayList<>();
+        for (JsonElement point : json.get("area").getAsJsonArray()) {
             String x = point.getAsJsonArray().get(0).getAsString();
             String y = point.getAsJsonArray().get(1).getAsString();
-            Point2D.Double p = new Point2D.Double(Double.parseDouble(x),Double.parseDouble(y));
+            Point2D.Double p = new Point2D.Double(Double.parseDouble(x), Double.parseDouble(y));
             this.area.add(p);
         }
     }
@@ -91,6 +98,22 @@ public class District implements Comparable<District> {
         }
 
         return item.build();
+    }
+
+    public void sendInfoMessage(Player player) {
+        player.sendMessage("");
+        player.sendMessage(ChatColor.GRAY+"------- "+ChatColor.BOLD+"District Overview"+ChatColor.GRAY+" -------");
+        player.sendMessage("");
+        player.sendMessage(ChatColor.GRAY+"Name: "+ChatColor.YELLOW+name);
+        player.sendMessage(ChatColor.GRAY+"Status: "+ChatColor.valueOf(status.getColor())+status.getName());
+        player.sendMessage(ChatColor.GRAY+"Progress: "+ChatColor.valueOf(status.getColor())+progress);
+        player.sendMessage(ChatColor.GRAY+"Blocks: "+ChatColor.YELLOW+(blocksDone+blocksLeft)+" ("+blocksDone +" done)");
+        if(progress==100) {
+            player.sendMessage(ChatColor.GRAY+"Completion Date: "+ChatColor.YELLOW+date);
+        }
+        player.sendMessage("");
+        player.sendMessage(ChatColor.GRAY+"----------------------------");
+        player.sendMessage("");
     }
 
     @Override
