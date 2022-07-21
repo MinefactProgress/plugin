@@ -2,6 +2,7 @@ package de.minefactprogress.progressplugin.entities.city;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.bukkit.ChatColor;
 
 @RequiredArgsConstructor
 @Getter
@@ -28,6 +29,6 @@ public enum Status {
 
     @Override
     public String toString() {
-        return color + name;
+        return ChatColor.valueOf(color) + name;
     }
 }

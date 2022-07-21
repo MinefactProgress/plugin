@@ -6,7 +6,6 @@ import de.minefactprogress.progressplugin.menusystem.MenuStorage;
 import de.minefactprogress.progressplugin.utils.CustomColors;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -37,7 +36,7 @@ public class BoroughsMenu extends Menu {
 
         if (item.getType() == Material.LECTERN) {
             menuStorage.setSubborough(District.getDistrictByName(PlainTextComponentSerializer.plainText().serializeOrNull(item.getItemMeta().displayName())));
-            new DistrictsMenu(menuStorage, this).open();
+            new DistrictsMenu(menuStorage, this, 0, 0).open();
         }
     }
 

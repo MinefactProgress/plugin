@@ -3,15 +3,14 @@ package de.minefactprogress.progressplugin.menusystem.menus;
 import de.minefactprogress.progressplugin.Main;
 import de.minefactprogress.progressplugin.entities.city.Block;
 import de.minefactprogress.progressplugin.entities.city.District;
+import de.minefactprogress.progressplugin.entities.city.Status;
 import de.minefactprogress.progressplugin.menusystem.Menu;
 import de.minefactprogress.progressplugin.menusystem.MenuStorage;
 import de.minefactprogress.progressplugin.menusystem.PaginatedMenu;
 import de.minefactprogress.progressplugin.utils.CustomColors;
+import de.minefactprogress.progressplugin.utils.EnumUtils;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -22,8 +21,12 @@ import java.util.List;
 
 public class DistrictsMenu extends PaginatedMenu {
 
-    public DistrictsMenu(MenuStorage menuStorage, Menu previousMenu) {
+    private final int filter, sorting;
+
+    public DistrictsMenu(MenuStorage menuStorage, Menu previousMenu, int filter, int sorting) {
         super(menuStorage, previousMenu);
+        this.filter = filter;
+        this.sorting = sorting;
     }
 
     @Override
@@ -56,7 +59,7 @@ public class DistrictsMenu extends PaginatedMenu {
                     menuStorage.setDistrict(district);
                     new BlocksMenu(menuStorage, this).open();
                 } else if (e.getClick().isRightClick()) {
-                    if(district.getCenter() != null) {
+                    if (district.getCenter() != null) {
                         p.teleport(district.getCenter());
                         p.sendMessage(Main.getPREFIX() + ChatColor.GRAY + "You got teleported to " + ChatColor.YELLOW + district.getName());
                     } else {
@@ -65,17 +68,26 @@ public class DistrictsMenu extends PaginatedMenu {
                 }
                 break;
             case HOPPER:
-                // TODO Filter
+                if (e.getClick().isLeftClick()) {
+                    new DistrictsMenu(menuStorage, previousMenu, EnumUtils.getNextID(Status.class, filter, 1), sorting).open();
+                } else if (e.getClick().isRightClick()) {
+                    new DistrictsMenu(menuStorage, previousMenu, EnumUtils.getPreviousID(Status.class, filter, 1), sorting).open();
+                }
                 break;
             case COMPARATOR:
-                // TODO Sorting
+                if (e.getClick().isLeftClick()) {
+                    new DistrictsMenu(menuStorage, previousMenu, filter, EnumUtils.getNextID(District.Sorting.class, sorting)).open();
+                } else if (e.getClick().isRightClick()) {
+                    new DistrictsMenu(menuStorage, previousMenu, filter, EnumUtils.getPreviousID(District.Sorting.class, sorting)).open();
+                }
                 break;
         }
     }
 
     @Override
     public void setMenuItems() {
-
+        inventory.setItem(46, getFilterItem(Status.class, filter));
+        inventory.setItem(47, getSortingItem(District.Sorting.class, sorting));
     }
 
     @Override
@@ -83,7 +95,11 @@ public class DistrictsMenu extends PaginatedMenu {
         ArrayList<ItemStack> items = new ArrayList<>();
         List<District> districts = District.getChildren(menuStorage.getSubborough().getName());
 
+        districts.sort(EnumUtils.getByID(District.Sorting.class, sorting));
+
         for (District district : districts) {
+            if (filter != 0 && filter != district.getStatus().ordinal() + 1) continue;
+
             items.add(district.toItemStack());
         }
 

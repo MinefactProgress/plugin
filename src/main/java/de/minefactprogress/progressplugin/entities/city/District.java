@@ -15,6 +15,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.stream.Collectors;
 
@@ -55,14 +56,31 @@ public class District implements Comparable<District> {
         JsonArray coordsJson = json.get("center").getAsJsonArray();
         World world = Bukkit.getWorld("world");
         Location center = null;
-        if(world != null && coordsJson.size() == 2) {
+        if (world != null && coordsJson.size() == 2) {
             try {
                 double[] coords = CoordinateConversion.convertFromGeo(coordsJson.get(0).getAsDouble(), coordsJson.get(1).getAsDouble());
                 center = new Location(world, coords[0], Utils.getHighestY(world, (int) coords[0], (int) coords[1]) + 1, coords[1]);
-            } catch (OutOfProjectionBoundsException ignored) {}
+            } catch (OutOfProjectionBoundsException ignored) {
+            }
         }
         this.center = center;
     }
+
+    public static District getDistrictByID(int id) {
+        return districts.stream().filter(d -> d.id == id).findFirst().orElse(null);
+    }
+
+    public static District getDistrictByName(String name) {
+        return districts.stream().filter(d -> d.name.equalsIgnoreCase(name)).findFirst().orElse(null);
+    }
+
+    public static ArrayList<District> getChildren(String districtName) {
+        return districts.stream()
+                .filter(d -> d.parent != null && d.parent.id == getDistrictByName(districtName).id)
+                .collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    // -----===== Static Methods =====-----
 
     public ItemStack toItemStack() {
         if (parent == null) return null;
@@ -83,12 +101,12 @@ public class District implements Comparable<District> {
             lore.add(ChatColor.GRAY + "Completion Date: " + ChatColor.YELLOW + date);
         }
         int numberOfBlocks = Block.getBlocksOfDistrict(this).size();
-        if(numberOfBlocks > 0) {
+        if (numberOfBlocks > 0) {
             lore.add("");
             lore.add(ChatColor.YELLOW + "Click for more info");
         }
-        if(center != null) {
-            if(numberOfBlocks == 0) {
+        if (center != null) {
+            if (numberOfBlocks == 0) {
                 lore.add("");
             }
             lore.add(CustomColors.YELLOW.getChatColor() + "Right-Click to teleport");
@@ -141,19 +159,44 @@ public class District implements Comparable<District> {
         return d.status.getId() - status.getId();
     }
 
-    // -----===== Static Methods =====-----
+    // -----===== Sorting Enum =====-----
 
-    public static District getDistrictByID(int id) {
-        return districts.stream().filter(d -> d.id == id).findFirst().orElse(null);
-    }
+    public enum Sorting implements Comparator<District> {
+        PROGRESS {
+            @Override
+            public int compare(District d1, District d2) {
+                if (d1.getStatus() == d2.getStatus()) {
+                    double dif = d2.getProgress() - d1.getProgress();
 
-    public static District getDistrictByName(String name) {
-        return districts.stream().filter(d -> d.name.equalsIgnoreCase(name)).findFirst().orElse(null);
-    }
-
-    public static ArrayList<District> getChildren(String districtName) {
-        return districts.stream()
-                .filter(d -> d.parent != null && d.parent.id == getDistrictByName(districtName).id)
-                .collect(Collectors.toCollection(ArrayList::new));
+                    if (dif == 0.0) return 0;
+                    return dif > 0 ? 1 : -1;
+                }
+                return d2.getStatus().compareTo(d1.getStatus());
+            }
+        },
+        NAME {
+            @Override
+            public int compare(District d1, District d2) {
+                return d1.getName().compareTo(d2.getName());
+            }
+        },
+        TOTAL_BLOCKS_COUNT {
+            @Override
+            public int compare(District d1, District d2) {
+                return (d2.getBlocksDone() + d2.getBlocksLeft()) - (d1.getBlocksDone() + d1.getBlocksLeft());
+            }
+        },
+        BLOCKS_DONE {
+            @Override
+            public int compare(District d1, District d2) {
+                return d2.getBlocksDone() - d1.getBlocksDone();
+            }
+        },
+        BLOCKS_LEFT {
+            @Override
+            public int compare(District d1, District d2) {
+                return d2.getBlocksLeft() - d1.getBlocksLeft();
+            }
+        }
     }
 }

@@ -1,6 +1,7 @@
 package de.minefactprogress.progressplugin.menusystem;
 
 import de.minefactprogress.progressplugin.api.RequestHandler;
+import de.minefactprogress.progressplugin.utils.CustomColors;
 import de.minefactprogress.progressplugin.utils.Item;
 import de.minefactprogress.progressplugin.utils.time.TimeCalculator;
 import lombok.Getter;
@@ -85,5 +86,42 @@ public abstract class Menu implements InventoryHolder {
             this.inventory.setItem(4, titleItem());
         }
         this.inventory.setItem(slots() - 5, new Item(Material.BARRIER).setDisplayName(NAME_CLOSE).build());
+    }
+
+    public final ItemStack getFilterItem(Class<? extends Enum<?>> e, int filter) {
+        ArrayList<String> lore = new ArrayList<>();
+        lore.add("");
+        lore.add((filter == 0 ? ChatColor.GRAY + "➝ " + ChatColor.DARK_GRAY : ChatColor.GRAY + "") + "None");
+
+        for (Enum<?> value : e.getEnumConstants()) {
+            lore.add(value.ordinal() == filter - 1 ? ChatColor.GRAY + "➝ " + value : ChatColor.GRAY + ChatColor.stripColor(value.toString()));
+        }
+        lore.add("");
+        lore.add(ChatColor.YELLOW + "Left-Click to toggle");
+        lore.add(CustomColors.YELLOW.getChatColor() + "Right-Click for backwards");
+
+        return new Item(Material.HOPPER).setDisplayName(ChatColor.BLUE + "Filter").setLore(lore).build();
+    }
+
+    public final ItemStack getSortingItem(Class<? extends Enum<?>> e, int sorting) {
+        ArrayList<String> lore = new ArrayList<>();
+        lore.add("");
+
+        for (Enum<?> value : e.getEnumConstants()) {
+            String[] split = value.name().toLowerCase().split("_");
+            StringBuilder result = new StringBuilder();
+            for (String str : split) {
+                if (!result.toString().equals("")) {
+                    result.append(" ");
+                }
+                result.append(str.substring(0, 1).toUpperCase()).append(str.substring(1));
+            }
+            lore.add((value.ordinal() == sorting ? ChatColor.GRAY + "➝ " + ChatColor.AQUA : ChatColor.GRAY + "") + result);
+        }
+        lore.add("");
+        lore.add(ChatColor.YELLOW + "Left-Click to toggle");
+        lore.add(CustomColors.YELLOW.getChatColor() + "Right-Click for backwards");
+
+        return new Item(Material.COMPARATOR).setDisplayName(ChatColor.BLUE + "Sorting").setLore(lore).build();
     }
 }
