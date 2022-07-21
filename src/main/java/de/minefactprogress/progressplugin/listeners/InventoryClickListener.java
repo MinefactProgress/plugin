@@ -2,6 +2,7 @@ package de.minefactprogress.progressplugin.listeners;
 
 import de.minefactprogress.progressplugin.menusystem.Menu;
 import de.minefactprogress.progressplugin.menusystem.PaginatedMenu;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -21,23 +22,26 @@ public class InventoryClickListener implements Listener {
 
         ItemStack item = e.getCurrentItem();
         InventoryHolder holder = e.getClickedInventory().getHolder();
+        String itemName = PlainTextComponentSerializer.plainText().serializeOrNull(item.getItemMeta().displayName());
+
+        if(itemName == null) return;
 
         if (holder instanceof Menu menu) {
             e.setCancelled(true);
 
-            if (item.getType() == Material.BARRIER && item.getItemMeta().getDisplayName().equals(Menu.NAME_CLOSE)) {
+            if (item.getType() == Material.BARRIER && itemName.equals(Menu.NAME_CLOSE)) {
                 p.closeInventory();
                 return;
             } else if (item.getType() == Material.PLAYER_HEAD) {
-                if (item.getItemMeta().getDisplayName().equals(Menu.NAME_BACK)) {
+                if (itemName.equals(Menu.NAME_BACK)) {
                     menu.getPreviousMenu().open();
                     return;
                 }
                 if (menu instanceof PaginatedMenu paginatedMenu) {
-                    if (item.getItemMeta().getDisplayName().equals(PaginatedMenu.NAME_NEXT)) {
+                    if (itemName.equals(PaginatedMenu.NAME_NEXT)) {
                         paginatedMenu.nextPage();
                         return;
-                    } else if (item.getItemMeta().getDisplayName().equals(PaginatedMenu.NAME_PREVIOUS)) {
+                    } else if (itemName.equals(PaginatedMenu.NAME_PREVIOUS)) {
                         paginatedMenu.previousPage();
                         return;
                     }

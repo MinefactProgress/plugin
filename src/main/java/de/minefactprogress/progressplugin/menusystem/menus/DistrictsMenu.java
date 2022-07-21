@@ -8,7 +8,10 @@ import de.minefactprogress.progressplugin.menusystem.MenuStorage;
 import de.minefactprogress.progressplugin.menusystem.PaginatedMenu;
 import de.minefactprogress.progressplugin.utils.CustomColors;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -43,7 +46,7 @@ public class DistrictsMenu extends PaginatedMenu {
         switch (item.getType()) {
             case BOOK:
                 if (e.getClick().isLeftClick()) {
-                    String districtName = ChatColor.stripColor(item.getItemMeta().getDisplayName());
+                    String districtName = PlainTextComponentSerializer.plainText().serializeOrNull(item.getItemMeta().displayName());
                     District district = District.getDistrictByName(districtName);
                     if (Block.getBlocksOfDistrict(district).isEmpty()) {
                         p.sendMessage(Component.text(Main.getPREFIX()).append(Component.text("This district has no data!", NamedTextColor.RED)));

@@ -5,6 +5,7 @@ import de.minefactprogress.progressplugin.menusystem.Menu;
 import de.minefactprogress.progressplugin.menusystem.MenuStorage;
 import de.minefactprogress.progressplugin.utils.CustomColors;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -35,7 +36,7 @@ public class NewYorkCityMenu extends Menu {
         if (item == null) return;
 
         if (item.getType() == Material.BOOKSHELF) {
-            menuStorage.setBorough(District.getDistrictByName(ChatColor.stripColor(item.getItemMeta().getDisplayName())));
+            menuStorage.setBorough(District.getDistrictByName(PlainTextComponentSerializer.plainText().serializeOrNull(item.getItemMeta().displayName())));
             new BoroughsMenu(menuStorage, this).open();
         }
     }
