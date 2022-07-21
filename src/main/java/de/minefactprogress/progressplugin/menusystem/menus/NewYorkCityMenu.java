@@ -21,7 +21,7 @@ public class NewYorkCityMenu extends Menu {
 
     @Override
     public Component menuName() {
-        return Component.text("New York City", CustomColors.BLUE.getColor());
+        return Component.text("New York City", CustomColors.BLUE.getComponentColor());
     }
 
     @Override

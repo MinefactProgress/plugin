@@ -28,7 +28,7 @@ public class DistrictsMenu extends PaginatedMenu {
 
     @Override
     public Component menuName() {
-        return Component.text(menuStorage.getSubborough().getName(), CustomColors.BLUE.getColor());
+        return Component.text(menuStorage.getSubborough().getName(), CustomColors.BLUE.getComponentColor());
     }
 
     @Override
@@ -43,19 +43,25 @@ public class DistrictsMenu extends PaginatedMenu {
 
         if (item == null) return;
 
+        String districtName = PlainTextComponentSerializer.plainText().serializeOrNull(item.getItemMeta().displayName());
+        District district = District.getDistrictByName(districtName);
+
         switch (item.getType()) {
             case BOOK:
                 if (e.getClick().isLeftClick()) {
-                    String districtName = PlainTextComponentSerializer.plainText().serializeOrNull(item.getItemMeta().displayName());
-                    District district = District.getDistrictByName(districtName);
                     if (Block.getBlocksOfDistrict(district).isEmpty()) {
-                        p.sendMessage(Component.text(Main.getPREFIX()).append(Component.text("This district has no data!", NamedTextColor.RED)));
+                        p.sendMessage(Main.getPREFIX() + ChatColor.RED + "This district has no data!");
                         return;
                     }
                     menuStorage.setDistrict(district);
                     new BlocksMenu(menuStorage, this).open();
                 } else if (e.getClick().isRightClick()) {
-                    // TODO Teleport
+                    if(district.getCenter() != null) {
+                        p.teleport(district.getCenter());
+                        p.sendMessage(Main.getPREFIX() + ChatColor.GRAY + "You got teleported to " + ChatColor.YELLOW + district.getName());
+                    } else {
+                        p.sendMessage(Main.getPREFIX() + ChatColor.RED + "No location found for this district!");
+                    }
                 }
                 break;
             case HOPPER:

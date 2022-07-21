@@ -20,7 +20,7 @@ public class BlocksMenu extends PaginatedMenu {
 
     @Override
     public Component menuName() {
-        return Component.text(menuStorage.getDistrict().getName(), CustomColors.BLUE.getColor());
+        return Component.text(menuStorage.getDistrict().getName(), CustomColors.BLUE.getComponentColor());
     }
 
     @Override

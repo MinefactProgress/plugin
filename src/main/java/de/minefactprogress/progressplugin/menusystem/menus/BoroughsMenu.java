@@ -21,7 +21,7 @@ public class BoroughsMenu extends Menu {
 
     @Override
     public Component menuName() {
-        return Component.text(menuStorage.getBorough().getName(), CustomColors.BLUE.getColor());
+        return Component.text(menuStorage.getBorough().getName(), CustomColors.BLUE.getComponentColor());
     }
 
     @Override

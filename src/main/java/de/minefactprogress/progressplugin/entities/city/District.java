@@ -1,14 +1,14 @@
 package de.minefactprogress.progressplugin.entities.city;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import de.minefactprogress.progressplugin.utils.Item;
-import de.minefactprogress.progressplugin.utils.MathUtils;
-import de.minefactprogress.progressplugin.utils.ProgressUtils;
+import de.minefactprogress.progressplugin.utils.*;
+import de.minefactprogress.progressplugin.utils.conversion.CoordinateConversion;
+import de.minefactprogress.progressplugin.utils.conversion.projection.OutOfProjectionBoundsException;
 import de.minefactprogress.progressplugin.utils.time.DateUtils;
 import lombok.Getter;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -32,6 +32,7 @@ public class District implements Comparable<District> {
     private final String date;
     private final District parent;
     private final ArrayList<Point2D.Double> area;
+    private final Location center;
 
     public District(JsonObject json) {
         this.id = json.get("id").getAsInt();
@@ -42,6 +43,7 @@ public class District implements Comparable<District> {
         this.blocksLeft = json.get("blocks").getAsJsonObject().get("left").getAsInt();
         this.date = json.get("completionDate").isJsonNull() ? null : DateUtils.formatDateFromISOString(json.get("completionDate").getAsString());
         this.parent = json.get("parent").isJsonNull() ? null : getDistrictByID(json.get("parent").getAsInt());
+
         this.area = new ArrayList<>();
         for (JsonElement point : json.get("area").getAsJsonArray()) {
             String x = point.getAsJsonArray().get(0).getAsString();
@@ -49,22 +51,17 @@ public class District implements Comparable<District> {
             Point2D.Double p = new Point2D.Double(Double.parseDouble(x), Double.parseDouble(y));
             this.area.add(p);
         }
-    }
 
-    public static District getDistrictByID(int id) {
-        return districts.stream().filter(d -> d.id == id).findFirst().orElse(null);
-    }
-
-    public static District getDistrictByName(String name) {
-        return districts.stream().filter(d -> d.name.equalsIgnoreCase(name)).findFirst().orElse(null);
-    }
-
-    // -----===== Static Methods =====-----
-
-    public static ArrayList<District> getChildren(String districtName) {
-        return districts.stream()
-                .filter(d -> d.parent != null && d.parent.id == getDistrictByName(districtName).id)
-                .collect(Collectors.toCollection(ArrayList::new));
+        JsonArray coordsJson = json.get("center").getAsJsonArray();
+        World world = Bukkit.getWorld("world");
+        Location center = null;
+        if(world != null && coordsJson.size() == 2) {
+            try {
+                double[] coords = CoordinateConversion.convertFromGeo(coordsJson.get(0).getAsDouble(), coordsJson.get(1).getAsDouble());
+                center = new Location(world, coords[0], Utils.getHighestY(world, (int) coords[0], (int) coords[1]) + 1, coords[1]);
+            } catch (OutOfProjectionBoundsException ignored) {}
+        }
+        this.center = center;
     }
 
     public ItemStack toItemStack() {
@@ -84,6 +81,17 @@ public class District implements Comparable<District> {
 
         if (date != null) {
             lore.add(ChatColor.GRAY + "Completion Date: " + ChatColor.YELLOW + date);
+        }
+        int numberOfBlocks = Block.getBlocksOfDistrict(this).size();
+        if(numberOfBlocks > 0) {
+            lore.add("");
+            lore.add(ChatColor.YELLOW + "Click for more info");
+        }
+        if(center != null) {
+            if(numberOfBlocks == 0) {
+                lore.add("");
+            }
+            lore.add(CustomColors.YELLOW.getChatColor() + "Right-Click to teleport");
         }
 
         Item item = new Item(mat).setDisplayName(ChatColor.AQUA + name).setLore(lore);
@@ -131,5 +139,21 @@ public class District implements Comparable<District> {
             return progress > d.progress ? 1 : -1;
         }
         return d.status.getId() - status.getId();
+    }
+
+    // -----===== Static Methods =====-----
+
+    public static District getDistrictByID(int id) {
+        return districts.stream().filter(d -> d.id == id).findFirst().orElse(null);
+    }
+
+    public static District getDistrictByName(String name) {
+        return districts.stream().filter(d -> d.name.equalsIgnoreCase(name)).findFirst().orElse(null);
+    }
+
+    public static ArrayList<District> getChildren(String districtName) {
+        return districts.stream()
+                .filter(d -> d.parent != null && d.parent.id == getDistrictByName(districtName).id)
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 }
