@@ -3,6 +3,7 @@ package de.minefactprogress.progressplugin.listeners;
 import de.minefactprogress.progressplugin.menusystem.Menu;
 import de.minefactprogress.progressplugin.menusystem.PaginatedMenu;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -29,19 +30,19 @@ public class InventoryClickListener implements Listener {
         if (holder instanceof Menu menu) {
             e.setCancelled(true);
 
-            if (item.getType() == Material.BARRIER && itemName.equals(Menu.NAME_CLOSE)) {
+            if (item.getType() == Material.BARRIER && itemName.equals(ChatColor.stripColor(Menu.NAME_CLOSE))) {
                 p.closeInventory();
                 return;
             } else if (item.getType() == Material.PLAYER_HEAD) {
-                if (itemName.equals(Menu.NAME_BACK)) {
+                if (itemName.equals(ChatColor.stripColor(Menu.NAME_BACK))) {
                     menu.getPreviousMenu().open();
                     return;
                 }
                 if (menu instanceof PaginatedMenu paginatedMenu) {
-                    if (itemName.equals(PaginatedMenu.NAME_NEXT)) {
+                    if (itemName.equals(ChatColor.stripColor(PaginatedMenu.NAME_NEXT))) {
                         paginatedMenu.nextPage();
                         return;
-                    } else if (itemName.equals(PaginatedMenu.NAME_PREVIOUS)) {
+                    } else if (itemName.equals(ChatColor.stripColor(PaginatedMenu.NAME_PREVIOUS))) {
                         paginatedMenu.previousPage();
                         return;
                     }

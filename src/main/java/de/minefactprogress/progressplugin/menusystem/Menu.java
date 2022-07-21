@@ -19,8 +19,8 @@ import java.util.ArrayList;
 @RequiredArgsConstructor
 public abstract class Menu implements InventoryHolder {
 
-    public static final String NAME_BACK = "§6Back";
-    public static final String NAME_CLOSE = "§cClose";
+    public static final String NAME_BACK = ChatColor.GOLD + "Back";
+    public static final String NAME_CLOSE = ChatColor.RED + "Close";
 
     protected final MenuStorage menuStorage;
     @Getter

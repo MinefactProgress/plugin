@@ -1,14 +1,15 @@
 package de.minefactprogress.progressplugin.menusystem;
 
 import de.minefactprogress.progressplugin.utils.Item;
+import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 
 public abstract class PaginatedMenu extends Menu {
 
-    public static final String NAME_NEXT = "§bNext Page §8>>";
-    public static final String NAME_PREVIOUS = "§8<< §bPrevious Page";
+    public static final String NAME_NEXT = ChatColor.AQUA + "Next Page " + ChatColor.DARK_GRAY + ">>";
+    public static final String NAME_PREVIOUS = ChatColor.DARK_GRAY + "<< " + ChatColor.AQUA + "Previous Page";
 
     protected int currentPage = 0;
     protected int maxItemsPerPage = ((slots() / 9) - 2) * 7;
