@@ -9,6 +9,7 @@ import de.minefactprogress.progressplugin.listeners.JoinListener;
 import de.minefactprogress.progressplugin.menusystem.MenuStorage;
 import lombok.Getter;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -34,19 +35,20 @@ public final class Main extends JavaPlugin {
 
         RequestHandler.getInstance().startSchedulers();
 
-        Bukkit.getConsoleSender().sendMessage(PREFIX + "§2Plugin enabled");
+        Bukkit.getConsoleSender().sendMessage(PREFIX + ChatColor.DARK_GREEN + "Plugin enabled");
     }
 
     @Override
     public void onDisable() {
-
+        Bukkit.getConsoleSender().sendMessage(PREFIX + ChatColor.DARK_RED + "Plugin disabled");
     }
 
 
     private void registerCommands() {
         getCommand("district").setExecutor(new DistrictCommand());
-        getCommand("progress").setExecutor(new ProgressCommand());
 
+        getCommand("progress").setExecutor(new ProgressCommand());
+        getCommand("progress").setTabCompleter(new ProgressCommand());
     }
 
     private void registerListeners() {
