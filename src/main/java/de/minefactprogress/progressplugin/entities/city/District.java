@@ -31,9 +31,9 @@ public class District implements Comparable<District> {
     private final int blocksDone;
     private final int blocksLeft;
     private final String date;
-    private final District parent;
     private final ArrayList<Point2D.Double> area;
     private final Location center;
+    private District parent;
 
     public District(JsonObject json) {
         this.id = json.get("id").getAsInt();
@@ -65,22 +65,6 @@ public class District implements Comparable<District> {
         }
         this.center = center;
     }
-
-    public static District getDistrictByID(int id) {
-        return districts.stream().filter(d -> d.id == id).findFirst().orElse(null);
-    }
-
-    public static District getDistrictByName(String name) {
-        return districts.stream().filter(d -> d.name.equalsIgnoreCase(name)).findFirst().orElse(null);
-    }
-
-    public static ArrayList<District> getChildren(String districtName) {
-        return districts.stream()
-                .filter(d -> d.parent != null && d.parent.id == getDistrictByName(districtName).id)
-                .collect(Collectors.toCollection(ArrayList::new));
-    }
-
-    // -----===== Static Methods =====-----
 
     public ItemStack toItemStack() {
         if (parent == null) return null;
@@ -157,6 +141,37 @@ public class District implements Comparable<District> {
             return progress > d.progress ? 1 : -1;
         }
         return d.status.getId() - status.getId();
+    }
+
+    // -----===== Static Methods =====-----
+
+    public static void loadMissingParents(JsonArray json) {
+        for(District district : districts) {
+            if(!district.name.equals("New York City") && district.parent == null) {
+                District parent = null;
+                for(JsonElement e : json) {
+                    JsonObject o = e.getAsJsonObject();
+                    if(o.get("id").getAsInt() == district.id) {
+                        parent = getDistrictByID(o.get("parent").getAsInt());
+                    }
+                }
+                district.parent = parent;
+            }
+        }
+    }
+
+    public static District getDistrictByID(int id) {
+        return districts.stream().filter(d -> d.id == id).findFirst().orElse(null);
+    }
+
+    public static District getDistrictByName(String name) {
+        return districts.stream().filter(d -> d.name.equalsIgnoreCase(name)).findFirst().orElse(null);
+    }
+
+    public static ArrayList<District> getChildren(String districtName) {
+        return districts.stream()
+                .filter(d -> d.parent != null && d.parent.id == getDistrictByName(districtName).id)
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     // -----===== Sorting Enum =====-----

@@ -91,6 +91,7 @@ public class RequestHandler {
         for (JsonElement e : jsonArray) {
             District.districts.add(new District(e.getAsJsonObject()));
         }
+        District.loadMissingParents(jsonArray);
         lastUpdatedDistricts = System.currentTimeMillis();
     }
 
