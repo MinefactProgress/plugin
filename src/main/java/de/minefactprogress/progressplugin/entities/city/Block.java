@@ -12,6 +12,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.stream.Collectors;
 
 @Getter
@@ -36,7 +37,8 @@ public class Block {
         this.date = json.get("completionDate").isJsonNull() ? null : DateUtils.formatDateFromISOString(json.get("completionDate").getAsString());
 
         this.builders = new ArrayList<>();
-        String[] builders = json.get("builder") == null || json.get("builder").isJsonNull() ? new String[0] : json.get("builder").getAsString().split(",");
+        String[] builders = json.get("builder") == null || json.get("builder").isJsonNull() || json.get("builder").getAsString().equals("")
+                ? new String[0] : json.get("builder").getAsString().split(",");
         for(String builder : builders) {
             if(!this.builders.contains(builder)) {
                 this.builders.add(builder);
@@ -53,7 +55,7 @@ public class Block {
         if(!builders.isEmpty()) {
             lore.add(ChatColor.GRAY + "Builder:");
             for(String builder : builders) {
-                lore.add(ChatColor.GRAY + "-" + ChatColor.GREEN + builder);
+                lore.add(ChatColor.GRAY + "- " + ChatColor.GREEN + builder);
             }
         }
         if(date != null) {
@@ -73,5 +75,28 @@ public class Block {
 
     public static ArrayList<Block> getBlocksOfDistrict(District district) {
         return blocks.stream().filter(b -> b.district.equals(district)).collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    // -----===== Sorting Enum =====-----
+
+    public enum Sorting implements Comparator<Block> {
+        ID {
+            @Override
+            public int compare(Block b1, Block b2) {
+                return b1.getId() - b2.getId();
+            }
+        },
+        PROGRESS {
+            @Override
+            public int compare(Block b1, Block b2) {
+                if(b1.getStatus() == b2.getStatus()) {
+                    double dif = b2.getProgress() - b1.getProgress();
+
+                    if(dif == 0.0) return 0;
+                    return dif > 0 ? 1 : -1;
+                }
+                return b2.getStatus().compareTo(b1.getStatus());
+            }
+        }
     }
 }

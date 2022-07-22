@@ -57,7 +57,7 @@ public class DistrictsMenu extends PaginatedMenu {
                         return;
                     }
                     menuStorage.setDistrict(district);
-                    new BlocksMenu(menuStorage, this).open();
+                    new BlocksMenu(menuStorage, this, 0, 0).open();
                 } else if (e.getClick().isRightClick()) {
                     if (district.getCenter() != null) {
                         p.teleport(district.getCenter());
