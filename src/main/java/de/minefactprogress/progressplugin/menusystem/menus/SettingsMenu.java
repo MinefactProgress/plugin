@@ -47,7 +47,7 @@ public class SettingsMenu extends Menu {
         if(item.getType() == Material.OAK_SIGN) {
             menuStorage.getOwner().sendMessage(Main.getPREFIX()+ ChatColor.GRAY+"Toggled the District Bossbar");
             Main.getDistrictBossbar().togglePlayer(menuStorage.getOwner());
-            inventory.setItem(10 +9, Main.getDistrictBossbar().getBars().containsKey(menuStorage.getOwner())?ITEM_ENABLED:ITEM_DISABLED);
+            inventory.setItem(10 +9, Main.getDistrictBossbar().getBars().containsKey(menuStorage.getOwner().getUniqueId())?ITEM_ENABLED:ITEM_DISABLED);
         }
 
     }
@@ -60,6 +60,6 @@ public class SettingsMenu extends Menu {
         // District Bossbar
         inventory.setItem(10, new Item(Material.OAK_SIGN).setDisplayName(ChatColor.AQUA+"District Bar").setLore(new ArrayList<>(
                 Arrays.asList(ChatColor.GRAY+"Displays a BossBar on the",ChatColor.GRAY+"top of the screen showing",ChatColor.GRAY+"the District you are in"))).build());
-        inventory.setItem(10 +9, Main.getDistrictBossbar().getBars().containsKey(menuStorage.getOwner())?ITEM_ENABLED:ITEM_DISABLED);
+        inventory.setItem(10 +9, Main.getDistrictBossbar().getBars().containsKey(menuStorage.getOwner().getUniqueId())?ITEM_ENABLED:ITEM_DISABLED);
     }
 }

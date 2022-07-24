@@ -71,5 +71,9 @@ public class JoinListener implements Listener {
                 });
             }
         }
+
+        if(Main.getDistrictBossbar().getBars().containsKey(p.getUniqueId())) {
+            Main.getDistrictBossbar().updatePlayer(p);
+        }
     }
 }
