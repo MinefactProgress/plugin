@@ -7,7 +7,9 @@ import de.minefactprogress.progressplugin.menusystem.MenuStorage;
 import de.minefactprogress.progressplugin.menusystem.PaginatedMenu;
 import de.minefactprogress.progressplugin.utils.CustomColors;
 import de.minefactprogress.progressplugin.utils.EnumUtils;
+import de.minefactprogress.progressplugin.utils.Permissions;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -37,25 +39,32 @@ public class BlocksMenu extends PaginatedMenu {
 
     @Override
     public void handleMenu(InventoryClickEvent e) {
+        Player p = (Player) e.getWhoClicked();
         ItemStack item = e.getCurrentItem();
 
-        if(item == null) return;
+        if (item == null) return;
 
-        switch(item.getType()) {
+        switch (item.getType()) {
             case PAPER:
-                // TODO
+                if (e.getClick().isRightClick() || !Permissions.isTeamMember(p)) {
+                    // TODO teleport
+                } else if (e.getClick().isLeftClick()) {
+                    int id = Integer.parseInt(PlainTextComponentSerializer.plainText().serialize(item.displayName()).replaceAll("\\D+", ""));
+                    menuStorage.setBlock(Block.getBlock(menuStorage.getDistrict(), id));
+                    new EditBlockMenu(menuStorage, this).open();
+                }
                 break;
             case HOPPER:
-                if(e.getClick().isLeftClick()) {
+                if (e.getClick().isLeftClick()) {
                     new BlocksMenu(menuStorage, previousMenu, EnumUtils.getNextID(Status.class, filter, 1), sorting).open();
-                } else if(e.getClick().isRightClick()) {
+                } else if (e.getClick().isRightClick()) {
                     new BlocksMenu(menuStorage, previousMenu, EnumUtils.getPreviousID(Status.class, filter, 1), sorting).open();
                 }
                 break;
             case COMPARATOR:
-                if(e.getClick().isLeftClick()) {
+                if (e.getClick().isLeftClick()) {
                     new BlocksMenu(menuStorage, previousMenu, filter, EnumUtils.getNextID(Block.Sorting.class, sorting)).open();
-                } else if(e.getClick().isRightClick()) {
+                } else if (e.getClick().isRightClick()) {
                     new BlocksMenu(menuStorage, previousMenu, filter, EnumUtils.getPreviousID(Block.Sorting.class, sorting)).open();
                 }
                 break;
@@ -75,8 +84,8 @@ public class BlocksMenu extends PaginatedMenu {
 
         blocks.sort(EnumUtils.getByID(Block.Sorting.class, sorting));
 
-        for(Block block : blocks) {
-            if(filter != 0 && filter != block.getStatus().ordinal() + 1) continue;
+        for (Block block : blocks) {
+            if (filter != 0 && filter != block.getStatus().ordinal() + 1) continue;
 
             items.add(block.toItemStack());
         }

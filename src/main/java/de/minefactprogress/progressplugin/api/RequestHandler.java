@@ -5,6 +5,7 @@ import de.minefactprogress.progressplugin.Main;
 import de.minefactprogress.progressplugin.entities.city.Block;
 import de.minefactprogress.progressplugin.entities.city.District;
 import de.minefactprogress.progressplugin.entities.users.User;
+import de.minefactprogress.progressplugin.utils.Logger;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 
@@ -56,7 +57,7 @@ public class RequestHandler {
         try {
             jsonElement = JsonParser.parseString(jsonString);
         } catch (JsonSyntaxException e) {
-            Bukkit.getLogger().warning(Main.getPREFIX() + "Could not parse users API response to JSON!");
+            Logger.warn("Could not parse users API response to JSON!");
             return;
         }
 
@@ -81,7 +82,7 @@ public class RequestHandler {
         try {
             jsonElement = JsonParser.parseString(jsonString);
         } catch (JsonSyntaxException e) {
-            Bukkit.getLogger().warning(Main.getPREFIX() + "Could not parse districts API response to JSON!");
+            Logger.warn("Could not parse districts API response to JSON!");
             return;
         }
 
@@ -98,24 +99,24 @@ public class RequestHandler {
     }
 
     public void requestBlocks() {
-        if(Bukkit.getOnlinePlayers().size() == 0) return;
+        if (Bukkit.getOnlinePlayers().size() == 0) return;
 
         String jsonString = GET("api/blocks/get");
 
-        if(jsonString == null) return;
+        if (jsonString == null) return;
 
         JsonElement jsonElement;
         try {
             jsonElement = JsonParser.parseString(jsonString);
         } catch (JsonSyntaxException e) {
-            Bukkit.getLogger().warning(Main.getPREFIX() + "Could not parse blocks API response to JSON!");
+            Logger.warn("Could not parse blocks API response to JSON!");
             return;
         }
 
-        if(!jsonElement.isJsonArray()) return;
+        if (!jsonElement.isJsonArray()) return;
 
         JsonArray jsonArray = jsonElement.getAsJsonArray();
-        for(JsonElement e : jsonArray) {
+        for (JsonElement e : jsonArray) {
             Block.blocks.add(new Block(e.getAsJsonObject()));
         }
         lastUpdatedBlocks = System.currentTimeMillis();
@@ -126,7 +127,7 @@ public class RequestHandler {
             HttpURLConnection con = createConnection(BASE_URL + path, "GET");
 
             if (con.getResponseCode() > 299) {
-                Bukkit.getLogger().warning(Main.getPREFIX() + "API Request returned response code " + con.getResponseCode() + " for URL: " + this.BASE_URL + path);
+                Logger.warn("API Request returned response code " + con.getResponseCode() + " for URL: " + this.BASE_URL + path);
                 return null;
             }
 
@@ -141,9 +142,9 @@ public class RequestHandler {
 
             return content.toString();
         } catch (SocketTimeoutException e) {
-            Bukkit.getLogger().warning(Main.getPREFIX() + "Read timed out! Is the API offline?");
+            Logger.warn("Read timed out! Is the API offline?");
         } catch (ConnectException e) {
-            Bukkit.getLogger().warning(Main.getPREFIX() + "Could not connect to the API! Is it offline?");
+            Logger.warn("Could not connect to the API! Is it offline?");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -160,7 +161,7 @@ public class RequestHandler {
             out.close();
 
             if (con.getResponseCode() > 299) {
-                Bukkit.getLogger().warning(Main.getPREFIX() + "API Request returned response code " + con.getResponseCode() + " for URL: " + this.BASE_URL + path);
+                Logger.warn("API Request returned response code " + con.getResponseCode() + " for URL: " + this.BASE_URL + path);
                 return null;
             }
 
@@ -177,9 +178,9 @@ public class RequestHandler {
 
             return JsonParser.parseString(content.toString()).getAsJsonObject();
         } catch (SocketTimeoutException e) {
-            Bukkit.getLogger().warning(Main.getPREFIX() + "Read timed out! Is the API offline?");
+            Logger.warn("Read timed out! Is the API offline?");
         } catch (ConnectException e) {
-            Bukkit.getLogger().warning(Main.getPREFIX() + "Could not connect to the API! Is it offline?");
+            Logger.warn("Could not connect to the API! Is it offline?");
         } catch (IOException e) {
             e.printStackTrace();
         }

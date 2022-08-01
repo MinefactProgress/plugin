@@ -42,8 +42,14 @@ public class User implements Comparable<User> {
         return rank.getColor() + name;
     }
 
+    // -----===== Static Methods =====-----
+
     public static User getByUUID(UUID uuid) {
         return users.stream().filter(u -> u.uuid.equals(uuid)).findFirst().orElse(null);
+    }
+
+    public static User getByName(String name) {
+        return users.stream().filter(u -> u.name.equalsIgnoreCase(name)).findFirst().orElse(null);
     }
 
     public static void register(Player p) {

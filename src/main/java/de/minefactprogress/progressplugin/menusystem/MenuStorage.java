@@ -1,5 +1,6 @@
 package de.minefactprogress.progressplugin.menusystem;
 
+import de.minefactprogress.progressplugin.entities.city.Block;
 import de.minefactprogress.progressplugin.entities.city.District;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -15,4 +16,5 @@ public class MenuStorage {
     private District borough;
     private District subborough;
     private District district;
+    private Block block;
 }

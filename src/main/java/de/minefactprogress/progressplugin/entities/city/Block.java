@@ -1,6 +1,8 @@
 package de.minefactprogress.progressplugin.entities.city;
 
 import com.google.gson.JsonObject;
+import de.minefactprogress.progressplugin.entities.users.Rank;
+import de.minefactprogress.progressplugin.entities.users.User;
 import de.minefactprogress.progressplugin.utils.Item;
 import de.minefactprogress.progressplugin.utils.MathUtils;
 import de.minefactprogress.progressplugin.utils.ProgressUtils;
@@ -39,8 +41,8 @@ public class Block {
         this.builders = new ArrayList<>();
         String[] builders = json.get("builder") == null || json.get("builder").isJsonNull() || json.get("builder").getAsString().equals("")
                 ? new String[0] : json.get("builder").getAsString().split(",");
-        for(String builder : builders) {
-            if(!this.builders.contains(builder)) {
+        for (String builder : builders) {
+            if (!this.builders.contains(builder)) {
                 this.builders.add(builder);
             }
         }
@@ -52,18 +54,23 @@ public class Block {
         lore.add(ChatColor.GRAY + "Progress: " + ProgressUtils.progressToColor(progress) + progress + "%");
         lore.add(ChatColor.GRAY + "Details: " + (details ? ChatColor.GREEN + "✔" : ChatColor.RED + "✘"));
 
-        if(!builders.isEmpty()) {
+        if (!builders.isEmpty()) {
             lore.add(ChatColor.GRAY + "Builder:");
-            for(String builder : builders) {
-                lore.add(ChatColor.GRAY + "- " + ChatColor.GREEN + builder);
+            for (String builder : builders) {
+                User user = User.getByName(builder);
+                if (user == null) {
+                    lore.add(ChatColor.GRAY + "- " + Rank.PLAYER.getColor() + builder);
+                } else {
+                    lore.add(ChatColor.GRAY + "- " + user.getRank().getColor() + user.getName());
+                }
             }
         }
-        if(date != null) {
+        if (date != null) {
             lore.add(ChatColor.GRAY + "Completion Date: " + ChatColor.YELLOW + date);
         }
 
         Item item = new Item(Material.PAPER).setDisplayName(ChatColor.AQUA + "Block #" + id).setLore(lore);
-        if(status == Status.DONE) {
+        if (status == Status.DONE) {
             item.addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
             item.hideEnchantments(true);
         }
@@ -75,6 +82,10 @@ public class Block {
 
     public static ArrayList<Block> getBlocksOfDistrict(District district) {
         return blocks.stream().filter(b -> b.district.equals(district)).collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    public static Block getBlock(District district, int id) {
+        return blocks.stream().filter(b -> b.district.equals(district) && b.id == id).findFirst().orElse(null);
     }
 
     // -----===== Sorting Enum =====-----
@@ -89,10 +100,10 @@ public class Block {
         PROGRESS {
             @Override
             public int compare(Block b1, Block b2) {
-                if(b1.getStatus() == b2.getStatus()) {
+                if (b1.getStatus() == b2.getStatus()) {
                     double dif = b2.getProgress() - b1.getProgress();
 
-                    if(dif == 0.0) return 0;
+                    if (dif == 0.0) return 0;
                     return dif > 0 ? 1 : -1;
                 }
                 return b2.getStatus().compareTo(b1.getStatus());

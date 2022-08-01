@@ -27,8 +27,12 @@ public enum Status {
         return null;
     }
 
+    public ChatColor getChatColor() {
+        return ChatColor.valueOf(color);
+    }
+
     @Override
     public String toString() {
-        return ChatColor.valueOf(color) + name;
+        return getChatColor() + name;
     }
 }
