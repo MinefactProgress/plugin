@@ -1,8 +1,8 @@
 package de.minefactprogress.progressplugin;
 
 import de.minefactprogress.progressplugin.api.RequestHandler;
-import de.minefactprogress.progressplugin.commands.DistrictCommand;
-import de.minefactprogress.progressplugin.commands.ProgressCommand;
+import de.minefactprogress.progressplugin.commandsystem.CommandManager;
+import de.minefactprogress.progressplugin.commandsystem.commands.DistrictCommand;
 import de.minefactprogress.progressplugin.components.DistrictBossbar;
 import de.minefactprogress.progressplugin.listeners.InventoryClickListener;
 import de.minefactprogress.progressplugin.listeners.JoinListener;
@@ -24,12 +24,18 @@ public final class Main extends JavaPlugin {
     @Getter
     private static DistrictBossbar districtBossbar;
     private final HashMap<Player, MenuStorage> menuStorages = new HashMap<>();
+    @Getter
+    private CommandManager commandManager;
 
     @Override
     public void onEnable() {
         instance = this;
         registerListeners();
         registerCommands();
+
+        commandManager = new CommandManager();
+        commandManager.init();
+
         districtBossbar = new DistrictBossbar();
         districtBossbar.startSchedulers();
 
@@ -46,9 +52,6 @@ public final class Main extends JavaPlugin {
 
     private void registerCommands() {
         getCommand("district").setExecutor(new DistrictCommand());
-
-        getCommand("progress").setExecutor(new ProgressCommand());
-        getCommand("progress").setTabCompleter(new ProgressCommand());
     }
 
     private void registerListeners() {

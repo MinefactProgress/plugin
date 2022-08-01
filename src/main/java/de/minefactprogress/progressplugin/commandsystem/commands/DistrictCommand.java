@@ -1,7 +1,6 @@
-package de.minefactprogress.progressplugin.commands;
+package de.minefactprogress.progressplugin.commandsystem.commands;
 
 import de.minefactprogress.progressplugin.Main;
-import de.minefactprogress.progressplugin.components.DistrictBossbar;
 import de.minefactprogress.progressplugin.entities.city.District;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -9,8 +8,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Arrays;
 
 public class DistrictCommand implements CommandExecutor {
 
