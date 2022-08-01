@@ -25,6 +25,7 @@
 package de.minefactprogress.progressplugin.commandsystem;
 
 import de.minefactprogress.progressplugin.Main;
+import de.minefactprogress.progressplugin.utils.Permissions;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -73,7 +74,7 @@ public abstract class BaseCommand implements CommandExecutor, ICommand {
             if (subCommand == null) {
                 sendInfo(sender);
             } else {
-                if (subCommand.getPermission() != null && !sender.hasPermission(subCommand.getPermission())) {
+                if (subCommand.isStaffOnly() && sender instanceof Player p && !Permissions.isTeamMember(p)) {
                     sender.sendMessage(Main.getPREFIX() + ChatColor.RED + "You don't have permission to execute this command!");
                     return true;
                 }

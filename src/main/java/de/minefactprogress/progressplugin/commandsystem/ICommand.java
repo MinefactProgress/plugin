@@ -45,7 +45,7 @@ public interface ICommand {
     /**
      * @return Command Permission
      */
-    String getPermission();
+    boolean isStaffOnly();
 
     /**
      * Lists all relevant commands to the player

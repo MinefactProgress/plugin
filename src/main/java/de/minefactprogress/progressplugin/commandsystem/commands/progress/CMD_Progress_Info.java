@@ -6,6 +6,8 @@ import de.minefactprogress.progressplugin.commandsystem.SubCommand;
 import de.minefactprogress.progressplugin.entities.city.Block;
 import de.minefactprogress.progressplugin.entities.city.District;
 import de.minefactprogress.progressplugin.menusystem.menus.BlocksMenu;
+import de.minefactprogress.progressplugin.menusystem.menus.EditBlockMenu;
+import de.minefactprogress.progressplugin.utils.ProgressUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -32,8 +34,8 @@ public class CMD_Progress_Info extends SubCommand {
     }
 
     @Override
-    public String getPermission() {
-        return null;
+    public boolean isStaffOnly() {
+        return false;
     }
 
     @Override
@@ -65,7 +67,23 @@ public class CMD_Progress_Info extends SubCommand {
             Main.getInstance().getMenuStorage(p).setDistrict(district);
             new BlocksMenu(Main.getInstance().getMenuStorage(p), null, 0, 0).open();
         } else {
+            if(ProgressUtils.checkStaffPermission(p)) {
+                try {
+                    int id = Integer.parseInt(args[1]);
+                    Block block = Block.getBlock(district, id);
 
+                    if(block == null) {
+                        p.sendMessage(Main.getPREFIX() + ChatColor.RED + "Block " + ChatColor.YELLOW + "#" + id
+                                + ChatColor.RED + " of " + ChatColor.YELLOW + district.getName() + ChatColor.RED + " not found!");
+                        return;
+                    }
+
+                    Main.getInstance().getMenuStorage(p).setBlock(block);
+                    new EditBlockMenu(Main.getInstance().getMenuStorage(p), null).open();
+                } catch (NumberFormatException e) {
+                    p.sendMessage(Main.getPREFIX() + ChatColor.RED + "Please enter a valid block ID!");
+                }
+            }
         }
     }
 }

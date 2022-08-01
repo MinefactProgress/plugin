@@ -33,8 +33,8 @@ public class CMD_Progress extends BaseCommand {
     }
 
     @Override
-    public String getPermission() {
-        return null;
+    public boolean isStaffOnly() {
+        return false;
     }
 
     @Override

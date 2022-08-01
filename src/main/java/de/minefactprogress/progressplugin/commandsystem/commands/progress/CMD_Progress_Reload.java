@@ -32,8 +32,8 @@ public class CMD_Progress_Reload extends SubCommand {
     }
 
     @Override
-    public String getPermission() {
-        return null;
+    public boolean isStaffOnly() {
+        return true;
     }
 
     @Override
