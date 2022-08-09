@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 public class CMD_Progress extends BaseCommand {
 
     public CMD_Progress() {
+        registerSubCommand(new CMD_Progress_Debuginfo(this));
         registerSubCommand(new CMD_Progress_Info(this));
         registerSubCommand(new CMD_Progress_Reload(this));
     }
