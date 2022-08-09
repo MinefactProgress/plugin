@@ -1,5 +1,6 @@
 package de.minefactprogress.progressplugin.menusystem.menus;
 
+import de.minefactprogress.progressplugin.Main;
 import de.minefactprogress.progressplugin.entities.city.Block;
 import de.minefactprogress.progressplugin.entities.city.Status;
 import de.minefactprogress.progressplugin.menusystem.Menu;
@@ -10,6 +11,9 @@ import de.minefactprogress.progressplugin.utils.EnumUtils;
 import de.minefactprogress.progressplugin.utils.Permissions;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -46,11 +50,18 @@ public class BlocksMenu extends PaginatedMenu {
 
         switch (item.getType()) {
             case PAPER:
+                int blockID = Integer.parseInt(PlainTextComponentSerializer.plainText().serialize(item.displayName()).replaceAll("\\D+", ""));
+                Block block = Block.getBlock(menuStorage.getDistrict(), blockID);
+                Location loc = block.getCenter();
                 if (e.getClick().isRightClick() || !Permissions.isTeamMember(p)) {
-                    // TODO teleport
+                    if (loc != null) {
+                        p.teleport(loc);
+                        p.playSound(p.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1f, 1f);
+                        p.sendMessage(Main.getPREFIX() + ChatColor.GRAY + "Teleported to Block " + ChatColor.YELLOW
+                                + "#" + block.getId() + " " + ChatColor.GRAY + "of " + ChatColor.YELLOW + block.getDistrict().getName());
+                    }
                 } else if (e.getClick().isLeftClick()) {
-                    int id = Integer.parseInt(PlainTextComponentSerializer.plainText().serialize(item.displayName()).replaceAll("\\D+", ""));
-                    menuStorage.setBlock(Block.getBlock(menuStorage.getDistrict(), id));
+                    menuStorage.setBlock(block);
                     new EditBlockMenu(menuStorage, this).open();
                 }
                 break;
@@ -87,7 +98,7 @@ public class BlocksMenu extends PaginatedMenu {
         for (Block block : blocks) {
             if (filter != 0 && filter != block.getStatus().ordinal() + 1) continue;
 
-            items.add(block.toItemStack());
+            items.add(block.toItemStack(menuStorage.getOwner()));
         }
 
         return items;

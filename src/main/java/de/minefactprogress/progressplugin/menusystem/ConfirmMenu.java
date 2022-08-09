@@ -3,6 +3,7 @@ package de.minefactprogress.progressplugin.menusystem;
 import de.minefactprogress.progressplugin.utils.Item;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -39,6 +40,12 @@ public abstract class ConfirmMenu extends Menu {
         } else if (item.getType() == Material.RED_CONCRETE) {
             handleCancel();
         }
+    }
+
+    @Override
+    public void setMenuItems() {
+        inventory.setItem(12, new Item(Material.LIME_CONCRETE).setDisplayName(ChatColor.GREEN + "Confirm").build());
+        inventory.setItem(14, new Item(Material.RED_CONCRETE).setDisplayName(ChatColor.RED + "Cancel").build());
     }
 
     public abstract void handleConfirm();

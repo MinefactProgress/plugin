@@ -1,17 +1,23 @@
 package de.minefactprogress.progressplugin.menusystem.menus;
 
+import de.minefactprogress.progressplugin.Main;
 import de.minefactprogress.progressplugin.entities.city.Block;
 import de.minefactprogress.progressplugin.entities.users.Rank;
 import de.minefactprogress.progressplugin.entities.users.User;
 import de.minefactprogress.progressplugin.menusystem.Menu;
 import de.minefactprogress.progressplugin.menusystem.MenuStorage;
+import de.minefactprogress.progressplugin.menusystem.menus.confirmation.DetailsConfirmMenu;
 import de.minefactprogress.progressplugin.utils.CustomColors;
 import de.minefactprogress.progressplugin.utils.Item;
 import de.minefactprogress.progressplugin.utils.ProgressUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.wesjd.anvilgui.AnvilGUI;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -38,12 +44,66 @@ public class EditBlockMenu extends Menu {
 
     @Override
     public ItemStack titleItem() {
-        return menuStorage.getBlock().toItemStack();
+        return menuStorage.getBlock().toItemStack(menuStorage.getOwner());
     }
 
     @Override
     public void handleMenu(InventoryClickEvent e) {
+        Player p = menuStorage.getOwner();
+        ItemStack item = e.getCurrentItem();
+        Block block = menuStorage.getBlock();
 
+        if(item == null || block == null) return;
+
+        switch (item.getType()) {
+            case ENDER_PEARL:
+                // Teleport
+                Location loc = block.getCenter();
+                if(loc != null) {
+                    p.teleport(loc);
+                    p.playSound(p.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1f, 1f);
+                    p.sendMessage(Main.getPREFIX() + ChatColor.GRAY + "Teleported to Block " + ChatColor.YELLOW + "#"
+                            + block.getId() + ChatColor.GRAY + " of " + ChatColor.YELLOW + block.getDistrict().getName());
+                } else {
+                    p.playSound(p.getLocation(), Sound.ENTITY_ITEM_BREAK, 1f, 1f);
+                    p.sendMessage(Main.getPREFIX() + ChatColor.RED + "No location found for this block");
+                }
+                break;
+            case SMITHING_TABLE:
+                // Progress
+                new AnvilGUI.Builder()
+                        .onComplete((player, text) -> {
+                            try {
+                                double progress = Double.parseDouble(text);
+
+                                if(progress > 100 || progress < 0) {
+                                    p.sendMessage(Main.getPREFIX() + ChatColor.RED + "The progress must be between 0 and 100");
+                                    return AnvilGUI.Response.text(block.getProgress() + "");
+                                }
+
+                                block.setProgress(progress, p);
+
+                                return AnvilGUI.Response.close();
+                            } catch (NumberFormatException ex) {
+                                p.sendMessage(Main.getPREFIX() + ChatColor.RED + "Please enter a valid number");
+                                return AnvilGUI.Response.text(block.getProgress() + "");
+                            }
+                        })
+                        .text(String.valueOf(block.getProgress()))
+                        .itemLeft(new Item(Material.NAME_TAG).build())
+                        .title("Set the new progress")
+                        .plugin(Main.getInstance())
+                        .open(p);
+                break;
+            case ROSE_BUSH: case DEAD_BUSH:
+                // Details
+                menuStorage.setEditDetails(item.getType().equals(Material.DEAD_BUSH));
+                new DetailsConfirmMenu(menuStorage, this).open();
+                break;
+            case IRON_PICKAXE:
+                // Builder
+                break;
+        }
     }
 
     @Override

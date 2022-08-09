@@ -6,10 +6,7 @@ import de.minefactprogress.progressplugin.Main;
 import de.minefactprogress.progressplugin.api.RequestHandler;
 import de.minefactprogress.progressplugin.entities.users.Rank;
 import de.minefactprogress.progressplugin.entities.users.User;
-import de.minefactprogress.progressplugin.utils.Item;
-import de.minefactprogress.progressplugin.utils.MathUtils;
-import de.minefactprogress.progressplugin.utils.ProgressUtils;
-import de.minefactprogress.progressplugin.utils.Utils;
+import de.minefactprogress.progressplugin.utils.*;
 import de.minefactprogress.progressplugin.utils.conversion.CoordinateConversion;
 import de.minefactprogress.progressplugin.utils.conversion.projection.OutOfProjectionBoundsException;
 import de.minefactprogress.progressplugin.utils.time.DateUtils;
@@ -30,9 +27,9 @@ public class Block {
 
     private final District district;
     private final int id;
-    private final Status status;
-    private final double progress;
-    private final boolean details;
+    private Status status;
+    private double progress;
+    private boolean details;
     private final String date;
     private final ArrayList<String> builders;
     private final Location center = null;
@@ -70,14 +67,14 @@ public class Block {
             double[] coords = CoordinateConversion.convertFromGeo(latlong[0], latlong[1]);
             World world = Bukkit.getWorld("world");
             if(world != null) {
-                return new Location(world, coords[0], Utils.getHighestY(world, (int) coords[0], (int) coords[1]), coords[1]);
+                return new Location(world, coords[0], Utils.getHighestY(world, (int) coords[0], (int) coords[1]) + 1, coords[1]);
             }
         } catch (OutOfProjectionBoundsException ignored) {
         }
         return null;
     }
 
-    public ItemStack toItemStack() {
+    public ItemStack toItemStack(Player p) {
         ArrayList<String> lore = new ArrayList<>();
         lore.add(ChatColor.GRAY + "Status: " + ChatColor.valueOf(status.getColor()) + ChatColor.BOLD + status.getName());
         lore.add(ChatColor.GRAY + "Progress: " + ProgressUtils.progressToColor(progress) + progress + "%");
@@ -97,6 +94,18 @@ public class Block {
         if (date != null) {
             lore.add(ChatColor.GRAY + "Completion Date: " + ChatColor.YELLOW + date);
         }
+        if(Permissions.isTeamMember(p)) {
+            lore.add("");
+            lore.add(ChatColor.YELLOW + "Click for more options");
+        }
+        if(latlong != null) {
+            if(Permissions.isTeamMember(p)) {
+                lore.add(CustomColors.YELLOW.getChatColor() + "Right-Click to teleport");
+            } else {
+                lore.add("");
+                lore.add(ChatColor.YELLOW + "Click to teleport");
+            }
+        }
 
         Item item = new Item(Material.PAPER).setDisplayName(ChatColor.AQUA + "Block #" + id).setLore(lore);
         if (status == Status.DONE) {
@@ -105,6 +114,64 @@ public class Block {
         }
 
         return item.build();
+    }
+
+    public void setProgress(double progress, Player p) {
+        JsonObject json = RequestHandler.getInstance().createJsonObject(this);
+        json.getAsJsonObject("values").addProperty("progress", progress);
+
+        Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
+            if(doRequest("api/blocks/update", json, "Progress", String.valueOf(progress), p)) {
+                this.progress = progress;
+                refreshStatus();
+            } else {
+                sendErrorMessage(p);
+            }
+        });
+    }
+
+    public void setDetails(boolean details, Player p) {
+        JsonObject json = RequestHandler.getInstance().createJsonObject(this);
+        json.getAsJsonObject("values").addProperty("details", details);
+
+        Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
+            if (doRequest("api/blocks/update", json, "Details", String.valueOf(details), p)) {
+                this.details = details;
+                refreshStatus();
+            } else {
+                sendErrorMessage(p);
+            }
+        });
+    }
+
+    private boolean doRequest(String url, JsonObject json, String type, String newValue, Player p) {
+        p.sendMessage(Main.getPREFIX() + ChatColor.GRAY + "Updating block...");
+        if (!RequestHandler.getInstance().POST(url, json).get("error").getAsBoolean()) {
+            p.sendMessage(Main.getPREFIX() + ChatColor.GREEN + type + " of " + ChatColor.YELLOW + district.getName()
+                    + " #" + id + ChatColor.GREEN + " successfully set" + (newValue != null ? " to " + ChatColor.YELLOW + newValue : ""));
+            return true;
+        } else {
+            p.sendMessage(Main.getPREFIX() + ChatColor.RED + "Couldn't update block data! Please try again.");
+            return false;
+        }
+    }
+
+    private void refreshStatus() {
+        if (progress >= 100 && details) {
+            status = Status.DONE;
+        } else if (progress >= 100) {
+            status = Status.DETAILING;
+        } else if (progress > 0 || details) {
+            status = Status.BUILDING;
+        } else if (!builders.isEmpty()) {
+            status = Status.RESERVED;
+        } else {
+            status = Status.NOT_STARTED;
+        }
+    }
+
+    private void sendErrorMessage(Player p) {
+        p.sendMessage(Main.getPREFIX() + ChatColor.RED + "Couldn't update block data! Please try again.");
     }
 
     // -----===== Static Methods =====-----

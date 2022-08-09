@@ -17,4 +17,5 @@ public class MenuStorage {
     private District subborough;
     private District district;
     private Block block;
+    private boolean editDetails;
 }

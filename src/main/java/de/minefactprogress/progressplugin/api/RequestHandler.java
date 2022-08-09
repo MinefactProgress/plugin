@@ -127,6 +127,15 @@ public class RequestHandler {
         lastUpdatedBlocks = System.currentTimeMillis();
     }
 
+    public JsonObject createJsonObject(Block block) {
+        JsonObject json = new JsonObject();
+        json.addProperty("key", ROOT_KEY);
+        json.addProperty("district", block.getDistrict().getName());
+        json.addProperty("blockID", block.getId());
+        json.add("values", new JsonObject());
+        return json;
+    }
+
     public String GET(String path) {
         try {
             HttpURLConnection con = createConnection(BASE_URL + path, "GET");
