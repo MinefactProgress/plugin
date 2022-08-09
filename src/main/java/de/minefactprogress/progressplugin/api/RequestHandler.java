@@ -32,6 +32,7 @@ public class RequestHandler {
     private final int INTERVAL = 60;
     private final String BASE_URL = "https://progressbackend.minefact.de/";
     private final String ROOT_KEY = "e9299168-9a87-4a44-801b-4214449e46be";
+    private boolean reloading = false;
     private long lastUpdatedDistricts = 0;
     private long lastUpdatedBlocks = 0;
 
@@ -40,11 +41,13 @@ public class RequestHandler {
 
     public void startSchedulers() {
         Bukkit.getScheduler().runTaskTimerAsynchronously(Main.getInstance(), () -> {
+            reloading = true;
             if (User.users.isEmpty()) {
                 requestUsers();
             }
             requestDistricts();
             requestBlocks();
+            reloading = false;
         }, 0, INTERVAL * 20);
     }
 
@@ -99,7 +102,7 @@ public class RequestHandler {
     }
 
     public void requestBlocks() {
-        if (Bukkit.getOnlinePlayers().size() == 0) return;
+        if (!Block.blocks.isEmpty() && Bukkit.getOnlinePlayers().size() == 0) return;
 
         String jsonString = GET("api/blocks/get");
 
@@ -116,6 +119,8 @@ public class RequestHandler {
         if (!jsonElement.isJsonArray()) return;
 
         JsonArray jsonArray = jsonElement.getAsJsonArray();
+
+        Block.blocks.clear();
         for (JsonElement e : jsonArray) {
             Block.blocks.add(new Block(e.getAsJsonObject()));
         }
