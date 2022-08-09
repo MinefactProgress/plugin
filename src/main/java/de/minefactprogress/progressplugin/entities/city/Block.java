@@ -1,16 +1,22 @@
 package de.minefactprogress.progressplugin.entities.city;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import de.minefactprogress.progressplugin.Main;
+import de.minefactprogress.progressplugin.api.RequestHandler;
 import de.minefactprogress.progressplugin.entities.users.Rank;
 import de.minefactprogress.progressplugin.entities.users.User;
 import de.minefactprogress.progressplugin.utils.Item;
 import de.minefactprogress.progressplugin.utils.MathUtils;
 import de.minefactprogress.progressplugin.utils.ProgressUtils;
+import de.minefactprogress.progressplugin.utils.Utils;
+import de.minefactprogress.progressplugin.utils.conversion.CoordinateConversion;
+import de.minefactprogress.progressplugin.utils.conversion.projection.OutOfProjectionBoundsException;
 import de.minefactprogress.progressplugin.utils.time.DateUtils;
 import lombok.Getter;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
@@ -29,6 +35,8 @@ public class Block {
     private final boolean details;
     private final String date;
     private final ArrayList<String> builders;
+    private final Location center = null;
+    private final double[] latlong;
 
     public Block(JsonObject json) {
         this.district = District.getDistrictByID(json.get("district").getAsInt());
@@ -46,6 +54,27 @@ public class Block {
                 this.builders.add(builder);
             }
         }
+
+        JsonArray latlongJson = json.get("center").getAsJsonArray();
+        if(latlongJson.size() == 2) {
+            this.latlong = new double[2];
+            this.latlong[0] = latlongJson.get(0).getAsDouble();
+            this.latlong[1] = latlongJson.get(1).getAsDouble();
+        } else {
+            this.latlong = null;
+        }
+    }
+
+    public Location getCenter() {
+        try {
+            double[] coords = CoordinateConversion.convertFromGeo(latlong[0], latlong[1]);
+            World world = Bukkit.getWorld("world");
+            if(world != null) {
+                return new Location(world, coords[0], Utils.getHighestY(world, (int) coords[0], (int) coords[1]), coords[1]);
+            }
+        } catch (OutOfProjectionBoundsException ignored) {
+        }
+        return null;
     }
 
     public ItemStack toItemStack() {
