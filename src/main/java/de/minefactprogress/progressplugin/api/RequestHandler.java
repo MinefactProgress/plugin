@@ -33,8 +33,7 @@ public class RequestHandler {
     private final String BASE_URL = "https://progressbackend.minefact.de/";
     private final String ROOT_KEY = "e9299168-9a87-4a44-801b-4214449e46be";
     private boolean reloading = false;
-    private long lastUpdatedDistricts = 0;
-    private long lastUpdatedBlocks = 0;
+    private long lastUpdated = 0;
 
     private RequestHandler() {
     }
@@ -42,11 +41,21 @@ public class RequestHandler {
     public void startSchedulers() {
         Bukkit.getScheduler().runTaskTimerAsynchronously(Main.getInstance(), () -> {
             reloading = true;
+            if(lastUpdated == 0) {
+                Logger.info("Loading progress data...");
+            }
+
             if (User.users.isEmpty()) {
                 requestUsers();
             }
             requestDistricts();
             requestBlocks();
+
+            if(lastUpdated == 0) {
+                Logger.info("Successfully loaded " + User.users.size() + " users, " + District.districts.size() + " districts and " + Block.blocks.size() + " blocks");
+            }
+
+            lastUpdated = System.currentTimeMillis();
             reloading = false;
         }, 0, INTERVAL * 20);
     }
@@ -98,7 +107,6 @@ public class RequestHandler {
             District.districts.add(new District(e.getAsJsonObject()));
         }
         District.loadMissingParents(jsonArray);
-        lastUpdatedDistricts = System.currentTimeMillis();
     }
 
     public void requestBlocks() {
@@ -124,7 +132,6 @@ public class RequestHandler {
         for (JsonElement e : jsonArray) {
             Block.blocks.add(new Block(e.getAsJsonObject()));
         }
-        lastUpdatedBlocks = System.currentTimeMillis();
     }
 
     public JsonObject createJsonObject(Block block) {
