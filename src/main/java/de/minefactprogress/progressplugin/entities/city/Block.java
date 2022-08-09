@@ -121,7 +121,7 @@ public class Block {
         json.getAsJsonObject("values").addProperty("progress", progress);
 
         Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
-            if(doRequest("api/blocks/update", json, "Progress", String.valueOf(progress), p)) {
+            if(doRequest(json, "Progress", String.valueOf(progress), p)) {
                 this.progress = progress;
                 refreshStatus();
             } else {
@@ -135,7 +135,7 @@ public class Block {
         json.getAsJsonObject("values").addProperty("details", details);
 
         Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
-            if (doRequest("api/blocks/update", json, "Details", String.valueOf(details), p)) {
+            if (doRequest(json, "Details", String.valueOf(details), p)) {
                 this.details = details;
                 refreshStatus();
             } else {
@@ -144,9 +144,43 @@ public class Block {
         });
     }
 
-    private boolean doRequest(String url, JsonObject json, String type, String newValue, Player p) {
+    public void setBuilder(String name, Player p, boolean add) {
+        JsonObject json = RequestHandler.getInstance().createJsonObject(this);
+
+        if((add && builders.contains(name)) || (!add && !builders.contains(name))) return;
+
+        // Add or remove builder form builders list
+        if(add) {
+            builders.add(name);
+        } else {
+            builders.remove(name);
+        }
+
+        json.getAsJsonObject("values").addProperty("builder", String.join(",", builders));
+
+        Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
+            if(!RequestHandler.getInstance().POST("api/blocks/update", json).get("error").getAsBoolean()) {
+                User user = User.getByName(name);
+                p.sendMessage(Main.getPREFIX() + ChatColor.GREEN + "Builder " +
+                        (user == null ? Rank.PLAYER.getColor() : user.getRank().getColor()) + name +
+                        ChatColor.GREEN + " successfully " + (add ? "added to" : "removed from") + " Block " + ChatColor.YELLOW + "#" + id +
+                        ChatColor.GREEN + " of " + ChatColor.YELLOW + district.getName());
+
+                refreshStatus();
+            } else {
+                if(add) {
+                    builders.remove(name);
+                } else {
+                    builders.add(name);
+                }
+                sendErrorMessage(p);
+            }
+        });
+    }
+
+    private boolean doRequest(JsonObject json, String type, String newValue, Player p) {
         p.sendMessage(Main.getPREFIX() + ChatColor.GRAY + "Updating block...");
-        if (!RequestHandler.getInstance().POST(url, json).get("error").getAsBoolean()) {
+        if (!RequestHandler.getInstance().POST("api/blocks/update", json).get("error").getAsBoolean()) {
             p.sendMessage(Main.getPREFIX() + ChatColor.GREEN + type + " of " + ChatColor.YELLOW + district.getName()
                     + " #" + id + ChatColor.GREEN + " successfully set" + (newValue != null ? " to " + ChatColor.YELLOW + newValue : ""));
             return true;

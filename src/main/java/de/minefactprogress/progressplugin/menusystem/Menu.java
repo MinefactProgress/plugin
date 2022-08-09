@@ -36,8 +36,7 @@ public abstract class Menu implements InventoryHolder {
 
     public ItemStack titleItem() {
         ArrayList<String> lore = new ArrayList<>();
-        lore.add(ChatColor.GRAY + "Districts: " + ChatColor.YELLOW + new TimeCalculator(RequestHandler.getInstance().getLastUpdatedDistricts()).formatTimeAgo());
-        lore.add(ChatColor.GRAY + "Blocks: " + ChatColor.YELLOW + new TimeCalculator(RequestHandler.getInstance().getLastUpdatedBlocks()).formatTimeAgo());
+        lore.add(ChatColor.YELLOW + new TimeCalculator(RequestHandler.getInstance().getLastUpdated()).formatTimeAgo());
 
         return new Item(Material.CLOCK).setDisplayName("§bLast updated:").setLore(lore).build();
     }

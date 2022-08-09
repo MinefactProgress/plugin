@@ -6,6 +6,7 @@ import de.minefactprogress.progressplugin.entities.users.Rank;
 import de.minefactprogress.progressplugin.entities.users.User;
 import de.minefactprogress.progressplugin.menusystem.Menu;
 import de.minefactprogress.progressplugin.menusystem.MenuStorage;
+import de.minefactprogress.progressplugin.menusystem.menus.confirmation.AddBuilderConfirmMenu;
 import de.minefactprogress.progressplugin.menusystem.menus.confirmation.DetailsConfirmMenu;
 import de.minefactprogress.progressplugin.utils.CustomColors;
 import de.minefactprogress.progressplugin.utils.Item;
@@ -102,6 +103,18 @@ public class EditBlockMenu extends Menu {
                 break;
             case IRON_PICKAXE:
                 // Builder
+                if(e.getClick().isRightClick() || !block.getBuilders().isEmpty()) {
+                    // Open Builder Manager
+                    new BuilderManagerMenu(menuStorage, this).open();
+                } else {
+                    // Add yourself as builder
+                    if(menuStorage.getBlock().getBuilders().contains(p.getName())) {
+                        p.sendMessage(Main.getPREFIX() + ChatColor.RED + "You habe already claimed this block");
+                        return;
+                    }
+
+                    new AddBuilderConfirmMenu(menuStorage, this).open();
+                }
                 break;
         }
     }
@@ -151,7 +164,7 @@ public class EditBlockMenu extends Menu {
         }
 
         inventory.setItem(15, new Item(Material.IRON_PICKAXE)
-                .setDisplayName(ChatColor.GRAY + "Builders:" + (block.getBuilders().isEmpty() ? ChatColor.GOLD + "" + ChatColor.BOLD + "None" : ""))
+                .setDisplayName(ChatColor.GRAY + "Builders:" + (block.getBuilders().isEmpty() ? ChatColor.GOLD + "" + ChatColor.BOLD + " None" : ""))
                 .setLore(loreBuilders)
                 .hideAttributes(true)
                 .build());
