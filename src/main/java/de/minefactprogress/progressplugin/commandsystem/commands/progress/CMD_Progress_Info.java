@@ -78,6 +78,7 @@ public class CMD_Progress_Info extends SubCommand {
                         return;
                     }
 
+                    Main.getInstance().getMenuStorage(p).setDistrict(district);
                     Main.getInstance().getMenuStorage(p).setBlock(block);
                     new EditBlockMenu(Main.getInstance().getMenuStorage(p), null).open();
                 } catch (NumberFormatException e) {
