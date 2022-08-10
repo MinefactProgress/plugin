@@ -46,6 +46,11 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        // Remove every player from BossBar
+        for(Player p : Bukkit.getOnlinePlayers()) {
+            districtBossbar.removePlayer(p);
+        }
+
         Bukkit.getConsoleSender().sendMessage(PREFIX + ChatColor.DARK_RED + "Plugin disabled");
     }
 

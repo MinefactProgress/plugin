@@ -1,9 +1,8 @@
 package de.minefactprogress.progressplugin.components;
 
-import com.google.gson.*;
 import de.minefactprogress.progressplugin.Main;
-import de.minefactprogress.progressplugin.api.RequestHandler;
 import de.minefactprogress.progressplugin.entities.city.District;
+import de.minefactprogress.progressplugin.utils.CustomColors;
 import de.minefactprogress.progressplugin.utils.Utils;
 import de.minefactprogress.progressplugin.utils.conversion.CoordinateConversion;
 import de.minefactprogress.progressplugin.utils.conversion.projection.OutOfProjectionBoundsException;
@@ -13,7 +12,6 @@ import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
@@ -40,7 +38,7 @@ public class DistrictBossbar {
             Player p = Bukkit.getPlayer(uuid);
             District district = getCurrentDistrict(p);
 
-            bars.get(p.getUniqueId()).name(Component.text(district.getName()));
+            bars.get(p.getUniqueId()).name(Component.text(district.getName() + " (" + district.getProgress() + "%)"));
             bars.get(p.getUniqueId()).progress((float)(district.getProgress()/100));
             bars.get(p.getUniqueId()).color(BossBar.Color.valueOf(district.getStatus().getColor().replace("GOLD","YELLOW")));
         }
@@ -93,8 +91,10 @@ public class DistrictBossbar {
         player.showBossBar(bars.get(player.getUniqueId()));
     }
     public void removePlayer(Player player) {
-        player.hideBossBar(bars.get(player.getUniqueId()));
-        bars.remove(player.getUniqueId());
+        if(bars.containsKey(player.getUniqueId())) {
+            player.hideBossBar(bars.get(player.getUniqueId()));
+            bars.remove(player.getUniqueId());
+        }
     }
 
 }
