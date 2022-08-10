@@ -49,8 +49,9 @@ public class BuilderManagerMenu extends PaginatedMenu {
 
             if(itemName == null) return;
 
-            if(itemName.equals(NAME_ADD_BUILDER)) {
-                // TODO
+            if(itemName.equals(ChatColor.stripColor(NAME_ADD_BUILDER))) {
+                // Add builder
+                new AddBuilderMenu(menuStorage, this).open();
             } else {
                 // Remove builder
                 menuStorage.getBlock().setBuilder(itemName, p, false);

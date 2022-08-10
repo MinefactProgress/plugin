@@ -74,7 +74,7 @@ public class Block {
         return null;
     }
 
-    public ItemStack toItemStack(Player p) {
+    public ItemStack toItemStack(Player p, boolean titleitem) {
         ArrayList<String> lore = new ArrayList<>();
         lore.add(ChatColor.GRAY + "Status: " + ChatColor.valueOf(status.getColor()) + ChatColor.BOLD + status.getName());
         lore.add(ChatColor.GRAY + "Progress: " + ProgressUtils.progressToColor(progress) + progress + "%");
@@ -94,16 +94,18 @@ public class Block {
         if (date != null) {
             lore.add(ChatColor.GRAY + "Completion Date: " + ChatColor.YELLOW + date);
         }
-        if(Permissions.isTeamMember(p)) {
-            lore.add("");
-            lore.add(ChatColor.YELLOW + "Click for more options");
-        }
-        if(latlong != null) {
+        if(!titleitem) {
             if(Permissions.isTeamMember(p)) {
-                lore.add(CustomColors.YELLOW.getChatColor() + "Right-Click to teleport");
-            } else {
                 lore.add("");
-                lore.add(ChatColor.YELLOW + "Click to teleport");
+                lore.add(ChatColor.YELLOW + "Click for more options");
+            }
+            if(latlong != null) {
+                if(Permissions.isTeamMember(p)) {
+                    lore.add(CustomColors.YELLOW.getChatColor() + "Right-Click to teleport");
+                } else {
+                    lore.add("");
+                    lore.add(ChatColor.YELLOW + "Click to teleport");
+                }
             }
         }
 
@@ -216,6 +218,10 @@ public class Block {
 
     public static Block getBlock(District district, int id) {
         return blocks.stream().filter(b -> b.district.equals(district) && b.id == id).findFirst().orElse(null);
+    }
+
+    public static ArrayList<Block> getClaimsOfUser(User user) {
+        return blocks.stream().filter(b -> b.builders.contains(user.getName())).collect(Collectors.toCollection(ArrayList::new));
     }
 
     // -----===== Sorting Enum =====-----

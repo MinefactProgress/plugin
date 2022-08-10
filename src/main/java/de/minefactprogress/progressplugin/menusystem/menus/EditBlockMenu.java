@@ -45,7 +45,7 @@ public class EditBlockMenu extends Menu {
 
     @Override
     public ItemStack titleItem() {
-        return menuStorage.getBlock().toItemStack(menuStorage.getOwner());
+        return menuStorage.getBlock().toItemStack(menuStorage.getOwner(), true);
     }
 
     @Override

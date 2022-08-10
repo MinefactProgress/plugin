@@ -98,7 +98,7 @@ public class BlocksMenu extends PaginatedMenu {
         for (Block block : blocks) {
             if (filter != 0 && filter != block.getStatus().ordinal() + 1) continue;
 
-            items.add(block.toItemStack(menuStorage.getOwner()));
+            items.add(block.toItemStack(menuStorage.getOwner(), false));
         }
 
         return items;
