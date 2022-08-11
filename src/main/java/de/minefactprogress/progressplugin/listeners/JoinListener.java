@@ -5,15 +5,19 @@ import de.minefactprogress.progressplugin.Main;
 import de.minefactprogress.progressplugin.api.RequestHandler;
 import de.minefactprogress.progressplugin.entities.users.Rank;
 import de.minefactprogress.progressplugin.entities.users.User;
+import de.minefactprogress.progressplugin.utils.CustomColors;
+import de.minefactprogress.progressplugin.utils.Item;
 import de.minefactprogress.progressplugin.utils.Logger;
-import de.minefactprogress.progressplugin.utils.conversion.CoordinateConversion;
-import de.minefactprogress.progressplugin.utils.conversion.projection.OutOfProjectionBoundsException;
 import lombok.SneakyThrows;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+
+import java.util.ArrayList;
 
 public class JoinListener implements Listener {
 
@@ -23,6 +27,11 @@ public class JoinListener implements Listener {
         Player p = e.getPlayer();
         User user = User.getByUUID(p.getUniqueId());
         Rank rank = Rank.getByPermission(p);
+
+        // Add progress item
+        ArrayList<String> progressLore = new ArrayList<>();
+        progressLore.add(ChatColor.GRAY + "Check out the progress of New York City.");
+        p.getInventory().setItem(4, new Item(Material.EMERALD).setDisplayName(CustomColors.BLUE.getChatColor() + "Progress").setLore(progressLore).build());
 
         // Register user
         if(user == null) {
