@@ -1,9 +1,11 @@
 package de.minefactprogress.progressplugin.menusystem.menus;
 
+import de.minefactprogress.progressplugin.Main;
 import de.minefactprogress.progressplugin.entities.city.District;
 import de.minefactprogress.progressplugin.menusystem.Menu;
 import de.minefactprogress.progressplugin.menusystem.MenuStorage;
 import de.minefactprogress.progressplugin.utils.CustomColors;
+import de.minefactprogress.progressplugin.utils.Item;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.ChatColor;
@@ -14,6 +16,8 @@ import org.bukkit.inventory.ItemStack;
 import java.util.List;
 
 public class NewYorkCityMenu extends Menu {
+
+    private static final String NAME_SETTINGS = ChatColor.GOLD + "Settings";
 
     public NewYorkCityMenu(MenuStorage menuStorage, Menu previousMenu) {
         super(menuStorage, previousMenu);
@@ -35,9 +39,14 @@ public class NewYorkCityMenu extends Menu {
 
         if (item == null) return;
 
+        String itemName = PlainTextComponentSerializer.plainText().serializeOrNull(item.getItemMeta().displayName());
+
         if (item.getType() == Material.BOOKSHELF) {
             menuStorage.setBorough(District.getDistrictByName(PlainTextComponentSerializer.plainText().serializeOrNull(item.getItemMeta().displayName())));
             new BoroughsMenu(menuStorage, this).open();
+        } else if (item.getType() == Material.PLAYER_HEAD && itemName != null && itemName.equals(ChatColor.stripColor(NAME_SETTINGS))) {
+            new SettingsMenu(menuStorage, this).open();
+            return;
         }
     }
 
@@ -56,5 +65,7 @@ public class NewYorkCityMenu extends Menu {
             inventory.setItem(index, district.toItemStack());
             index += steps;
         }
+
+        inventory.setItem(slots() - 4, Item.createCustomHead("26110", NAME_SETTINGS, null));
     }
 }

@@ -1,12 +1,8 @@
 package de.minefactprogress.progressplugin.listeners;
 
-import de.minefactprogress.progressplugin.Main;
 import de.minefactprogress.progressplugin.menusystem.Menu;
 import de.minefactprogress.progressplugin.menusystem.PaginatedMenu;
-import de.minefactprogress.progressplugin.menusystem.menus.NewYorkCityMenu;
-import de.minefactprogress.progressplugin.menusystem.menus.SettingsMenu;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -38,10 +34,6 @@ public class InventoryClickListener implements Listener {
             } else if (item.getType() == Material.PLAYER_HEAD) {
                 if (itemName != null && itemName.equals(ChatColor.stripColor(Menu.NAME_BACK))) {
                     menu.getPreviousMenu().open();
-                    return;
-                }
-                if (itemName != null && itemName.equals(ChatColor.stripColor(Menu.NAME_SETTINGS))) {
-                    new SettingsMenu(Main.getInstance().getMenuStorage(p),menu).open();
                     return;
                 }
                 if (menu instanceof PaginatedMenu paginatedMenu) {

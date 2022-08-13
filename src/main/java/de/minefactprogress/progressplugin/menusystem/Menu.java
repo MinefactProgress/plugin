@@ -22,7 +22,6 @@ public abstract class Menu implements InventoryHolder {
 
     public static final String NAME_BACK = ChatColor.GOLD + "Back";
     public static final String NAME_CLOSE = ChatColor.RED + "Close";
-    public static final String NAME_SETTINGS = ChatColor.GOLD + "Settings";
 
     protected final MenuStorage menuStorage;
     @Getter
@@ -86,7 +85,6 @@ public abstract class Menu implements InventoryHolder {
             this.inventory.setItem(4, titleItem());
         }
         this.inventory.setItem(slots() - 5, new Item(Material.BARRIER).setDisplayName(NAME_CLOSE).build());
-        this.inventory.setItem(slots()-4, Item.createCustomHead("26110", NAME_SETTINGS, null));
     }
 
     public final ItemStack getFilterItem(Class<? extends Enum<?>> e, int filter) {
