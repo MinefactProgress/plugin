@@ -25,6 +25,7 @@
 package de.minefactprogress.progressplugin.commandsystem;
 
 import de.minefactprogress.progressplugin.Main;
+import de.minefactprogress.progressplugin.commandsystem.commands.bannercreator.CMD_Banner;
 import de.minefactprogress.progressplugin.commandsystem.commands.progress.CMD_Progress;
 import lombok.Getter;
 
@@ -36,6 +37,7 @@ public class CommandManager {
 
     public List<BaseCommand> baseCommands = new ArrayList<>() {{
         add(new CMD_Progress());
+        add(new CMD_Banner());
     }};
 
     public void init() {

@@ -22,4 +22,8 @@ public enum CustomColors {
     public ChatColor getChatColor() {
         return ChatColor.of(hexColor);
     }
+
+    public static TextColor of(String hexColor) {
+        return TextColor.fromHexString(hexColor);
+    }
 }

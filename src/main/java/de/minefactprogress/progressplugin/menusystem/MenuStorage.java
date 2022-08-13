@@ -5,7 +5,9 @@ import de.minefactprogress.progressplugin.entities.city.District;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 @RequiredArgsConstructor
 @Getter
@@ -18,4 +20,8 @@ public class MenuStorage {
     private District district;
     private Block block;
     private boolean editDetails;
+
+    // BannerCreator
+    private ItemStack banner;
+    private DyeColor patternColor;
 }

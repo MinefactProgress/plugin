@@ -21,6 +21,8 @@ public final class Main extends JavaPlugin {
     @Getter
     private static final String PREFIX = "§7[§bProgress§7] §r";
     @Getter
+    private static final String PREFIX_SERVER = ChatColor.GOLD + "Server >> " + ChatColor.RESET;
+    @Getter
     private static Main instance;
     @Getter
     private static DistrictBossbar districtBossbar;
