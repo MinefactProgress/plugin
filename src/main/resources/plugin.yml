@@ -12,3 +12,6 @@ commands:
     usage: /progress
   banner:
     usage: /banner
+  noclip:
+    usage: /noclip
+    aliases: [nc]

@@ -26,11 +26,13 @@ package de.minefactprogress.progressplugin.commandsystem;
 
 import de.minefactprogress.progressplugin.Main;
 import de.minefactprogress.progressplugin.commandsystem.commands.bannercreator.CMD_Banner;
+import de.minefactprogress.progressplugin.commandsystem.commands.noclip.CMD_NoClip;
 import de.minefactprogress.progressplugin.commandsystem.commands.progress.CMD_Progress;
 import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Getter
 public class CommandManager {
@@ -38,12 +40,13 @@ public class CommandManager {
     public List<BaseCommand> baseCommands = new ArrayList<>() {{
         add(new CMD_Progress());
         add(new CMD_Banner());
+        add(new CMD_NoClip());
     }};
 
     public void init() {
         for(BaseCommand cmd : baseCommands) {
             for(String name : cmd.getNames()) {
-                Main.getInstance().getCommand(name).setExecutor(cmd);
+                Objects.requireNonNull(Main.getInstance().getCommand(name)).setExecutor(cmd);
             }
         }
     }
