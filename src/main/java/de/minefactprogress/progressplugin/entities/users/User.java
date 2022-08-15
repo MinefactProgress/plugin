@@ -11,6 +11,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.UUID;
 
 @Getter
@@ -68,6 +69,32 @@ public class User implements Comparable<User> {
                     Logger.error("§cAn error occurred while registering Player §e" + p.getName(), json);
                 }
             });
+        }
+    }
+
+    // -----===== Sorting Enum =====-----
+
+    public enum Sorting implements Comparator<User> {
+        RANK {
+            @Override
+            public int compare(User u1, User u2) {
+                if(u1.getRank().getPriority() == u2.getRank().getPriority()) {
+                    return u1.getName().toLowerCase().compareTo(u2.getName().toLowerCase());
+                }
+                return u1.getRank().getPriority() - u2.getRank().getPriority();
+            }
+        },
+        NAME {
+            @Override
+            public int compare(User u1, User u2) {
+                return u1.getName().toLowerCase().compareTo(u2.getName().toLowerCase());
+            }
+        },
+        CLAIMS {
+            @Override
+            public int compare(User u1, User u2) {
+                return 0;
+            }
         }
     }
 }
