@@ -1,5 +1,6 @@
 package de.minefactprogress.progressplugin.entities.city;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import de.minefactprogress.progressplugin.Main;
@@ -44,9 +45,7 @@ public class Block {
         this.date = json.get("completionDate").isJsonNull() ? null : DateUtils.formatDateFromISOString(json.get("completionDate").getAsString());
 
         this.builders = new ArrayList<>();
-        String[] builders = json.get("builder") == null || json.get("builder").isJsonNull() || json.get("builder").getAsString().equals("")
-                ? new String[0] : json.get("builder").getAsString().split(",");
-        for (String builder : builders) {
+        for (String builder : new Gson().fromJson(json.get("builder").getAsJsonArray(), String[].class)) {
             if (!this.builders.contains(builder)) {
                 this.builders.add(builder);
             }
