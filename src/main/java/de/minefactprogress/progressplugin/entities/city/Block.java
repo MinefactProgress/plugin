@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import de.minefactprogress.progressplugin.Main;
+import de.minefactprogress.progressplugin.api.API;
 import de.minefactprogress.progressplugin.api.RequestHandler;
 import de.minefactprogress.progressplugin.entities.users.Rank;
 import de.minefactprogress.progressplugin.entities.users.User;
@@ -12,6 +13,7 @@ import de.minefactprogress.progressplugin.utils.conversion.CoordinateConversion;
 import de.minefactprogress.progressplugin.utils.conversion.projection.OutOfProjectionBoundsException;
 import de.minefactprogress.progressplugin.utils.time.DateUtils;
 import lombok.Getter;
+import lombok.ToString;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -22,6 +24,7 @@ import java.util.Comparator;
 import java.util.stream.Collectors;
 
 @Getter
+@ToString
 public class Block {
 
     public static final ArrayList<Block> blocks = new ArrayList<>();
@@ -37,7 +40,7 @@ public class Block {
     private final double[] latlong;
 
     public Block(JsonObject json) {
-        this.district = District.getDistrictByID(json.get("district").getAsInt());
+        this.district = District.getDistrictByID(json.get("district").getAsJsonObject().get("id").getAsInt());
         this.id = json.get("id").getAsInt();
         this.status = Status.getByID(json.get("status").getAsInt());
         this.progress = MathUtils.roundTo2Decimals(json.get("progress").getAsDouble());
@@ -45,7 +48,7 @@ public class Block {
         this.date = json.get("completionDate").isJsonNull() ? null : DateUtils.formatDateFromISOString(json.get("completionDate").getAsString());
 
         this.builders = new ArrayList<>();
-        for (String builder : new Gson().fromJson(json.get("builder").getAsJsonArray(), String[].class)) {
+        for (String builder : new Gson().fromJson(json.get("builders").getAsJsonArray(), String[].class)) {
             if (!this.builders.contains(builder)) {
                 this.builders.add(builder);
             }
@@ -62,13 +65,15 @@ public class Block {
     }
 
     public Location getCenter() {
-        try {
-            double[] coords = CoordinateConversion.convertFromGeo(latlong[0], latlong[1]);
-            World world = Bukkit.getWorld("world");
-            if(world != null) {
-                return new Location(world, coords[0], Utils.getHighestY(world, (int) coords[0], (int) coords[1]) + 1, coords[1]);
+        if(this.latlong != null) {
+            try {
+                double[] coords = CoordinateConversion.convertFromGeo(latlong[0], latlong[1]);
+                World world = Bukkit.getWorld("world");
+                if(world != null) {
+                    return new Location(world, coords[0], Utils.getHighestY(world, (int) coords[0], (int) coords[1]) + 1, coords[1]);
+                }
+            } catch (OutOfProjectionBoundsException ignored) {
             }
-        } catch (OutOfProjectionBoundsException ignored) {
         }
         return null;
     }
@@ -76,7 +81,8 @@ public class Block {
     public ItemStack toItemStack(Player p, boolean titleitem) {
         ArrayList<String> lore = new ArrayList<>();
         lore.add(ChatColor.GRAY + "Status: " + ChatColor.valueOf(status.getColor()) + ChatColor.BOLD + status.getName());
-        lore.add(ChatColor.GRAY + "Progress: " + ProgressUtils.progressToColor(progress) + progress + "%");
+        lore.add(ChatColor.GRAY + "Progress: ");
+        lore.add(ProgressUtils.generateProgressbar(this.progress));
         lore.add(ChatColor.GRAY + "Details: " + (details ? ChatColor.GREEN + "✔" : ChatColor.RED + "✘"));
 
         if (!builders.isEmpty()) {
@@ -212,15 +218,15 @@ public class Block {
     // -----===== Static Methods =====-----
 
     public static ArrayList<Block> getBlocksOfDistrict(District district) {
-        return blocks.stream().filter(b -> b.district.equals(district)).collect(Collectors.toCollection(ArrayList::new));
+        return API.getBlocks().stream().filter(b -> b.district.equals(district)).collect(Collectors.toCollection(ArrayList::new));
     }
 
     public static Block getBlock(District district, int id) {
-        return blocks.stream().filter(b -> b.district.equals(district) && b.id == id).findFirst().orElse(null);
+        return API.getBlocks().stream().filter(b -> b.district.equals(district) && b.id == id).findFirst().orElse(null);
     }
 
     public static ArrayList<Block> getClaimsOfUser(User user) {
-        return blocks.stream().filter(b -> b.builders.contains(user.getName())).collect(Collectors.toCollection(ArrayList::new));
+        return API.getBlocks().stream().filter(b -> b.builders.contains(user.getName())).collect(Collectors.toCollection(ArrayList::new));
     }
 
     // -----===== Sorting Enum =====-----

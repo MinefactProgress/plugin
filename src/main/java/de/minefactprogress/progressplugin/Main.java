@@ -1,6 +1,6 @@
 package de.minefactprogress.progressplugin;
 
-import de.minefactprogress.progressplugin.api.RequestHandler;
+import de.minefactprogress.progressplugin.api.API;
 import de.minefactprogress.progressplugin.commandsystem.CommandManager;
 import de.minefactprogress.progressplugin.commandsystem.commands.DistrictCommand;
 import de.minefactprogress.progressplugin.components.DistrictBossbar;
@@ -42,7 +42,7 @@ public final class Main extends JavaPlugin {
         districtBossbar = new DistrictBossbar();
         districtBossbar.startSchedulers();
 
-        RequestHandler.getInstance().startSchedulers();
+        API.loadProgress();
 
         Bukkit.getConsoleSender().sendMessage(PREFIX + ChatColor.DARK_GREEN + "Plugin enabled");
     }

@@ -1,11 +1,9 @@
 package de.minefactprogress.progressplugin.commandsystem.commands.progress;
 
 import de.minefactprogress.progressplugin.Main;
+import de.minefactprogress.progressplugin.api.API;
 import de.minefactprogress.progressplugin.commandsystem.BaseCommand;
 import de.minefactprogress.progressplugin.commandsystem.SubCommand;
-import de.minefactprogress.progressplugin.entities.city.Block;
-import de.minefactprogress.progressplugin.entities.city.District;
-import de.minefactprogress.progressplugin.entities.users.User;
 import org.bukkit.command.CommandSender;
 
 public class CMD_Progress_Debuginfo extends SubCommand {
@@ -36,8 +34,8 @@ public class CMD_Progress_Debuginfo extends SubCommand {
 
     @Override
     public void onCommand(CommandSender sender, String[] args) {
-        sender.sendMessage(Main.getPREFIX() + "Users: " + User.users.size());
-        sender.sendMessage(Main.getPREFIX() + "Districts: " + District.districts.size());
-        sender.sendMessage(Main.getPREFIX() + "Blocks: " + Block.blocks.size());
+        sender.sendMessage(Main.getPREFIX() + "Users: " + API.getUsers().size());
+        sender.sendMessage(Main.getPREFIX() + "Districts: " + API.getDistricts().size());
+        sender.sendMessage(Main.getPREFIX() + "Blocks: " + API.getBlocks().size());
     }
 }

@@ -3,11 +3,13 @@ package de.minefactprogress.progressplugin.entities.city;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import de.minefactprogress.progressplugin.api.API;
 import de.minefactprogress.progressplugin.utils.*;
 import de.minefactprogress.progressplugin.utils.conversion.CoordinateConversion;
 import de.minefactprogress.progressplugin.utils.conversion.projection.OutOfProjectionBoundsException;
 import de.minefactprogress.progressplugin.utils.time.DateUtils;
 import lombok.Getter;
+import lombok.ToString;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -20,6 +22,7 @@ import java.util.Date;
 import java.util.stream.Collectors;
 
 @Getter
+@ToString
 public class District implements Comparable<District> {
 
     public static final ArrayList<District> districts = new ArrayList<>();
@@ -77,7 +80,8 @@ public class District implements Comparable<District> {
 
         ArrayList<String> lore = new ArrayList<>();
         lore.add(ChatColor.GRAY + "Status: " + ChatColor.valueOf(status.getColor()) + ChatColor.BOLD + status.getName());
-        lore.add(ChatColor.GRAY + "Progress: " + ProgressUtils.progressToColor(progress) + progress + "%");
+        lore.add(ChatColor.GRAY + "Progress: ");
+        lore.add(ProgressUtils.generateProgressbar(this.progress));
         lore.add(ChatColor.GRAY + "Blocks Done: " + ChatColor.YELLOW + blocksDone);
         lore.add(ChatColor.GRAY + "Blocks Left: " + ChatColor.YELLOW + blocksLeft);
 
@@ -146,7 +150,7 @@ public class District implements Comparable<District> {
     // -----===== Static Methods =====-----
 
     public static void loadMissingParents(JsonArray json) {
-        for(District district : districts) {
+        for(District district : API.getDistricts()) {
             if(!district.name.equals("New York City") && district.parent == null) {
                 District parent = null;
                 for(JsonElement e : json) {
@@ -161,15 +165,15 @@ public class District implements Comparable<District> {
     }
 
     public static District getDistrictByID(int id) {
-        return districts.stream().filter(d -> d.id == id).findFirst().orElse(null);
+        return API.getDistricts().stream().filter(d -> d.id == id).findFirst().orElse(null);
     }
 
     public static District getDistrictByName(String name) {
-        return districts.stream().filter(d -> d.name.equalsIgnoreCase(name)).findFirst().orElse(null);
+        return API.getDistricts().stream().filter(d -> d.name.replace(" ", "").equalsIgnoreCase(name.replace(" ", ""))).findFirst().orElse(null);
     }
 
     public static ArrayList<District> getChildren(String districtName) {
-        return districts.stream()
+        return API.getDistricts().stream()
                 .filter(d -> d.parent != null && d.parent.id == getDistrictByName(districtName).id)
                 .collect(Collectors.toCollection(ArrayList::new));
     }

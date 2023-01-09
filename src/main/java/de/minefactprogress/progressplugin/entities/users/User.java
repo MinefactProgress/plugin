@@ -23,11 +23,13 @@ public class User implements Comparable<User> {
     private final UUID uuid;
     private final String name;
     private final Rank rank;
+    private final int permissionLevel;
 
     public User(JsonObject json) {
-        this.uuid = UUID.fromString(json.get("uuid").getAsString());
-        this.name = json.get("username").getAsString();
-        this.rank = Rank.getByName(json.get("rank").getAsString());
+        this.uuid = UUID.fromString(json.get("minecraft").getAsJsonObject().get("uuid").getAsString());
+        this.name = json.get("minecraft").getAsJsonObject().get("username").getAsString();
+        this.rank = Rank.getByName(json.get("minecraft").getAsJsonObject().get("rank").getAsString());
+        this.permissionLevel = json.get("permission").getAsInt();
     }
 
     @Override

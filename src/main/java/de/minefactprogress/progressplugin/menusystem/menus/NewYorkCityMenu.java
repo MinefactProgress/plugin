@@ -1,6 +1,5 @@
 package de.minefactprogress.progressplugin.menusystem.menus;
 
-import de.minefactprogress.progressplugin.Main;
 import de.minefactprogress.progressplugin.entities.city.District;
 import de.minefactprogress.progressplugin.menusystem.Menu;
 import de.minefactprogress.progressplugin.menusystem.MenuStorage;
@@ -46,7 +45,6 @@ public class NewYorkCityMenu extends Menu {
             new BoroughsMenu(menuStorage, this).open();
         } else if (item.getType() == Material.PLAYER_HEAD && itemName != null && itemName.equals(ChatColor.stripColor(NAME_SETTINGS))) {
             new SettingsMenu(menuStorage, this).open();
-            return;
         }
     }
 

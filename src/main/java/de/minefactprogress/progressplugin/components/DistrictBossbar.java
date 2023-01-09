@@ -1,8 +1,8 @@
 package de.minefactprogress.progressplugin.components;
 
 import de.minefactprogress.progressplugin.Main;
+import de.minefactprogress.progressplugin.api.API;
 import de.minefactprogress.progressplugin.entities.city.District;
-import de.minefactprogress.progressplugin.utils.CustomColors;
 import de.minefactprogress.progressplugin.utils.Utils;
 import de.minefactprogress.progressplugin.utils.conversion.CoordinateConversion;
 import de.minefactprogress.progressplugin.utils.conversion.projection.OutOfProjectionBoundsException;
@@ -16,6 +16,7 @@ import org.bukkit.entity.Player;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 public class DistrictBossbar {
@@ -48,7 +49,7 @@ public class DistrictBossbar {
         p.showBossBar(bars.get(p.getUniqueId()));
     }
 
-    private HashMap<Integer, ArrayList<Point2D.Double>> convertToAreas(ArrayList<District> object) {
+    private HashMap<Integer, ArrayList<Point2D.Double>> convertToAreas(List<District> object) {
         HashMap<Integer,ArrayList<Point2D.Double>> result = new HashMap<>();
         for(District e: object) {
             result.put(e.getId(),e.getArea());
@@ -58,8 +59,7 @@ public class DistrictBossbar {
 
     public District getCurrentDistrict(Player player) {
         if(bars.containsKey(player.getUniqueId())) {
-            ArrayList<District> districts = District.districts;
-            HashMap<Integer, ArrayList<Point2D.Double>> areas = convertToAreas(districts);
+            HashMap<Integer, ArrayList<Point2D.Double>> areas = convertToAreas(API.getDistricts());
 
             double x = player.getLocation().getX();
             double y = player.getLocation().getZ();
