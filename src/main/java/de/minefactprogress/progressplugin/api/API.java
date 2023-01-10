@@ -8,6 +8,7 @@ import de.minefactprogress.progressplugin.Main;
 import de.minefactprogress.progressplugin.entities.city.Block;
 import de.minefactprogress.progressplugin.entities.city.District;
 import de.minefactprogress.progressplugin.entities.users.User;
+import de.minefactprogress.progressplugin.utils.Logger;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -78,11 +79,17 @@ public class API {
 
     public static void loadProgress() {
         Bukkit.getScheduler().runTaskTimerAsynchronously(Main.getInstance(), () -> {
+            long time = System.currentTimeMillis();
             loadDistricts();
             loadBlocks();
 
             if (users.isEmpty()) {
                 loadUsers();
+                Logger.info(String.format("Successfully loaded %d Districts, %d Blocks and %d Users (%dms)",
+                        districts.size(),
+                        blocks.size(),
+                        users.size(),
+                        System.currentTimeMillis() - time));
             }
         }, 0L, INTERVAL * 20L);
     }

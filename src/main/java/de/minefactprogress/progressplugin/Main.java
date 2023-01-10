@@ -1,6 +1,7 @@
 package de.minefactprogress.progressplugin;
 
 import de.minefactprogress.progressplugin.api.API;
+import de.minefactprogress.progressplugin.api.SocketManager;
 import de.minefactprogress.progressplugin.commandsystem.CommandManager;
 import de.minefactprogress.progressplugin.commandsystem.commands.DistrictCommand;
 import de.minefactprogress.progressplugin.components.DistrictBossbar;
@@ -22,8 +23,10 @@ public final class Main extends JavaPlugin {
     private static final String PREFIX = "§7[§bProgress§7] §r";
     @Getter
     private static final String PREFIX_SERVER = ChatColor.GOLD + "Server >> " + ChatColor.RESET;
+    private static final String SOCKET_URL = "https://progressbackend.minefact.de";
     @Getter
     private static Main instance;
+    private static SocketManager socketManager;
     @Getter
     private static DistrictBossbar districtBossbar;
     private final HashMap<Player, MenuStorage> menuStorages = new HashMap<>();
@@ -42,6 +45,9 @@ public final class Main extends JavaPlugin {
         districtBossbar = new DistrictBossbar();
         districtBossbar.startSchedulers();
 
+        socketManager = new SocketManager(SOCKET_URL);
+        socketManager.listenEvent("motd");
+
         API.loadProgress();
 
         Bukkit.getConsoleSender().sendMessage(PREFIX + ChatColor.DARK_GREEN + "Plugin enabled");
@@ -53,6 +59,8 @@ public final class Main extends JavaPlugin {
         for(Player p : Bukkit.getOnlinePlayers()) {
             districtBossbar.removePlayer(p);
         }
+
+        socketManager.disconnect();
 
         Bukkit.getConsoleSender().sendMessage(PREFIX + ChatColor.DARK_RED + "Plugin disabled");
     }
