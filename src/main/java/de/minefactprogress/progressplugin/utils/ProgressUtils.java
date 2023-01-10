@@ -19,16 +19,11 @@ public class ProgressUtils {
 
     public static String generateProgressbar(double progress) {
         ChatColor color = progressToColor(progress);
-        StringBuilder sb = new StringBuilder(color + ChatColor.STRIKETHROUGH.toString());
-        double numberOfElements = (progress / 100) * 20;
-        for(int i = 0; i < numberOfElements; i++) {
-            sb.append(" ");
-        }
-        sb.append(ChatColor.WHITE).append(ChatColor.STRIKETHROUGH);
-        for(int i = 0; i < 20 - numberOfElements; i++) {
-            sb.append(" ");
-        }
-        return sb.append(color).append(" ").append(progress).append("%").toString();
+        int numberOfElements = (int) ((progress / 100) * 20);
+        return color + ChatColor.STRIKETHROUGH.toString() + " ".repeat(Math.max(0, numberOfElements)) +
+                ChatColor.WHITE + ChatColor.STRIKETHROUGH +
+                " ".repeat(Math.max(0, 20 - numberOfElements)) +
+                color + " " + progress + "%";
     }
 
     public static boolean checkForData(Player p) {
