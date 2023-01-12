@@ -32,6 +32,15 @@ public class User implements Comparable<User> {
         this.permissionLevel = json.get("permission").getAsInt();
     }
 
+    public User(UUID uniqueId, String name, Rank rank) {
+        this.uuid = uniqueId;
+        this.name = name;
+        this.rank = rank;
+        // TODO: is this right?
+        this.permissionLevel = 0;
+    }
+
+
     @Override
     public int compareTo(User u) {
         if(rank.equals(u.rank)) {

@@ -11,6 +11,7 @@ import lombok.Setter;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.awt.geom.Point2D;
@@ -39,7 +40,7 @@ public class DistrictBossbar {
             Player p = Bukkit.getPlayer(uuid);
             District district = getCurrentDistrict(p);
 
-            bars.get(p.getUniqueId()).name(Component.text(district.getName() + " (" + district.getProgress() + "%)"));
+            bars.get(p.getUniqueId()).name(Component.text( ChatColor.GRAY+district.getName()+ " (" + district.getStatus().getChatColor()+district.getProgress() +ChatColor.GRAY+ "%)"));
             bars.get(p.getUniqueId()).progress((float)(district.getProgress()/100));
             bars.get(p.getUniqueId()).color(BossBar.Color.valueOf(district.getStatus().getColor().replace("GOLD","YELLOW")));
         }
