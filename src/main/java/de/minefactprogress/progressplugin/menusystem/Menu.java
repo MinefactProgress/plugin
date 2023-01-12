@@ -1,9 +1,7 @@
 package de.minefactprogress.progressplugin.menusystem;
 
-import de.minefactprogress.progressplugin.api.RequestHandler;
 import de.minefactprogress.progressplugin.utils.CustomColors;
 import de.minefactprogress.progressplugin.utils.Item;
-import de.minefactprogress.progressplugin.utils.time.TimeCalculator;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
@@ -34,10 +32,11 @@ public abstract class Menu implements InventoryHolder {
     public abstract int rows();
 
     public ItemStack titleItem() {
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ChatColor.YELLOW + new TimeCalculator(RequestHandler.getInstance().getLastUpdated()).formatTimeAgo());
+        return borderItem();
+    }
 
-        return new Item(Material.CLOCK).setDisplayName("§bLast updated:").setLore(lore).build();
+    public ItemStack borderItem() {
+        return new Item(Material.GRAY_STAINED_GLASS_PANE).setDisplayName(" ").build();
     }
 
     public abstract void handleMenu(InventoryClickEvent e);
@@ -61,7 +60,7 @@ public abstract class Menu implements InventoryHolder {
     }
 
     private void addMenuBorder() {
-        ItemStack glass = new Item(Material.GRAY_STAINED_GLASS_PANE).setDisplayName(" ").build();
+        ItemStack glass = borderItem();
 
         for (int i = 0; i < 9; i++) {
             this.inventory.setItem(i, glass);
