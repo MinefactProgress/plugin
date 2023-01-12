@@ -46,7 +46,7 @@ public final class Main extends JavaPlugin {
         districtBossbar.startSchedulers();
 
         socketManager = new SocketManager(SOCKET_URL);
-        socketManager.listenEvent("motd");
+        socketManager.startSchedulers();
 
         API.loadProgress();
 
@@ -59,6 +59,8 @@ public final class Main extends JavaPlugin {
         for(Player p : Bukkit.getOnlinePlayers()) {
             districtBossbar.removePlayer(p);
         }
+
+        Bukkit.getScheduler().cancelTasks(this);
 
         socketManager.disconnect();
 

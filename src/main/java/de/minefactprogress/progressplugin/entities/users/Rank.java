@@ -42,7 +42,7 @@ public enum Rank {
                 return rank;
             }
         }
-        return null;
+        return PLAYER;
     }
 
     public static Rank getByName(String name) {
@@ -51,7 +51,7 @@ public enum Rank {
                 return rank;
             }
         }
-        return null;
+        return PLAYER;
     }
 
     public static Rank getByPermission(Player p) {
@@ -60,7 +60,7 @@ public enum Rank {
                 return rank;
             }
         }
-        return null;
+        return PLAYER;
     }
 
     @Override

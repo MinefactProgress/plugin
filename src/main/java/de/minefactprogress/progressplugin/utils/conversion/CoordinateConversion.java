@@ -57,9 +57,13 @@ public class CoordinateConversion {
      * @param yCords - Minecraft player y-axis coordinates
      * @return - WG84 EPSG:4979 coordinates as double array {lon,lat} in degrees
      */
-    public static double[] convertToGeo(double xCords, double yCords) throws OutOfProjectionBoundsException {
-        double[] res = projection.toGeo(xCords, yCords);
-        return new double[]{res[1], res[0]};
+    public static double[] convertToGeo(double xCords, double yCords) {
+        try {
+            double[] res = projection.toGeo(xCords, yCords);
+            return new double[]{res[1], res[0]};
+        } catch (OutOfProjectionBoundsException e) {
+            return new double[]{0., 0.};
+        }
     }
 
     /**
