@@ -73,8 +73,12 @@ public class CoordinateConversion {
      * @param lat Geographic Latitude
      * @return The in-game coordinates (x, z)
      */
-    public static double[] convertFromGeo(double lat, double lon) throws OutOfProjectionBoundsException {
-        return projection.fromGeo(lon, lat);
+    public static double[] convertFromGeo(double lat, double lon) {
+        try {
+            return projection.fromGeo(lon, lat);
+        } catch (OutOfProjectionBoundsException e) {
+            return new double[]{0., 0.};
+        }
     }
 
     /**

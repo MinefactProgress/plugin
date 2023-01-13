@@ -36,7 +36,7 @@ public class Block {
     private boolean details;
     private final String date;
     private final ArrayList<String> builders;
-    private final Location center = null;
+    private Location center = null;
     private final double[] latlong;
 
     public Block(JsonObject json) {
@@ -65,17 +65,14 @@ public class Block {
     }
 
     public Location getCenter() {
-        if(this.latlong != null) {
-            try {
-                double[] coords = CoordinateConversion.convertFromGeo(latlong[0], latlong[1]);
-                World world = Bukkit.getWorld("world");
-                if(world != null) {
-                    return new Location(world, coords[0], Utils.getHighestY(world, (int) coords[0], (int) coords[1]) + 1, coords[1]);
-                }
-            } catch (OutOfProjectionBoundsException ignored) {
+        if(this.center == null && this.latlong != null) {
+            double[] coords = CoordinateConversion.convertFromGeo(latlong[0], latlong[1]);
+            World world = Bukkit.getWorld("world");
+            if(world != null) {
+                this.center = new Location(world, coords[0], Utils.getHighestY(world, (int) coords[0], (int) coords[1]) + 1., coords[1]);
             }
         }
-        return null;
+        return this.center;
     }
 
     public ItemStack toItemStack(Player p, boolean titleitem) {

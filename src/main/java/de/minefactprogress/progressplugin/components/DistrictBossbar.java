@@ -64,14 +64,9 @@ public class DistrictBossbar {
 
             double x = player.getLocation().getX();
             double y = player.getLocation().getZ();
-            double[] playerPos = new double[0];
-            try {
-                playerPos = CoordinateConversion.convertToGeo(x,y);
-            } catch (OutOfProjectionBoundsException e) {
-                e.printStackTrace();
-            }
+            double[] playerPos = CoordinateConversion.convertToGeo(x,y);
             for(int i = areas.size(); i >= 1;i--) {
-                if(areas.get(i).size()==0) continue;
+                if(areas.get(i).isEmpty()) continue;
                 if(Utils.inside(new Point2D.Double(playerPos[0],playerPos[1]),areas.get(i))) {
                     return District.getDistrictByID(i);
                 }
