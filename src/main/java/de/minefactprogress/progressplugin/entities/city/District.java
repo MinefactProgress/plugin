@@ -35,7 +35,8 @@ public class District implements Comparable<District> {
     private final int blocksLeft;
     private final String date;
     private final ArrayList<Point2D.Double> area;
-    private final Location center;
+    private Location center = null;
+    private final double[] latlon;
     private District parent;
 
     public District(JsonObject json) {
@@ -57,16 +58,24 @@ public class District implements Comparable<District> {
         }
 
         JsonArray coordsJson = json.get("center").getAsJsonArray();
-        World world = Bukkit.getWorld("world");
-        Location center = null;
-        if (world != null && coordsJson.size() == 2) {
-            try {
-                double[] coords = CoordinateConversion.convertFromGeo(coordsJson.get(0).getAsDouble(), coordsJson.get(1).getAsDouble());
-                center = new Location(world, coords[0], Utils.getHighestY(world, (int) coords[0], (int) coords[1]) + 1, coords[1]);
-            } catch (OutOfProjectionBoundsException ignored) {
+        if(coordsJson.size() == 2) {
+            this.latlon = new double[2];
+            this.latlon[0] = coordsJson.get(0).getAsDouble();
+            this.latlon[1] = coordsJson.get(1).getAsDouble();
+        } else {
+            this.latlon = null;
+        }
+    }
+
+    public Location getCenter() {
+        if (this.center == null && this.latlon != null) {
+            double[] coords = CoordinateConversion.convertFromGeo(latlon[0], latlon[1]);
+            World world = Bukkit.getWorld("world");
+            if(world != null) {
+                this.center = new Location(world, coords[0], Utils.getHighestY(world, (int) coords[0], (int) coords[1]) + 1., coords[1]);
             }
         }
-        this.center = center;
+        return this.center;
     }
 
     public ItemStack toItemStack() {
@@ -93,7 +102,7 @@ public class District implements Comparable<District> {
             lore.add("");
             lore.add(ChatColor.YELLOW + "Click for more info");
         }
-        if (center != null) {
+        if (latlon != null) {
             if (numberOfBlocks == 0) {
                 lore.add("");
             }
