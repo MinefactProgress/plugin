@@ -56,6 +56,8 @@ public class SocketManager {
 
     public void startSchedulers() {
         Bukkit.getScheduler().runTaskTimerAsynchronously(Main.getInstance(), () -> {
+            if(Bukkit.getOnlinePlayers().isEmpty()) return;
+
             JsonArray jsonArray = new JsonArray();
             for(Player p : Bukkit.getOnlinePlayers()) {
                 JsonObject json = new JsonObject();
