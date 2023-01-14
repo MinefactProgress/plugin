@@ -8,6 +8,7 @@ import de.minefactprogress.progressplugin.components.DistrictBossbar;
 import de.minefactprogress.progressplugin.listeners.InventoryClickListener;
 import de.minefactprogress.progressplugin.listeners.JoinListener;
 import de.minefactprogress.progressplugin.listeners.PlayerInteractListener;
+import de.minefactprogress.progressplugin.listeners.PluginDisableListener;
 import de.minefactprogress.progressplugin.menusystem.MenuStorage;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -26,6 +27,7 @@ public final class Main extends JavaPlugin {
     private static final String SOCKET_URL = "https://progressbackend.minefact.de";
     @Getter
     private static Main instance;
+    @Getter
     private static SocketManager socketManager;
     @Getter
     private static DistrictBossbar districtBossbar;
@@ -60,10 +62,6 @@ public final class Main extends JavaPlugin {
             districtBossbar.removePlayer(p);
         }
 
-        Bukkit.getScheduler().cancelTasks(this);
-
-        socketManager.disconnect();
-
         Bukkit.getConsoleSender().sendMessage(PREFIX + ChatColor.DARK_RED + "Plugin disabled");
     }
 
@@ -76,6 +74,7 @@ public final class Main extends JavaPlugin {
         Bukkit.getServer().getPluginManager().registerEvents(new InventoryClickListener(), instance);
         Bukkit.getServer().getPluginManager().registerEvents(new JoinListener(), instance);
         Bukkit.getServer().getPluginManager().registerEvents(new PlayerInteractListener(), instance);
+        Bukkit.getServer().getPluginManager().registerEvents(new PluginDisableListener(), instance);
     }
 
     public MenuStorage getMenuStorage(Player p) {
