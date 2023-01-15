@@ -41,6 +41,8 @@ public class API {
     @Getter
     private static List<User> users = new ArrayList<>();
 
+    private static boolean loadedOnce = false;
+
     // -----===== Request Methods =====-----
 
     public static JsonElement GET(String path) {
@@ -82,14 +84,15 @@ public class API {
             long time = System.currentTimeMillis();
             loadDistricts();
             loadBlocks();
+            loadUsers();
 
-            if (users.isEmpty()) {
-                loadUsers();
+            if (!loadedOnce) {
                 Logger.info(String.format("Successfully loaded %d Districts, %d Blocks and %d Users (%dms)",
                         districts.size(),
                         blocks.size(),
                         users.size(),
                         System.currentTimeMillis() - time));
+                loadedOnce = true;
             }
         }, 0L, INTERVAL * 20L);
     }
@@ -123,7 +126,7 @@ public class API {
 
         List<User> usersNew = new ArrayList<>();
         for (JsonElement e : json) {
-            if(e.getAsJsonObject().get("minecraft").isJsonNull()) continue;
+            if(e.getAsJsonObject().get("uuid").isJsonNull()) continue;
             usersNew.add(new User(e.getAsJsonObject()));
         }
 

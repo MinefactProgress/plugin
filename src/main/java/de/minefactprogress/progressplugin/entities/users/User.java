@@ -26,9 +26,9 @@ public class User implements Comparable<User> {
     private final int permissionLevel;
 
     public User(JsonObject json) {
-        this.uuid = UUID.fromString(json.get("minecraft").getAsJsonObject().get("uuid").getAsString());
-        this.name = json.get("minecraft").getAsJsonObject().get("username").getAsString();
-        this.rank = Rank.getByName(json.get("minecraft").getAsJsonObject().get("rank").getAsString());
+        this.uuid = json.get("uuid").isJsonNull() ? null : UUID.fromString(json.get("uuid").getAsString());
+        this.name = json.get("username").getAsString();
+        this.rank = json.get("rank").isJsonNull() ? null :  Rank.getByName(json.get("rank").getAsString());
         this.permissionLevel = json.get("permission").getAsInt();
     }
 
