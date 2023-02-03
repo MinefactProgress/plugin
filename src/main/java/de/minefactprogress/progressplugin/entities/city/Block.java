@@ -5,17 +5,14 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import de.minefactprogress.progressplugin.Main;
 import de.minefactprogress.progressplugin.api.API;
-import de.minefactprogress.progressplugin.api.RequestHandler;
 import de.minefactprogress.progressplugin.entities.users.Rank;
 import de.minefactprogress.progressplugin.entities.users.User;
 import de.minefactprogress.progressplugin.utils.*;
 import de.minefactprogress.progressplugin.utils.conversion.CoordinateConversion;
-import de.minefactprogress.progressplugin.utils.conversion.projection.OutOfProjectionBoundsException;
 import de.minefactprogress.progressplugin.utils.time.DateUtils;
 import lombok.Getter;
 import lombok.ToString;
 import org.bukkit.*;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -111,87 +108,90 @@ public class Block {
             }
         }
 
-        Item item = new Item(Material.PAPER).setDisplayName(ChatColor.AQUA + "Block #" + id).setLore(lore);
-        if (status == Status.DONE) {
-            item.addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
-            item.hideEnchantments(true);
+        String headID;
+        switch(status) {
+            case DONE -> headID = "59655";
+            case DETAILING -> headID = "6225";
+            case BUILDING -> headID = "6173";
+            case RESERVED -> headID = "6231";
+            default -> headID = "6241";
         }
-
-        return item.build();
+        return Item.createCustomHead(headID, ChatColor.AQUA + "Block #" + id, lore);
     }
 
     public void setProgress(double progress, Player p) {
-        JsonObject json = RequestHandler.getInstance().createJsonObject(this);
-        json.getAsJsonObject("values").addProperty("progress", progress);
-
-        Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
-            if(doRequest(json, "Progress", String.valueOf(progress), p)) {
-                this.progress = progress;
-                refreshStatus();
-            } else {
-                sendErrorMessage(p);
-            }
-        });
+//        JsonObject json = RequestHandler.getInstance().createJsonObject(this);
+//        json.getAsJsonObject("values").addProperty("progress", progress);
+//
+//        Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
+//            if(doRequest(json, "Progress", String.valueOf(progress), p)) {
+//                this.progress = progress;
+//                refreshStatus();
+//            } else {
+//                sendErrorMessage(p);
+//            }
+//        });
     }
 
     public void setDetails(boolean details, Player p) {
-        JsonObject json = RequestHandler.getInstance().createJsonObject(this);
-        json.getAsJsonObject("values").addProperty("details", details);
-
-        Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
-            if (doRequest(json, "Details", String.valueOf(details), p)) {
-                this.details = details;
-                refreshStatus();
-            } else {
-                sendErrorMessage(p);
-            }
-        });
+//        JsonObject json = RequestHandler.getInstance().createJsonObject(this);
+//        json.getAsJsonObject("values").addProperty("details", details);
+//
+//        Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
+//            if (doRequest(json, "Details", String.valueOf(details), p)) {
+//                this.details = details;
+//                refreshStatus();
+//            } else {
+//                sendErrorMessage(p);
+//            }
+//        });
     }
 
     public void setBuilder(String name, Player p, boolean add) {
-        JsonObject json = RequestHandler.getInstance().createJsonObject(this);
-
-        if((add && builders.contains(name)) || (!add && !builders.contains(name))) return;
-
-        // Add or remove builder form builders list
-        if(add) {
-            builders.add(name);
-        } else {
-            builders.remove(name);
-        }
-
-        json.getAsJsonObject("values").addProperty("builder", String.join(",", builders));
-
-        Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
-            if(!RequestHandler.getInstance().POST("api/blocks/update", json).get("error").getAsBoolean()) {
-                User user = User.getByName(name);
-                p.sendMessage(Main.getPREFIX() + ChatColor.GREEN + "Builder " +
-                        (user == null ? Rank.PLAYER.getColor() : user.getRank().getColor()) + name +
-                        ChatColor.GREEN + " successfully " + (add ? "added to" : "removed from") + " Block " + ChatColor.YELLOW + "#" + id +
-                        ChatColor.GREEN + " of " + ChatColor.YELLOW + district.getName());
-
-                refreshStatus();
-            } else {
-                if(add) {
-                    builders.remove(name);
-                } else {
-                    builders.add(name);
-                }
-                sendErrorMessage(p);
-            }
-        });
+//        JsonObject json = RequestHandler.getInstance().createJsonObject(this);
+//
+//        if((add && builders.contains(name)) || (!add && !builders.contains(name))) return;
+//
+//        // Add or remove builder form builders list
+//        if(add) {
+//            builders.add(name);
+//        } else {
+//            builders.remove(name);
+//        }
+//
+//        json.getAsJsonObject("values").addProperty("builder", String.join(",", builders));
+//
+//        Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
+//            if(!RequestHandler.getInstance().POST("api/blocks/update", json).get("error").getAsBoolean()) {
+//                User user = User.getByName(name);
+//                p.sendMessage(Main.getPREFIX() + ChatColor.GREEN + "Builder " +
+//                        (user == null ? Rank.PLAYER.getColor() : user.getRank().getColor()) + name +
+//                        ChatColor.GREEN + " successfully " + (add ? "added to" : "removed from") + " Block " + ChatColor.YELLOW + "#" + id +
+//                        ChatColor.GREEN + " of " + ChatColor.YELLOW + district.getName());
+//
+//                refreshStatus();
+//            } else {
+//                if(add) {
+//                    builders.remove(name);
+//                } else {
+//                    builders.add(name);
+//                }
+//                sendErrorMessage(p);
+//            }
+//        });
     }
 
     private boolean doRequest(JsonObject json, String type, String newValue, Player p) {
-        p.sendMessage(Main.getPREFIX() + ChatColor.GRAY + "Updating block...");
-        if (!RequestHandler.getInstance().POST("api/blocks/update", json).get("error").getAsBoolean()) {
-            p.sendMessage(Main.getPREFIX() + ChatColor.GREEN + type + " of " + ChatColor.YELLOW + district.getName()
-                    + " #" + id + ChatColor.GREEN + " successfully set" + (newValue != null ? " to " + ChatColor.YELLOW + newValue : ""));
-            return true;
-        } else {
-            p.sendMessage(Main.getPREFIX() + ChatColor.RED + "Couldn't update block data! Please try again.");
-            return false;
-        }
+//        p.sendMessage(Main.getPREFIX() + ChatColor.GRAY + "Updating block...");
+//        if (!RequestHandler.getInstance().POST("api/blocks/update", json).get("error").getAsBoolean()) {
+//            p.sendMessage(Main.getPREFIX() + ChatColor.GREEN + type + " of " + ChatColor.YELLOW + district.getName()
+//                    + " #" + id + ChatColor.GREEN + " successfully set" + (newValue != null ? " to " + ChatColor.YELLOW + newValue : ""));
+//            return true;
+//        } else {
+//            p.sendMessage(Main.getPREFIX() + ChatColor.RED + "Couldn't update block data! Please try again.");
+//            return false;
+//        }
+        return false;
     }
 
     private void refreshStatus() {

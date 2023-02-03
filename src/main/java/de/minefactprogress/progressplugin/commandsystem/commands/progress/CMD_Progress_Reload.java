@@ -1,7 +1,7 @@
 package de.minefactprogress.progressplugin.commandsystem.commands.progress;
 
 import de.minefactprogress.progressplugin.Main;
-import de.minefactprogress.progressplugin.api.RequestHandler;
+import de.minefactprogress.progressplugin.api.API;
 import de.minefactprogress.progressplugin.commandsystem.BaseCommand;
 import de.minefactprogress.progressplugin.commandsystem.SubCommand;
 import de.minefactprogress.progressplugin.utils.ProgressUtils;
@@ -44,9 +44,9 @@ public class CMD_Progress_Reload extends SubCommand {
 
         Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
             sender.sendMessage(Main.getPREFIX() + ChatColor.GRAY + "Reloading data...");
-            RequestHandler.getInstance().requestUsers();
-            RequestHandler.getInstance().requestDistricts();
-            RequestHandler.getInstance().requestBlocks();
+            API.loadUsers();
+            API.loadDistricts();
+            API.loadBlocks();
             sender.sendMessage(Main.getPREFIX() + ChatColor.GREEN + "Data reloaded successfully");
         });
     }

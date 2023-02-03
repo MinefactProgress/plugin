@@ -1,13 +1,10 @@
 package de.minefactprogress.progressplugin.listeners;
 
-import com.google.gson.JsonObject;
 import de.minefactprogress.progressplugin.Main;
-import de.minefactprogress.progressplugin.api.RequestHandler;
 import de.minefactprogress.progressplugin.entities.users.Rank;
-import de.minefactprogress.progressplugin.entities.users.User;
+import de.minefactprogress.progressplugin.entities.users.User2;
 import de.minefactprogress.progressplugin.utils.CustomColors;
 import de.minefactprogress.progressplugin.utils.Item;
-import de.minefactprogress.progressplugin.utils.Logger;
 import lombok.SneakyThrows;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -25,7 +22,7 @@ public class JoinListener implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
         Player p = e.getPlayer();
-        User user = User.getByUUID(p.getUniqueId());
+        User2 user = User2.getUserByUUID(p.getUniqueId());
         Rank rank = Rank.getByPermission(p);
 
         // Add progress item
@@ -33,56 +30,30 @@ public class JoinListener implements Listener {
         progressLore.add(ChatColor.GRAY + "Check out the progress of New York City.");
         p.getInventory().setItem(4, new Item(Material.EMERALD).setDisplayName(CustomColors.BLUE.getChatColor() + "Progress").setLore(progressLore).build());
 
-        // Register user
-        if(user == null) {
-            User.register(p);
-        } else {
-            if(!user.getName().equals(p.getName())) {
+        // Register district bossbar
+        if(Main.getDistrictBossbar().getBars().containsKey(p.getUniqueId())) {
+            Main.getDistrictBossbar().updatePlayer(p);
+        }
+
+        // TODO
+        if(user != null) {
+            if(!user.getUsername().equals(p.getName())) {
                 // Name changed
-                JsonObject json = new JsonObject();
-                json.addProperty("uuid", p.getUniqueId().toString());
-                json.addProperty("type", "name");
-                json.addProperty("value", p.getName());
-
-                Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
-                    JsonObject res = RequestHandler.getInstance().POST("api/minecraft/users/set", json);
-                    if(!res.get("error").getAsBoolean()) {
-                        String oldName = user.getName();
-
-                        User.users.remove(user);
-                        User.users.add(new User(p.getUniqueId(), p.getName(), user.getRank()));
-
-                        Logger.info("Name of " + oldName + " successfully changed to " + p.getName());
-                    } else {
-                        Logger.error("§cAn error occurred while renaming " + p.getName(), json);
-                    }
-                });
             }
             if(!user.getRank().equals(rank)) {
                 // Rank changed
-                JsonObject json = new JsonObject();
-                json.addProperty("uuid", p.getUniqueId().toString());
-                json.addProperty("type", "rank");
-                json.addProperty("value", rank != null ? rank.getName() : "Player");
-
                 Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
-                    JsonObject res = RequestHandler.getInstance().POST("api/minecraft/users/set", json);
-                    if(!res.get("error").getAsBoolean()) {
-                        String oldRank = user.getRank().getName();
-
-                        User.users.remove(user);
-                        User.users.add(new User(p.getUniqueId(), p.getName(), rank));
-
-                        Logger.info("Rank of " + p.getName() + " successfully changed to " + (rank != null ? rank.getName() : "Player"));
-                    } else {
-                        Logger.error("§cAn error occurred while changing the rank of " + p.getName(), json);
-                    }
+//                    user.setRank(rank);
+//
+//                    JsonObject json = new JsonObject();
+//                    json.addProperty("rank", rank.getName());
+//
+//                    JsonElement res = API.PUT(Routes.USERS + "/" + user.getUid(), json);
+//                    Logger.info(new Gson().toJsonTree(user).toString());
+//                    Logger.info(res.toString());
+//                    Logger.info("Rank of " + p.getName() + " successfully changed to " + rank.getName());
                 });
             }
-        }
-
-        if(Main.getDistrictBossbar().getBars().containsKey(p.getUniqueId())) {
-            Main.getDistrictBossbar().updatePlayer(p);
         }
     }
 }
