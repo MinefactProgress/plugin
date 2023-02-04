@@ -24,7 +24,6 @@ public final class Main extends JavaPlugin {
     private static final String PREFIX = "§7[§bProgress§7] §r";
     @Getter
     private static final String PREFIX_SERVER = ChatColor.GOLD + "Server >> " + ChatColor.RESET;
-    private static final String SOCKET_URL = "https://progressbackend.minefact.de";
     @Getter
     private static Main instance;
     @Getter
@@ -47,7 +46,7 @@ public final class Main extends JavaPlugin {
         districtBossbar = new DistrictBossbar();
         districtBossbar.startSchedulers();
 
-        socketManager = new SocketManager(SOCKET_URL);
+        socketManager = new SocketManager();
         socketManager.startSchedulers();
 
         API.loadProgress();

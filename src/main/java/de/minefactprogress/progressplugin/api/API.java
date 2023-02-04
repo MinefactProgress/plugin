@@ -8,6 +8,7 @@ import de.minefactprogress.progressplugin.Main;
 import de.minefactprogress.progressplugin.entities.city.Block;
 import de.minefactprogress.progressplugin.entities.city.District;
 import de.minefactprogress.progressplugin.entities.users.User;
+import de.minefactprogress.progressplugin.utils.Constants;
 import de.minefactprogress.progressplugin.utils.Logger;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -30,7 +31,6 @@ public class API {
 
     private static final int TIMEOUT = 10;
     private static final int INTERVAL = 60;
-    private static final String BASE_URL = "https://progressbackend.minefact.de/v1";
 
     private static final HttpClient client = HttpClient.newBuilder().build();
 
@@ -55,7 +55,7 @@ public class API {
 
     public static JsonElement POST(String path, JsonElement body) {
         HttpRequest req = defaultRequest(path)
-                .POST(HttpRequest.BodyPublishers.ofString(body.getAsString()))
+                .POST(HttpRequest.BodyPublishers.ofString(body.toString()))
                 .build();
 
         return sendRequest(req);
@@ -63,7 +63,7 @@ public class API {
 
     public static JsonElement PUT(String path, JsonElement body) {
         HttpRequest req = defaultRequest(path)
-                .PUT(HttpRequest.BodyPublishers.ofString(body.getAsString()))
+                .PUT(HttpRequest.BodyPublishers.ofString(body.toString()))
                 .build();
 
         return sendRequest(req);
@@ -80,11 +80,9 @@ public class API {
     // -----===== Progress Data =====-----
 
     public static void loadProgress() {
-        Bukkit.getScheduler().runTaskTimerAsynchronously(Main.getInstance(), () -> {
+        Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
             long time = System.currentTimeMillis();
-            loadDistricts();
-            loadBlocks();
-            loadUsers();
+            loadAll();
 
             if (!loadedOnce) {
                 Logger.info(String.format("Successfully loaded %d Districts, %d Blocks and %d Users (%dms)",
@@ -94,10 +92,16 @@ public class API {
                         System.currentTimeMillis() - time));
                 loadedOnce = true;
             }
-        }, 0L, INTERVAL * 20L);
+        });
     }
 
-    private static void loadDistricts() {
+    public static void loadAll() {
+        loadDistricts();
+        loadBlocks();
+        loadUsers();
+    }
+
+    public static void loadDistricts() {
         JsonArray json = GET(Routes.DISTRICTS).getAsJsonObject().get("data").getAsJsonArray();
 
         List<District> districtsNew = new ArrayList<>();
@@ -110,7 +114,7 @@ public class API {
         District.loadMissingParents(json);
     }
 
-    private static void loadBlocks() {
+    public static void loadBlocks() {
         JsonArray json = GET(Routes.BLOCKS).getAsJsonObject().get("data").getAsJsonArray();
 
         List<Block> blocksNew = new ArrayList<>();
@@ -121,7 +125,7 @@ public class API {
         blocks = blocksNew;
     }
 
-    private static void loadUsers() {
+    public static void loadUsers() {
         JsonArray json = GET(Routes.USERS).getAsJsonObject().get("data").getAsJsonArray();
 
         List<User> usersNew = new ArrayList<>();
@@ -148,7 +152,10 @@ public class API {
     private static HttpRequest.Builder defaultRequest(String path) {
         try {
             return HttpRequest.newBuilder()
-                    .uri(new URI(BASE_URL + path))
+                    .uri(new URI(Constants.API_URL + path))
+                    .header("Authorization", "Bearer " + Constants.API_TOKEN)
+                    .header("Content-Type", "application/json")
+                    .version(HttpClient.Version.HTTP_1_1)
                     .timeout(Duration.of(TIMEOUT, ChronoUnit.SECONDS));
         } catch (URISyntaxException e) {
             e.printStackTrace();
