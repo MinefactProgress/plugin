@@ -1,10 +1,14 @@
 package de.minefactprogress.progressplugin.listeners;
 
+import com.google.gson.JsonObject;
 import de.minefactprogress.progressplugin.Main;
+import de.minefactprogress.progressplugin.api.API;
+import de.minefactprogress.progressplugin.api.Routes;
 import de.minefactprogress.progressplugin.entities.users.Rank;
-import de.minefactprogress.progressplugin.entities.users.User2;
+import de.minefactprogress.progressplugin.entities.users.User;
 import de.minefactprogress.progressplugin.utils.CustomColors;
 import de.minefactprogress.progressplugin.utils.Item;
+import de.minefactprogress.progressplugin.utils.Logger;
 import lombok.SneakyThrows;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -22,7 +26,7 @@ public class JoinListener implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
         Player p = e.getPlayer();
-        User2 user = User2.getUserByUUID(p.getUniqueId());
+        User user = User.getUserByUUID(p.getUniqueId());
         Rank rank = Rank.getByPermission(p);
 
         // Add progress item
@@ -35,23 +39,31 @@ public class JoinListener implements Listener {
             Main.getDistrictBossbar().updatePlayer(p);
         }
 
-        // TODO
         if(user != null) {
             if(!user.getUsername().equals(p.getName())) {
                 // Name changed
+                Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
+                    String oldName = user.getUsername();
+                    user.setUsername(p.getName());
+
+                    JsonObject json = new JsonObject();
+                    json.addProperty("username", p.getName());
+
+                    API.PUT(Routes.USERS + "/" + user.getUid(), json);
+                    Logger.info("Username of " + oldName + " successfully changed to " + p.getName());
+                });
             }
             if(!user.getRank().equals(rank)) {
                 // Rank changed
                 Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
-//                    user.setRank(rank);
-//
-//                    JsonObject json = new JsonObject();
-//                    json.addProperty("rank", rank.getName());
-//
-//                    JsonElement res = API.PUT(Routes.USERS + "/" + user.getUid(), json);
-//                    Logger.info(new Gson().toJsonTree(user).toString());
-//                    Logger.info(res.toString());
-//                    Logger.info("Rank of " + p.getName() + " successfully changed to " + rank.getName());
+                    user.setRank(rank);
+
+                    JsonObject json = new JsonObject();
+                    json.addProperty("rank", rank.getName());
+
+                    // TODO: enable route when plugin is done
+//                    API.PUT(Routes.USERS + "/" + user.getUid(), json);
+                    Logger.info("Rank of " + p.getName() + " successfully changed to " + rank.getName());
                 });
             }
         }

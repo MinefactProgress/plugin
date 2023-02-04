@@ -152,11 +152,11 @@ public class EditBlockMenu extends Menu {
             loreBuilders.add(CustomColors.YELLOW.getChatColor() + "Right-Click to manage builders");
         } else {
             for (String builder : block.getBuilders()) {
-                User user = User.getByName(builder);
+                User user = User.getUserByName(builder);
                 if (user == null) {
                     loreBuilders.add(ChatColor.GRAY + "- " + Rank.PLAYER.getColor() + builder);
                 } else {
-                    loreBuilders.add(ChatColor.GRAY + "- " + user.getRank().getColor() + user.getName());
+                    loreBuilders.add(ChatColor.GRAY + "- " + user.getRank().getColor() + user.getUsername());
                 }
             }
             loreBuilders.add("");

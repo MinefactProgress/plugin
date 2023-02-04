@@ -1,9 +1,7 @@
 package de.minefactprogress.progressplugin.api;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.*;
 import de.minefactprogress.progressplugin.Main;
 import de.minefactprogress.progressplugin.entities.city.Block;
 import de.minefactprogress.progressplugin.entities.city.District;
@@ -16,6 +14,7 @@ import lombok.NoArgsConstructor;
 import org.bukkit.Bukkit;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
@@ -128,13 +127,8 @@ public class API {
     public static void loadUsers() {
         JsonArray json = GET(Routes.USERS).getAsJsonObject().get("data").getAsJsonArray();
 
-        List<User> usersNew = new ArrayList<>();
-        for (JsonElement e : json) {
-            if(e.getAsJsonObject().get("uuid").isJsonNull()) continue;
-            usersNew.add(new User(e.getAsJsonObject()));
-        }
-
-        users = usersNew;
+        Type userType = new TypeToken<ArrayList<User>>(){}.getType();
+        users = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create().fromJson(json, userType);
     }
 
     // -----===== Helper Methods =====-----

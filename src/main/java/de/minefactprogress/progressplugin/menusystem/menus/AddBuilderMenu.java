@@ -1,5 +1,6 @@
 package de.minefactprogress.progressplugin.menusystem.menus;
 
+import de.minefactprogress.progressplugin.api.API;
 import de.minefactprogress.progressplugin.entities.city.Block;
 import de.minefactprogress.progressplugin.entities.users.Rank;
 import de.minefactprogress.progressplugin.entities.users.User;
@@ -83,8 +84,8 @@ public class AddBuilderMenu extends PaginatedMenu {
         ArrayList<ItemStack> items = new ArrayList<>();
         Block block = menuStorage.getBlock();
 
-        for (User user : User.users) {
-            if(!block.getBuilders().contains(user.getName())) {
+        for (User user : API.getUsers()) {
+            if(!block.getBuilders().contains(user.getUsername())) {
                 users.add(user);
             }
         }
@@ -98,7 +99,7 @@ public class AddBuilderMenu extends PaginatedMenu {
             lore.add("");
             lore.add(ChatColor.YELLOW + "Click to add");
 
-            items.add(Item.createPlayerHead(user.getRank().getColor() + user.getName(), user.getName(), lore));
+            items.add(Item.createPlayerHead(user.getRank().getColor() + user.getUsername(), user.getUsername(), lore));
         }
 
         return items;

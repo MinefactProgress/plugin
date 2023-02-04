@@ -82,11 +82,11 @@ public class Block {
         if (!builders.isEmpty()) {
             lore.add(ChatColor.GRAY + "Builder:");
             for (String builder : builders) {
-                User user = User.getByName(builder);
+                User user = User.getUserByName(builder);
                 if (user == null) {
                     lore.add(ChatColor.GRAY + "- " + Rank.PLAYER.getColor() + builder);
                 } else {
-                    lore.add(ChatColor.GRAY + "- " + user.getRank().getColor() + user.getName());
+                    lore.add(ChatColor.GRAY + "- " + user.getRank().getColor() + user.getUsername());
                 }
             }
         }
@@ -220,10 +220,6 @@ public class Block {
 
     public static Block getBlock(District district, int id) {
         return API.getBlocks().stream().filter(b -> b.district.equals(district) && b.id == id).findFirst().orElse(null);
-    }
-
-    public static ArrayList<Block> getClaimsOfUser(User user) {
-        return API.getBlocks().stream().filter(b -> b.builders.contains(user.getName())).collect(Collectors.toCollection(ArrayList::new));
     }
 
     // -----===== Sorting Enum =====-----

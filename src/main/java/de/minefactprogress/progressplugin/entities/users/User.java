@@ -1,71 +1,72 @@
 package de.minefactprogress.progressplugin.entities.users;
 
-import com.google.gson.JsonObject;
-import lombok.AllArgsConstructor;
+import com.google.gson.annotations.SerializedName;
+import de.minefactprogress.progressplugin.api.API;
+import de.minefactprogress.progressplugin.utils.Item;
 import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.UUID;
 
 @Getter
-@AllArgsConstructor
+@Setter
+@ToString
 public class User implements Comparable<User> {
 
-    public static final ArrayList<User> users = new ArrayList<>();
+    private int uid;
+    private String username;
+    @SerializedName(value = "mc_uuid")
+    private UUID uuid;
+    private int permission;
+    private Rank rank;
+    private UserSettings settings;
 
-    private final UUID uuid;
-    private final String name;
-    private final Rank rank;
-    private final int permissionLevel;
+    public ItemStack toItemStack() {
+        if(rank == null) return null;
 
-    public User(JsonObject json) {
-        this.uuid = json.get("uuid").isJsonNull() ? null : UUID.fromString(json.get("uuid").getAsString());
-        this.name = json.get("username").getAsString();
-        this.rank = json.get("rank").isJsonNull() ? null :  Rank.getByName(json.get("rank").getAsString());
-        this.permissionLevel = json.get("permission").getAsInt();
+        return Item.createPlayerHead(rank.getColor() + username, username, null);
     }
 
-    public User(UUID uniqueId, String name, Rank rank) {
-        this.uuid = uniqueId;
-        this.name = name;
-        this.rank = rank;
-        // TODO: is this right?
-        this.permissionLevel = 0;
+    public boolean hasDebugPerms() {
+        return permission >= WebsitePermissions.ADMIN;
     }
 
+    public static User getUserByUUID(UUID uuid) {
+        for(User user : API.getUsers()) {
+            if(user.uuid != null && user.uuid.equals(uuid)) {
+                return user;
+            }
+        }
+        return null;
+    }
+
+    public static User getUserByName(String name) {
+        for(User user : API.getUsers()) {
+            if(user.username.equals(name)) {
+                return user;
+            }
+        }
+        return null;
+    }
 
     @Override
-    public int compareTo(User u) {
+    public int compareTo(@NotNull User u) {
         if(rank.equals(u.rank)) {
-            return name.compareTo(u.name);
+            return username.compareTo(u.username);
         }
         return rank.getPriority() - u.rank.getPriority();
     }
-
-    @Override
-    public String toString() {
-        return rank.getColor() + name;
-    }
-
-    // -----===== Static Methods =====-----
-
-    public static User getByUUID(UUID uuid) {
-        return users.stream().filter(u -> u.uuid.equals(uuid)).findFirst().orElse(null);
-    }
-
-    public static User getByName(String name) {
-        return users.stream().filter(u -> u.name.equalsIgnoreCase(name)).findFirst().orElse(null);
-    }
-
-    // -----===== Sorting Enum =====-----
 
     public enum Sorting implements Comparator<User> {
         RANK {
             @Override
             public int compare(User u1, User u2) {
                 if(u1.getRank().getPriority() == u2.getRank().getPriority()) {
-                    return u1.getName().toLowerCase().compareTo(u2.getName().toLowerCase());
+                    return u1.getUsername().toLowerCase().compareTo(u2.getUsername().toLowerCase());
                 }
                 return u1.getRank().getPriority() - u2.getRank().getPriority();
             }
@@ -73,7 +74,7 @@ public class User implements Comparable<User> {
         NAME {
             @Override
             public int compare(User u1, User u2) {
-                return u1.getName().toLowerCase().compareTo(u2.getName().toLowerCase());
+                return u1.getUsername().toLowerCase().compareTo(u2.getUsername().toLowerCase());
             }
         },
         CLAIMS {
@@ -82,5 +83,13 @@ public class User implements Comparable<User> {
                 return 0;
             }
         }
+    }
+
+    private static class WebsitePermissions {
+        public static final int DEFAULT = 0;
+        public static final int EVENT = 1;
+        public static final int BUILDER = 2;
+        public static final int MODERATOR = 3;
+        public static final int ADMIN = 4;
     }
 }
