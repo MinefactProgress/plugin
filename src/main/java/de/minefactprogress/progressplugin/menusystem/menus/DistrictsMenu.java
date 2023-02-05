@@ -93,7 +93,7 @@ public class DistrictsMenu extends PaginatedMenu {
     @Override
     public List<ItemStack> items() {
         ArrayList<ItemStack> items = new ArrayList<>();
-        List<District> districts = District.getChildren(menuStorage.getSubborough().getName());
+        List<District> districts = District.getChildren(menuStorage.getSubborough());
 
         districts.sort(EnumUtils.getByID(District.Sorting.class, sorting));
 

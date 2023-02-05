@@ -5,7 +5,6 @@ import de.minefactprogress.progressplugin.api.API;
 import de.minefactprogress.progressplugin.entities.city.District;
 import de.minefactprogress.progressplugin.utils.Utils;
 import de.minefactprogress.progressplugin.utils.conversion.CoordinateConversion;
-import de.minefactprogress.progressplugin.utils.conversion.projection.OutOfProjectionBoundsException;
 import lombok.Getter;
 import lombok.Setter;
 import net.kyori.adventure.bossbar.BossBar;
@@ -52,8 +51,8 @@ public class DistrictBossbar {
 
     private HashMap<Integer, ArrayList<Point2D.Double>> convertToAreas(List<District> object) {
         HashMap<Integer,ArrayList<Point2D.Double>> result = new HashMap<>();
-        for(District e: object) {
-            result.put(e.getId(),e.getArea());
+        for(District e : object) {
+            result.put(e.getId(), e.getArea());
         }
         return result;
     }
@@ -68,7 +67,7 @@ public class DistrictBossbar {
             for(int i = areas.size(); i >= 1;i--) {
                 if(areas.get(i).isEmpty()) continue;
                 if(Utils.inside(new Point2D.Double(playerPos[0],playerPos[1]),areas.get(i))) {
-                    return District.getDistrictByID(i);
+                    return District.getDistrictById(i);
                 }
             }
         }

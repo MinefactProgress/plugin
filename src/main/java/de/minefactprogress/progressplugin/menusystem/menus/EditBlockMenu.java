@@ -45,7 +45,7 @@ public class EditBlockMenu extends Menu {
 
     @Override
     public ItemStack titleItem() {
-        return menuStorage.getBlock().toItemStack(menuStorage.getOwner(), true);
+        return menuStorage.getBlock().toItemStack(menuStorage.getOwner());
     }
 
     @Override
@@ -169,7 +169,7 @@ public class EditBlockMenu extends Menu {
                 .hideAttributes(true)
                 .build());
         inventory.setItem(16, new Item(Material.CLOCK)
-                .setDisplayName(ChatColor.GRAY + "Completion Date: " + ChatColor.GOLD + "" + ChatColor.BOLD + (block.getDate() == null ? "None" : block.getDate()))
+                .setDisplayName(ChatColor.GRAY + "Completion Date: " + ChatColor.GOLD + "" + ChatColor.BOLD + (block.getCompletionDate() == null ? "None" : block.getCompletionDate()))
                 .build());
     }
 }

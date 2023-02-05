@@ -29,9 +29,14 @@ public class SocketManager {
 
     public SocketManager() {
         socket = IO.socket(URI.create(Constants.BASE_URL), IO.Options.builder().setAuth(Collections.singletonMap("token", Constants.API_TOKEN)).build());
-        socket.disconnect();    // If previous connection did not close properly
-        socket.connect();
-        Logger.info("Successfully connected to socket: " + Constants.BASE_URL);
+        try {
+            socket.disconnect();    // If previous connection did not close properly
+            socket.connect();
+            Logger.info("Successfully connected to socket: " + Constants.BASE_URL);
+        } catch (Exception e) {
+            Logger.error("Error occurred while connecting to socket: " + Constants.BASE_URL);
+            return;
+        }
 
         // Join socket rooms
         joinRoom("nyc_server");

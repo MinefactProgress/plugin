@@ -13,8 +13,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.bukkit.Bukkit;
 
+import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.net.ConnectException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
@@ -29,10 +32,8 @@ import java.util.List;
 public class API {
 
     private static final int TIMEOUT = 10;
-    private static final int INTERVAL = 60;
 
     private static final HttpClient client = HttpClient.newBuilder().build();
-
     @Getter
     private static List<District> districts = new ArrayList<>();
     @Getter
@@ -84,7 +85,7 @@ public class API {
             loadAll();
 
             if (!loadedOnce) {
-                Logger.info(String.format("Successfully loaded %d Districts, %d Blocks and %d Users (%dms)",
+                Logger.info(String.format("Loaded %d Districts, %d Blocks and %d Users (%dms)",
                         districts.size(),
                         blocks.size(),
                         users.size(),
@@ -101,34 +102,57 @@ public class API {
     }
 
     public static void loadDistricts() {
-        JsonArray json = GET(Routes.DISTRICTS).getAsJsonObject().get("data").getAsJsonArray();
+        Gson gson = new GsonBuilder()
+                .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+                .registerTypeAdapter(Point2D.Double.class, (JsonDeserializer<Point2D.Double>) (jsonElement, type, jsonDeserializationContext) -> {
+                    JsonArray array = jsonElement.getAsJsonArray();
+                    return new Point2D.Double(array.get(0).getAsDouble(), array.get(1).getAsDouble());
+                })
+                .create();
+        JsonElement res = GET(Routes.DISTRICTS);
 
-        List<District> districtsNew = new ArrayList<>();
-        for (JsonElement e : json) {
-            districtsNew.add(new District(e.getAsJsonObject()));
-        }
+        if(res == null) return;
 
-        districts = districtsNew;
+        JsonArray json = res.getAsJsonObject().get("data").getAsJsonArray();
 
-        District.loadMissingParents(json);
+        Type districtType = new TypeToken<ArrayList<District>>(){}.getType();
+        districts = gson.fromJson(json, districtType);
     }
 
     public static void loadBlocks() {
-        JsonArray json = GET(Routes.BLOCKS).getAsJsonObject().get("data").getAsJsonArray();
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(Integer.class, new JsonDeserializer<Integer>() {
+                    @Override
+                    public Integer deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+                        if(jsonElement instanceof JsonObject json && json.get("id") != null) {
+                            return json.get("id").getAsInt();
+                        }
+                        return jsonElement.getAsInt();
+                    }
+                })
+                .create();
+        JsonElement res = GET(Routes.BLOCKS);
 
-        List<Block> blocksNew = new ArrayList<>();
-        for (JsonElement e : json) {
-            blocksNew.add(new Block(e.getAsJsonObject()));
-        }
+        if(res == null) return;
 
-        blocks = blocksNew;
+        JsonArray json = res.getAsJsonObject().get("data").getAsJsonArray();
+
+        Type blockType = new TypeToken<ArrayList<Block>>(){}.getType();
+        blocks = gson.fromJson(json, blockType);
     }
 
     public static void loadUsers() {
-        JsonArray json = GET(Routes.USERS).getAsJsonObject().get("data").getAsJsonArray();
+        Gson gson = new GsonBuilder()
+                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+                .create();
+        JsonElement res = GET(Routes.USERS);
+
+        if(res == null) return;
+
+        JsonArray json = res.getAsJsonObject().get("data").getAsJsonArray();
 
         Type userType = new TypeToken<ArrayList<User>>(){}.getType();
-        users = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create().fromJson(json, userType);
+        users = gson.fromJson(json, userType);
     }
 
     // -----===== Helper Methods =====-----
@@ -137,10 +161,18 @@ public class API {
         try {
             HttpResponse<String> response = client.send(req, HttpResponse.BodyHandlers.ofString());
             return JsonParser.parseString(response.body());
+        } catch (ConnectException e) {
+            try {
+                int port = req.uri().getPort();
+                String url = req.uri().toURL().getProtocol() + "://" + req.uri().getHost() + (port == -1 ? "" : ":" + req.uri().getPort()) + "/";
+                Logger.error("Could not establish a connection to " + url);
+            } catch (MalformedURLException ex) {
+                Logger.error("Unknown error occurred while sending the request (" + req.method() + " " + req.uri() +  ")");
+            }
         } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
+            Logger.error("Unknown error occurred while sending the request (" + req.method() + " " + req.uri() +  ")");
         }
-        return new JsonPrimitive("");
+        return null;
     }
 
     private static HttpRequest.Builder defaultRequest(String path) {

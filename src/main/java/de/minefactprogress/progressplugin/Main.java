@@ -5,6 +5,7 @@ import de.minefactprogress.progressplugin.api.SocketManager;
 import de.minefactprogress.progressplugin.commandsystem.CommandManager;
 import de.minefactprogress.progressplugin.commandsystem.commands.DistrictCommand;
 import de.minefactprogress.progressplugin.components.DistrictBossbar;
+import de.minefactprogress.progressplugin.entities.users.User;
 import de.minefactprogress.progressplugin.listeners.InventoryClickListener;
 import de.minefactprogress.progressplugin.listeners.JoinListener;
 import de.minefactprogress.progressplugin.listeners.PlayerInteractListener;
@@ -78,7 +79,7 @@ public final class Main extends JavaPlugin {
 
     public MenuStorage getMenuStorage(Player p) {
         if (!menuStorages.containsKey(p)) {
-            menuStorages.put(p, new MenuStorage(p));
+            menuStorages.put(p, new MenuStorage(p, User.getUserByUUID(p.getUniqueId())));
         }
         return menuStorages.get(p);
     }
