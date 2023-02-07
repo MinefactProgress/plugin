@@ -1,6 +1,7 @@
 package de.minefactprogress.progressplugin.utils;
 
 import de.minefactprogress.progressplugin.api.API;
+import de.minefactprogress.progressplugin.entities.users.SettingType;
 import de.minefactprogress.progressplugin.entities.users.User;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -16,7 +17,7 @@ public class MessageHandler {
 
     public static void sendMessageToDebuggers(String msg) {
         for (User user : API.getUsers()) {
-            if(user.getSettings().isDebugMode()) {
+            if(user.getSetting(SettingType.MINECRAFT_DEBUG_MODE).equals("true")) {
                 Player p = Bukkit.getPlayer(user.getUuid());
 
                 if(p != null) {

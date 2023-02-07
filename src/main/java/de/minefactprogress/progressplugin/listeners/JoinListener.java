@@ -5,6 +5,7 @@ import de.minefactprogress.progressplugin.Main;
 import de.minefactprogress.progressplugin.api.API;
 import de.minefactprogress.progressplugin.api.Routes;
 import de.minefactprogress.progressplugin.entities.users.Rank;
+import de.minefactprogress.progressplugin.entities.users.SettingType;
 import de.minefactprogress.progressplugin.entities.users.User;
 import de.minefactprogress.progressplugin.utils.CustomColors;
 import de.minefactprogress.progressplugin.utils.Item;
@@ -34,12 +35,14 @@ public class JoinListener implements Listener {
         progressLore.add(ChatColor.GRAY + "Check out the progress of New York City.");
         p.getInventory().setItem(4, new Item(Material.EMERALD).setDisplayName(CustomColors.BLUE.getChatColor() + "Progress").setLore(progressLore).build());
 
-        // Register district bossbar
-        if(Main.getDistrictBossbar().getBars().containsKey(p.getUniqueId())) {
-            Main.getDistrictBossbar().updatePlayer(p);
-        }
-
         if(user != null) {
+            // Register district bossbar
+            if(user.getSetting(SettingType.MINECRAFT_DISTRICT_BAR).equals("true")) {
+                if(!Main.getDistrictBossbar().getBars().containsKey(p.getUniqueId())) {
+                    Main.getDistrictBossbar().addPlayer(p);
+                }
+                Main.getDistrictBossbar().updatePlayer(p);
+            }
             if(!user.getUsername().equals(p.getName())) {
                 // Name changed
                 Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {

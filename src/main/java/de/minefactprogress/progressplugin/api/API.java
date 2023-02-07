@@ -12,6 +12,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 import java.awt.geom.Point2D;
 import java.io.IOException;
@@ -27,6 +28,8 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+import java.util.function.Consumer;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class API {
@@ -45,7 +48,7 @@ public class API {
 
     // -----===== Request Methods =====-----
 
-    public static JsonElement GET(String path) {
+    public static JsonObject GET(String path) {
         HttpRequest req = defaultRequest(path)
                 .GET()
                 .build();
@@ -53,15 +56,29 @@ public class API {
         return sendRequest(req);
     }
 
-    public static JsonElement POST(String path, JsonElement body) {
+    public static String POST(String path, JsonElement body, Consumer<JsonObject> onSuccess) {
+        return POST(path, body, onSuccess, null);
+    }
+
+    public static String POST(String path, JsonElement body, Consumer<JsonObject> onSuccess, Player p) {
         HttpRequest req = defaultRequest(path)
                 .POST(HttpRequest.BodyPublishers.ofString(body.toString()))
                 .build();
 
-        return sendRequest(req);
+        JsonObject res = sendRequest(req);
+        String errorMessage = res == null || res.get("error") == null ? "An unknown error occurred" : res.get("error").getAsString();
+        if(res != null && res.get("error") == null) {
+            onSuccess.accept(res);
+        } else {
+            if(p != null) {
+                p.sendMessage(Constants.PREFIX + errorMessage);
+            }
+        }
+
+        return errorMessage;
     }
 
-    public static JsonElement PUT(String path, JsonElement body) {
+    public static JsonObject PUT(String path, JsonElement body) {
         HttpRequest req = defaultRequest(path)
                 .PUT(HttpRequest.BodyPublishers.ofString(body.toString()))
                 .build();
@@ -69,7 +86,7 @@ public class API {
         return sendRequest(req);
     }
 
-    public static JsonElement DELETE(String path) {
+    public static JsonObject DELETE(String path) {
         HttpRequest req = defaultRequest(path)
                 .DELETE()
                 .build();
@@ -109,11 +126,11 @@ public class API {
                     return new Point2D.Double(array.get(0).getAsDouble(), array.get(1).getAsDouble());
                 })
                 .create();
-        JsonElement res = GET(Routes.DISTRICTS);
+        JsonObject res = GET(Routes.DISTRICTS);
 
         if(res == null) return;
 
-        JsonArray json = res.getAsJsonObject().get("data").getAsJsonArray();
+        JsonArray json = res.get("data").getAsJsonArray();
 
         Type districtType = new TypeToken<ArrayList<District>>(){}.getType();
         districts = gson.fromJson(json, districtType);
@@ -131,11 +148,11 @@ public class API {
                     }
                 })
                 .create();
-        JsonElement res = GET(Routes.BLOCKS);
+        JsonObject res = GET(Routes.BLOCKS);
 
         if(res == null) return;
 
-        JsonArray json = res.getAsJsonObject().get("data").getAsJsonArray();
+        JsonArray json = res.get("data").getAsJsonArray();
 
         Type blockType = new TypeToken<ArrayList<Block>>(){}.getType();
         blocks = gson.fromJson(json, blockType);
@@ -144,12 +161,13 @@ public class API {
     public static void loadUsers() {
         Gson gson = new GsonBuilder()
                 .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+                .registerTypeAdapter(UUID.class, (JsonDeserializer<Object>) (jsonElement, type, jsonDeserializationContext) -> UUID.fromString(jsonElement.getAsString()))
                 .create();
-        JsonElement res = GET(Routes.USERS);
+        JsonObject res = GET(Routes.USERS);
 
         if(res == null) return;
 
-        JsonArray json = res.getAsJsonObject().get("data").getAsJsonArray();
+        JsonArray json = res.get("data").getAsJsonArray();
 
         Type userType = new TypeToken<ArrayList<User>>(){}.getType();
         users = gson.fromJson(json, userType);
@@ -157,10 +175,10 @@ public class API {
 
     // -----===== Helper Methods =====-----
 
-    private static JsonElement sendRequest(HttpRequest req) {
+    private static JsonObject sendRequest(HttpRequest req) {
         try {
             HttpResponse<String> response = client.send(req, HttpResponse.BodyHandlers.ofString());
-            return JsonParser.parseString(response.body());
+            return JsonParser.parseString(response.body()).getAsJsonObject();
         } catch (ConnectException e) {
             try {
                 int port = req.uri().getPort();

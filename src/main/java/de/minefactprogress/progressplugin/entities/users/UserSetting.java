@@ -7,8 +7,9 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class UserSettings {
+public class UserSetting {
 
-    private boolean debugMode;
+    private String key;
+    private String value;
 
 }

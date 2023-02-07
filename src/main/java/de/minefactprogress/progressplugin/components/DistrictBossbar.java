@@ -37,6 +37,9 @@ public class DistrictBossbar {
 
         for(UUID uuid:bars.keySet()) {
             Player p = Bukkit.getPlayer(uuid);
+
+            if(p == null) continue;
+
             District district = getCurrentDistrict(p);
 
             bars.get(p.getUniqueId()).name(Component.text( ChatColor.GRAY+district.getName()+ " (" + district.getStatus().getChatColor()+district.getProgress() +ChatColor.GRAY+ "%)"));

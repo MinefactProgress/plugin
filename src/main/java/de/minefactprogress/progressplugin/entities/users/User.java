@@ -1,14 +1,24 @@
 package de.minefactprogress.progressplugin.entities.users;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.google.gson.annotations.SerializedName;
+import de.minefactprogress.progressplugin.Main;
 import de.minefactprogress.progressplugin.api.API;
+import de.minefactprogress.progressplugin.api.Routes;
+import de.minefactprogress.progressplugin.utils.Constants;
 import de.minefactprogress.progressplugin.utils.Item;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.UUID;
 
@@ -19,11 +29,11 @@ public class User implements Comparable<User> {
 
     private int uid;
     private String username;
-    @SerializedName(value = "mc_uuid")
+    @SerializedName("mc_uuid")
     private UUID uuid;
     private int permission;
     private Rank rank;
-    private UserSettings settings;
+    private ArrayList<UserSetting> settings;
 
     public ItemStack toItemStack() {
         if(rank == null) return null;
@@ -31,8 +41,33 @@ public class User implements Comparable<User> {
         return Item.createPlayerHead(rank.getColor() + username, username, null);
     }
 
+    public Player getPlayer() {
+        return Bukkit.getPlayer(uuid);
+    }
+
     public boolean hasDebugPerms() {
         return permission >= WebsitePermissions.ADMIN;
+    }
+
+    public String getSetting(SettingType key) {
+        UserSetting setting = settings.stream().filter(s -> s.getKey().equalsIgnoreCase(key.name())).findFirst().orElse(null);
+        return setting == null ? null : setting.getValue();
+    }
+
+    public void setSetting(SettingType key, String value) {
+        settings.stream().filter(s -> s.getKey().equalsIgnoreCase(key.name())).findFirst().ifPresent(setting -> {
+            setting.setValue(value);
+            Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
+                JsonObject json = new JsonObject();
+                json.addProperty("key", key.name());
+                json.addProperty("value", value);
+
+                API.POST(Routes.USERS + "/" + uid + "/settings", json, res -> {
+                    getPlayer().sendMessage(Constants.PREFIX + ChatColor.GRAY + "Successfully "
+                            + (value.equals("true") ? ChatColor.GREEN + "enabled " : ChatColor.RED + "disabled ") + ChatColor.GRAY + key.getName());
+                }, getPlayer());
+            });
+        });
     }
 
     public static User getUserByUUID(UUID uuid) {
