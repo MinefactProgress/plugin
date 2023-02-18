@@ -6,10 +6,7 @@ import de.minefactprogress.progressplugin.commandsystem.CommandManager;
 import de.minefactprogress.progressplugin.commandsystem.commands.DistrictCommand;
 import de.minefactprogress.progressplugin.components.DistrictBossbar;
 import de.minefactprogress.progressplugin.entities.users.User;
-import de.minefactprogress.progressplugin.listeners.InventoryClickListener;
-import de.minefactprogress.progressplugin.listeners.JoinListener;
-import de.minefactprogress.progressplugin.listeners.PlayerInteractListener;
-import de.minefactprogress.progressplugin.listeners.PluginDisableListener;
+import de.minefactprogress.progressplugin.listeners.*;
 import de.minefactprogress.progressplugin.menusystem.MenuStorage;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -75,6 +72,7 @@ public final class Main extends JavaPlugin {
         Bukkit.getServer().getPluginManager().registerEvents(new JoinListener(), instance);
         Bukkit.getServer().getPluginManager().registerEvents(new PlayerInteractListener(), instance);
         Bukkit.getServer().getPluginManager().registerEvents(new PluginDisableListener(), instance);
+        Bukkit.getServer().getPluginManager().registerEvents(new QuitListener(), instance);
     }
 
     public MenuStorage getMenuStorage(Player p) {

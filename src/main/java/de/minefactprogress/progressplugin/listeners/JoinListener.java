@@ -30,6 +30,15 @@ public class JoinListener implements Listener {
         User user = User.getUserByUUID(p.getUniqueId());
         Rank rank = Rank.getByPermission(p);
 
+        // Send socket message
+        Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
+            JsonObject playerJson = new JsonObject();
+            playerJson.addProperty("username", p.getName());
+            playerJson.addProperty("uuid", p.getUniqueId().toString());
+            playerJson.addProperty("rank", Rank.getByPermission(p).getName());
+            Main.getSocketManager().sendMessage("playerJoin", playerJson);
+        });
+
         // Add progress item
         ArrayList<String> progressLore = new ArrayList<>();
         progressLore.add(ChatColor.GRAY + "Check out the progress of New York City.");
