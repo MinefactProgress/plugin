@@ -5,6 +5,7 @@ import de.minefactprogress.progressplugin.api.SocketManager;
 import de.minefactprogress.progressplugin.commandsystem.CommandManager;
 import de.minefactprogress.progressplugin.commandsystem.commands.DistrictCommand;
 import de.minefactprogress.progressplugin.components.DistrictBossbar;
+import de.minefactprogress.progressplugin.components.LocationEditor;
 import de.minefactprogress.progressplugin.entities.users.User;
 import de.minefactprogress.progressplugin.listeners.*;
 import de.minefactprogress.progressplugin.menusystem.MenuStorage;
@@ -47,6 +48,8 @@ public final class Main extends JavaPlugin {
         socketManager = new SocketManager();
         socketManager.startSchedulers();
 
+        LocationEditor.startScheduler();
+
         API.loadProgress();
 
         Bukkit.getConsoleSender().sendMessage(PREFIX + ChatColor.DARK_GREEN + "Plugin enabled");
@@ -58,6 +61,8 @@ public final class Main extends JavaPlugin {
         for(Player p : Bukkit.getOnlinePlayers()) {
             districtBossbar.removePlayer(p);
         }
+        // Destroy all LocationEditor Entities
+        LocationEditor.destroyAll();
 
         Bukkit.getConsoleSender().sendMessage(PREFIX + ChatColor.DARK_RED + "Plugin disabled");
     }
@@ -70,6 +75,7 @@ public final class Main extends JavaPlugin {
     private void registerListeners() {
         Bukkit.getServer().getPluginManager().registerEvents(new InventoryClickListener(), instance);
         Bukkit.getServer().getPluginManager().registerEvents(new JoinListener(), instance);
+        Bukkit.getServer().getPluginManager().registerEvents(new LocationEditorListener(), instance);
         Bukkit.getServer().getPluginManager().registerEvents(new PlayerInteractListener(), instance);
         Bukkit.getServer().getPluginManager().registerEvents(new PluginDisableListener(), instance);
         Bukkit.getServer().getPluginManager().registerEvents(new QuitListener(), instance);

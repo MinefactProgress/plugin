@@ -25,6 +25,7 @@
 package de.minefactprogress.progressplugin.commandsystem;
 
 import de.minefactprogress.progressplugin.Main;
+import de.minefactprogress.progressplugin.utils.Constants;
 import de.minefactprogress.progressplugin.utils.Permissions;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -111,6 +112,6 @@ public abstract class BaseCommand implements CommandExecutor, ICommand {
     @Override
     public void sendInfo(CommandSender sender) {
         // TODO
-        sender.sendMessage("TODO");
+        sender.sendMessage(Constants.PREFIX + getDescription());
     }
 }

@@ -2,6 +2,7 @@ package de.minefactprogress.progressplugin.listeners;
 
 import com.google.gson.JsonObject;
 import de.minefactprogress.progressplugin.Main;
+import de.minefactprogress.progressplugin.components.LocationEditor;
 import de.minefactprogress.progressplugin.entities.users.Rank;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -23,5 +24,10 @@ public class QuitListener implements Listener {
             playerJson.addProperty("rank", Rank.getByPermission(p).getName());
             Main.getSocketManager().sendMessage("playerLeave", playerJson);
         });
+
+        LocationEditor locationEditor = LocationEditor.get(p);
+        if(locationEditor != null) {
+            locationEditor.destroy();
+        }
     }
 }

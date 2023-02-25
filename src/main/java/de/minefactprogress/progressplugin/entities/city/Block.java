@@ -8,7 +8,6 @@ import de.minefactprogress.progressplugin.utils.*;
 import de.minefactprogress.progressplugin.utils.conversion.CoordinateConversion;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -23,7 +22,6 @@ import java.util.stream.Collectors;
 
 @Getter
 @Setter
-@ToString
 public class Block {
 
     private int uid;
@@ -37,6 +35,7 @@ public class Block {
     private Date completionDate;
     @SerializedName("center")
     private double[] latlon;
+    private ArrayList<double[]> area;
     private transient Location center = null;
 
     public District getDistrict() {
@@ -118,6 +117,11 @@ public class Block {
 
     public static ArrayList<Block> getBlocksOfDistrict(District district) {
         return API.getBlocks().stream().filter(b -> b.districtId == district.getId()).collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    @Override
+    public String toString() {
+        return getDistrict().getName() + " #" + id;
     }
 
     public enum Sorting implements Comparator<Block> {

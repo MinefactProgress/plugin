@@ -4,7 +4,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import de.minefactprogress.progressplugin.Main;
+import de.minefactprogress.progressplugin.entities.city.Block;
+import de.minefactprogress.progressplugin.entities.city.District;
 import de.minefactprogress.progressplugin.entities.users.Rank;
+import de.minefactprogress.progressplugin.entities.users.User;
 import de.minefactprogress.progressplugin.utils.Constants;
 import de.minefactprogress.progressplugin.utils.Logger;
 import de.minefactprogress.progressplugin.utils.MessageHandler;
@@ -13,6 +16,7 @@ import de.minefactprogress.progressplugin.utils.conversion.CoordinateConversion;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.net.URI;
@@ -46,13 +50,15 @@ public class SocketManager {
         listenEvent("block_updates", (Object... args) -> {
             for(Object obj : args) {
                 JsonObject json = (JsonObject) JsonParser.parseString(obj.toString());
-                JsonObject block = json.get("block").getAsJsonObject();
+                JsonObject blockJson = json.get("block").getAsJsonObject();
 
-                MessageHandler.sendToAllPlayers(
-                        block.get("district").getAsJsonObject().get("name").getAsString()
-                                + " #" + block.get("id").getAsInt() + " updated by "
-                                + json.get("user").getAsJsonObject().get("username").getAsString()
-                );
+                District district = District.getDistrictById(blockJson.get("district").getAsJsonObject().get("id").getAsInt());
+                Block block = Block.getBlock(district, blockJson.get("id").getAsInt());
+                User user = User.getUserByName(json.get("user").getAsJsonObject().get("username").getAsString());
+
+                if(block == null) return;
+
+                MessageHandler.sendToAllPlayers(ChatColor.YELLOW + block.toString() + ChatColor.GRAY + " updated by " + user);
 
                 // TODO: update blocks directly instead of requesting again
                 Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), API::loadAll);

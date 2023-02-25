@@ -102,6 +102,16 @@ public class District implements Comparable<District> {
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
+    public static ArrayList<District> getDistrictsWithoutChildren() {
+        ArrayList<District> districts = new ArrayList<>();
+        for(District district : API.getDistricts()) {
+            if(getChildren(district).size() == 0) {
+                districts.add(district);
+            }
+        }
+        return districts;
+    }
+
     @Override
     public int compareTo(@NotNull District d) {
         if (status.getId() == d.status.getId()) {
