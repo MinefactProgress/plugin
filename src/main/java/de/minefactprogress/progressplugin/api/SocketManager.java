@@ -90,8 +90,9 @@ public class SocketManager {
 
             JsonArray jsonArray = new JsonArray();
             for(Player p : Bukkit.getOnlinePlayers()) {
+                User user = User.getUserByUUID(p.getUniqueId());
 
-                if(User.getUserByUUID(p.getUniqueId()).getSetting(SettingType.MINECRAFT_MAP_VISIBLE).equals("false")) continue;
+                if(user != null && user.getSetting(SettingType.MINECRAFT_MAP_VISIBLE).equals("false")) continue;
 
                 JsonObject json = new JsonObject();
                 json.addProperty("username", p.getName());

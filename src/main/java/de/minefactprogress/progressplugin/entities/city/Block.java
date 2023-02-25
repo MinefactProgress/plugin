@@ -1,7 +1,11 @@
 package de.minefactprogress.progressplugin.entities.city;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
+import de.minefactprogress.progressplugin.Main;
 import de.minefactprogress.progressplugin.api.API;
+import de.minefactprogress.progressplugin.api.Routes;
 import de.minefactprogress.progressplugin.entities.users.Rank;
 import de.minefactprogress.progressplugin.entities.users.User;
 import de.minefactprogress.progressplugin.utils.*;
@@ -18,6 +22,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Getter
@@ -100,15 +105,62 @@ public class Block {
     }
 
     public void setProgress(double progress, Player p) {
+        p.sendMessage(Constants.PREFIX + ChatColor.GRAY + "Updating block...");
+        Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
+            JsonObject json = new JsonObject();
+            json.addProperty("progress", progress);
 
+            API.PUT(Routes.BLOCKS + "/" + uid, json, res -> {
+                this.progress = progress;
+                p.sendMessage(Constants.PREFIX + ChatColor.GRAY + "Successfully set progress of "
+                        + ChatColor.YELLOW + getDistrict().getName() + " #" + id + ChatColor.GRAY
+                        + " to " + ProgressUtils.progressToColor(progress) + progress + "%");
+            }, p);
+        });
     }
 
     public void setDetails(boolean details, Player p) {
+        p.sendMessage(Constants.PREFIX + ChatColor.GRAY + "Updating block...");
+        Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
+            JsonObject json = new JsonObject();
+            json.addProperty("details", details);
 
+            API.PUT(Routes.BLOCKS + "/" + uid, json, res -> {
+                this.details = details;
+                p.sendMessage(Constants.PREFIX + ChatColor.GRAY + "Successfully set details of "
+                        + ChatColor.YELLOW + getDistrict().getName() + " #" + id + ChatColor.GRAY
+                        + " to " + (details ? ChatColor.GREEN + "true" : ChatColor.RED + "false"));
+            }, p);
+        });
     }
 
     public void setBuilder(String name, Player p, boolean add) {
+        if(add && builders.contains(name)) {
+            p.sendMessage(Constants.PREFIX + ChatColor.RED + "This builder has already claimed this block");
+            return;
+        } else if(!add && !builders.contains(name)) {
+            p.sendMessage(Constants.PREFIX + ChatColor.RED + "This builder has not claimed this block");
+            return;
+        }
+        p.sendMessage(Constants.PREFIX + ChatColor.GRAY + "Updating block...");
+        Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
+            User user = User.getUserByName(name);
+            ArrayList<String> buildersNew = new ArrayList<>(builders);
+            JsonObject json = new JsonObject();
+            if(add) {
+                buildersNew.add(name);
+            } else {
+                buildersNew.remove(name);
+            }
+            json.add("builder", new Gson().toJsonTree(buildersNew));
 
+            API.PUT(Routes.BLOCKS + "/" + uid, json, res -> {
+                this.builders = buildersNew;
+                p.sendMessage(Constants.PREFIX + ChatColor.GRAY + "Successfully " + (add ? "added " : "removed ")
+                        + (user != null ? user.getRank().getColor() : Rank.PLAYER.getColor()) + name + ChatColor.GRAY
+                        + " as a builder of " + ChatColor.YELLOW + getDistrict().getName() + " #" + id + ChatColor.GRAY);
+            }, p);
+        });
     }
 
     public static Block getBlock(District district, int id) {

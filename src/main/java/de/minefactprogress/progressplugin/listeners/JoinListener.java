@@ -63,8 +63,9 @@ public class JoinListener implements Listener {
                     JsonObject json = new JsonObject();
                     json.addProperty("username", p.getName());
 
-                    API.PUT(Routes.USERS + "/" + user.getUid(), json);
-                    Logger.info("Username of " + oldName + " successfully changed to " + p.getName());
+                    API.PUT(Routes.USERS + "/" + user.getUid(), json, res -> {
+                        Logger.info("Username of " + oldName + " successfully changed to " + p.getName());
+                    }, p);
                 });
             }
             if(!user.getRank().equals(rank)) {
