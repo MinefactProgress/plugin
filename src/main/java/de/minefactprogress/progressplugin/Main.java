@@ -79,6 +79,7 @@ public final class Main extends JavaPlugin {
         Bukkit.getServer().getPluginManager().registerEvents(new PlayerInteractListener(), instance);
         Bukkit.getServer().getPluginManager().registerEvents(new PluginDisableListener(), instance);
         Bukkit.getServer().getPluginManager().registerEvents(new QuitListener(), instance);
+        Bukkit.getServer().getPluginManager().registerEvents(new ChatListener(), instance);
     }
 
     public MenuStorage getMenuStorage(Player p) {
