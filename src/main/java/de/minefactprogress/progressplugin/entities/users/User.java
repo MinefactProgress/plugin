@@ -1,8 +1,6 @@
 package de.minefactprogress.progressplugin.entities.users;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import com.google.gson.annotations.SerializedName;
 import de.minefactprogress.progressplugin.Main;
 import de.minefactprogress.progressplugin.api.API;
@@ -11,7 +9,6 @@ import de.minefactprogress.progressplugin.utils.Constants;
 import de.minefactprogress.progressplugin.utils.Item;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -24,7 +21,6 @@ import java.util.UUID;
 
 @Getter
 @Setter
-@ToString
 public class User implements Comparable<User> {
 
     private int uid;
@@ -68,6 +64,11 @@ public class User implements Comparable<User> {
                 }, getPlayer());
             });
         });
+    }
+
+    @Override
+    public String toString() {
+        return (rank != null ? rank.getColor() : Rank.PLAYER.getColor()) + username;
     }
 
     public static User getUserByUUID(UUID uuid) {

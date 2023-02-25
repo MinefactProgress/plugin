@@ -12,6 +12,7 @@ import de.minefactprogress.progressplugin.utils.EnumUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -59,8 +60,9 @@ public class DistrictsMenu extends PaginatedMenu {
                     menuStorage.setDistrict(district);
                     new BlocksMenu(menuStorage, this, 0, 0).open();
                 } else if (e.getClick().isRightClick()) {
-                    if (district.getCenter() != null) {
-                        p.teleport(district.getCenter());
+                    Location loc = district.getCenter();
+                    if (loc != null) {
+                        p.teleport(loc);
                         p.sendMessage(Main.getPREFIX() + ChatColor.GRAY + "You got teleported to " + ChatColor.YELLOW + district.getName());
                     } else {
                         p.sendMessage(Main.getPREFIX() + ChatColor.RED + "No location found for this district!");

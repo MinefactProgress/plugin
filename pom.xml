@@ -77,6 +77,12 @@
             <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
 
+        <!-- Spigot for nms -->
+        <repository>
+            <id>spigot-repo</id>
+            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+        </repository>
+
         <!-- Mojang!-->
         <repository>
             <id>minecraft-repo</id>
@@ -135,6 +141,13 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- Spigot for nms -->
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot</artifactId>
+            <version>1.18.2-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
 
         <!-- Mojang!-->
         <dependency>

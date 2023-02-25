@@ -11,6 +11,7 @@ import de.minefactprogress.progressplugin.utils.EnumUtils;
 import de.minefactprogress.progressplugin.utils.Permissions;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -56,8 +57,8 @@ public class BlocksMenu extends PaginatedMenu {
 
                 int blockID = Integer.parseInt(itemName.replaceAll("\\D+", ""));
                 Block block = Block.getBlock(menuStorage.getDistrict(), blockID);
-                Location loc = block.getCenter();
                 if (e.getClick().isRightClick() || !Permissions.isTeamMember(p)) {
+                    Location loc = block.getCenter();
                     if (loc != null) {
                         p.teleport(loc);
                         p.playSound(p.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1f, 1f);
@@ -99,12 +100,16 @@ public class BlocksMenu extends PaginatedMenu {
 
         blocks.sort(EnumUtils.getByID(Block.Sorting.class, sorting));
 
+        long sum = 0;
         for (Block block : blocks) {
             if (filter != 0 && filter != block.getStatus().ordinal() + 1) continue;
 
+            long time = System.currentTimeMillis();
             items.add(block.toItemStack(menuStorage.getOwner()));
+            sum += (System.currentTimeMillis() - time);
         }
 
+        Bukkit.broadcastMessage("Time for calculation: " + sum + "ms");
         return items;
     }
 }

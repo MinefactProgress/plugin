@@ -8,6 +8,7 @@ import de.minefactprogress.progressplugin.entities.city.District;
 import de.minefactprogress.progressplugin.entities.users.User;
 import de.minefactprogress.progressplugin.utils.Constants;
 import de.minefactprogress.progressplugin.utils.Logger;
+import de.minefactprogress.progressplugin.utils.conversion.CoordinateConversion;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -138,14 +139,16 @@ public class API {
 
     public static void loadBlocks() {
         Gson gson = new GsonBuilder()
-                .registerTypeAdapter(Integer.class, new JsonDeserializer<Integer>() {
-                    @Override
-                    public Integer deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-                        if(jsonElement instanceof JsonObject json && json.get("id") != null) {
-                            return json.get("id").getAsInt();
-                        }
-                        return jsonElement.getAsInt();
+                .registerTypeAdapter(Integer.class, (JsonDeserializer<Integer>) (jsonElement, type, jsonDeserializationContext) -> {
+                    if(jsonElement instanceof JsonObject json && json.get("id") != null) {
+                        return json.get("id").getAsInt();
                     }
+                    return jsonElement.getAsInt();
+                })
+                .registerTypeAdapter(double[].class, (JsonDeserializer<double[]>) (jsonElement, type, jsonDeserializationContext) -> {
+                    JsonArray array = jsonElement.getAsJsonArray();
+                    if(array.isEmpty()) return new double[0];
+                    return CoordinateConversion.convertFromGeo(array.get(0).getAsDouble(), array.get(1).getAsDouble());
                 })
                 .create();
         JsonObject res = GET(Routes.BLOCKS);

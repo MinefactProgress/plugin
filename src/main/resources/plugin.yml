@@ -15,3 +15,6 @@ commands:
   noclip:
     usage: /noclip
     aliases: [nc]
+  locationeditor:
+    usage: /locationeditor
+    aliases: [le]
