@@ -5,10 +5,8 @@ import de.minefactprogress.progressplugin.api.SocketManager;
 import de.minefactprogress.progressplugin.commandsystem.CommandManager;
 import de.minefactprogress.progressplugin.commandsystem.commands.DistrictCommand;
 import de.minefactprogress.progressplugin.components.DistrictBossbar;
-import de.minefactprogress.progressplugin.listeners.InventoryClickListener;
-import de.minefactprogress.progressplugin.listeners.JoinListener;
-import de.minefactprogress.progressplugin.listeners.PlayerInteractListener;
-import de.minefactprogress.progressplugin.listeners.PluginDisableListener;
+import de.minefactprogress.progressplugin.entities.users.User;
+import de.minefactprogress.progressplugin.listeners.*;
 import de.minefactprogress.progressplugin.menusystem.MenuStorage;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -24,7 +22,6 @@ public final class Main extends JavaPlugin {
     private static final String PREFIX = "§7[§bProgress§7] §r";
     @Getter
     private static final String PREFIX_SERVER = ChatColor.GOLD + "Server >> " + ChatColor.RESET;
-    private static final String SOCKET_URL = "https://progressbackend.minefact.de";
     @Getter
     private static Main instance;
     @Getter
@@ -47,7 +44,7 @@ public final class Main extends JavaPlugin {
         districtBossbar = new DistrictBossbar();
         districtBossbar.startSchedulers();
 
-        socketManager = new SocketManager(SOCKET_URL);
+        socketManager = new SocketManager();
         socketManager.startSchedulers();
 
         API.loadProgress();
@@ -75,11 +72,12 @@ public final class Main extends JavaPlugin {
         Bukkit.getServer().getPluginManager().registerEvents(new JoinListener(), instance);
         Bukkit.getServer().getPluginManager().registerEvents(new PlayerInteractListener(), instance);
         Bukkit.getServer().getPluginManager().registerEvents(new PluginDisableListener(), instance);
+        Bukkit.getServer().getPluginManager().registerEvents(new QuitListener(), instance);
     }
 
     public MenuStorage getMenuStorage(Player p) {
         if (!menuStorages.containsKey(p)) {
-            menuStorages.put(p, new MenuStorage(p));
+            menuStorages.put(p, new MenuStorage(p, User.getUserByUUID(p.getUniqueId())));
         }
         return menuStorages.get(p);
     }

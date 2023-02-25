@@ -42,7 +42,7 @@ public class BoroughsMenu extends Menu {
 
     @Override
     public void setMenuItems() {
-        List<District> districts = District.getChildren(menuStorage.getBorough().getName());
+        List<District> districts = District.getChildren(menuStorage.getBorough());
         for (int i = 10; i <= 16 && (i - 10) < districts.size(); i++) {
             inventory.setItem(i, districts.get(i - 10).toItemStack());
         }

@@ -26,13 +26,29 @@ public class DistrictCommand implements CommandExecutor {
                 p.sendMessage(Main.getPREFIX()+ ChatColor.GRAY+"Toggled the District Bossbar");
             }else {
                 if(District.getDistrictByName(String.join(" ",args))==null) return true;
-                District.getDistrictByName(String.join(" ",args)).sendInfoMessage(p);
+                sendInfoMessage(p, District.getDistrictByName(String.join(" ",args)));
             }
         } else {
             p.sendMessage(Main.getPREFIX()+ ChatColor.GRAY+"Valid Subcommands: <<district name>|show|hide|toggle>");
             if(Main.getDistrictBossbar().getBars().containsKey(p.getUniqueId()))
-                Main.getDistrictBossbar().getCurrentDistrict(p).sendInfoMessage(p);
+                sendInfoMessage(p, Main.getDistrictBossbar().getCurrentDistrict(p));
         }
         return true;
+    }
+
+    private void sendInfoMessage(Player player, District district) {
+        player.sendMessage("");
+        player.sendMessage(ChatColor.GRAY + "------- " + ChatColor.BOLD + "District Overview" + ChatColor.GRAY + " -------");
+        player.sendMessage("");
+        player.sendMessage(ChatColor.GRAY + "Name: " + ChatColor.YELLOW + district.getName());
+        player.sendMessage(ChatColor.GRAY + "Status: " + ChatColor.valueOf(district.getStatus().getColor()) + district.getStatus().getName());
+        player.sendMessage(ChatColor.GRAY + "Progress: " + ChatColor.valueOf(district.getStatus().getColor()) + district.getProgress());
+//        player.sendMessage(ChatColor.GRAY + "Blocks: " + ChatColor.YELLOW + (blocksDone + blocksLeft) + " (" + blocksDone + " done)");
+        if (district.getProgress() == 100) {
+            player.sendMessage(ChatColor.GRAY + "Completion Date: " + ChatColor.YELLOW + district.getCompletionDate());
+        }
+        player.sendMessage("");
+        player.sendMessage(ChatColor.GRAY + "----------------------------");
+        player.sendMessage("");
     }
 }

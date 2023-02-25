@@ -1,19 +1,16 @@
 package de.minefactprogress.progressplugin.entities.city;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.google.gson.annotations.SerializedName;
 import de.minefactprogress.progressplugin.api.API;
 import de.minefactprogress.progressplugin.utils.*;
 import de.minefactprogress.progressplugin.utils.conversion.CoordinateConversion;
-import de.minefactprogress.progressplugin.utils.conversion.projection.OutOfProjectionBoundsException;
-import de.minefactprogress.progressplugin.utils.time.DateUtils;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
@@ -22,95 +19,68 @@ import java.util.Date;
 import java.util.stream.Collectors;
 
 @Getter
+@Setter
 @ToString
 public class District implements Comparable<District> {
 
-    public static final ArrayList<District> districts = new ArrayList<>();
+    private int id;
+    private String name;
+    private Date completionDate;
+    private Status status;
+    private double progress;
+    private BlockCount blocks;
+    @SerializedName("parent")
+    private int parentId;
+    private ArrayList<Point2D.Double> area;
+    @SerializedName("center")
+    private double[] latlon;
+    private transient Location center = null;
 
-    private final int id;
-    private final String name;
-    private final Status status;
-    private final double progress;
-    private final int blocksDone;
-    private final int blocksLeft;
-    private final String date;
-    private final ArrayList<Point2D.Double> area;
-    private Location center = null;
-    private final double[] latlon;
-    private District parent;
-
-    public District(JsonObject json) {
-        this.id = json.get("id").getAsInt();
-        this.name = json.get("name").getAsString();
-        this.status = Status.getByID(json.get("status").getAsInt());
-        this.progress = MathUtils.roundTo2Decimals(json.get("progress").getAsDouble());
-        this.blocksDone = json.get("blocks").getAsJsonObject().get("done").getAsInt();
-        this.blocksLeft = json.get("blocks").getAsJsonObject().get("left").getAsInt();
-        this.date = json.get("completionDate").isJsonNull() ? null : DateUtils.formatDateFromISOString(json.get("completionDate").getAsString());
-        this.parent = json.get("parent").isJsonNull() ? null : getDistrictByID(json.get("parent").getAsInt());
-
-        this.area = new ArrayList<>();
-        for (JsonElement point : json.get("area").getAsJsonArray()) {
-            String x = point.getAsJsonArray().get(0).getAsString();
-            String y = point.getAsJsonArray().get(1).getAsString();
-            Point2D.Double p = new Point2D.Double(Double.parseDouble(x), Double.parseDouble(y));
-            this.area.add(p);
-        }
-
-        JsonArray coordsJson = json.get("center").getAsJsonArray();
-        if(coordsJson.size() == 2) {
-            this.latlon = new double[2];
-            this.latlon[0] = coordsJson.get(0).getAsDouble();
-            this.latlon[1] = coordsJson.get(1).getAsDouble();
-        } else {
-            this.latlon = null;
-        }
+    public District getParent() {
+        return getDistrictById(parentId);
     }
 
     public Location getCenter() {
-        if (this.center == null && this.latlon != null) {
+        if (center == null && latlon != null && latlon.length == 2) {
             double[] coords = CoordinateConversion.convertFromGeo(latlon[0], latlon[1]);
             World world = Bukkit.getWorld("world");
             if(world != null) {
-                this.center = new Location(world, coords[0], Utils.getHighestY(world, (int) coords[0], (int) coords[1]) + 1., coords[1]);
+                center = new Location(world, coords[0], Utils.getHighestY(world, (int) coords[0], (int) coords[1]) + 1., coords[1]);
             }
         }
-        return this.center;
+        return center;
     }
 
     public ItemStack toItemStack() {
-        if (parent == null) return null;
-
-        Material mat = parent.parent == null
+        Material mat = getParent().getParent() == null
                 ? Material.BOOKSHELF
-                : parent.parent.parent == null
+                : getParent().getParent().getParent() == null
                 ? Material.LECTERN
                 : Material.BOOK;
 
         ArrayList<String> lore = new ArrayList<>();
         lore.add(ChatColor.GRAY + "Status: " + ChatColor.valueOf(status.getColor()) + ChatColor.BOLD + status.getName());
-        lore.add(ChatColor.GRAY + "Progress: ");
-        lore.add(ProgressUtils.generateProgressbar(this.progress));
-        lore.add(ChatColor.GRAY + "Blocks Done: " + ChatColor.YELLOW + blocksDone);
-        lore.add(ChatColor.GRAY + "Blocks Left: " + ChatColor.YELLOW + blocksLeft);
+        lore.add(ChatColor.GRAY + "Progress:");
+        lore.add(ProgressUtils.generateProgressbar(MathUtils.roundTo2Decimals(progress)));
+        lore.add(ChatColor.GRAY + "Blocks Done: " + ChatColor.YELLOW + blocks.getDone());
+        lore.add(ChatColor.GRAY + "Blocks Left: " + ChatColor.YELLOW + blocks.getLeft());
 
-        if (date != null) {
-            lore.add(ChatColor.GRAY + "Completion Date: " + ChatColor.YELLOW + date);
+        if(completionDate != null) {
+            lore.add(ChatColor.GRAY + "Completion Date: " + ChatColor.YELLOW + completionDate);
         }
-        int numberOfBlocks = Block.getBlocksOfDistrict(this).size();
-        if (numberOfBlocks > 0) {
+        if(blocks.getTotal() > 0) {
             lore.add("");
             lore.add(ChatColor.YELLOW + "Click for more info");
         }
-        if (latlon != null) {
-            if (numberOfBlocks == 0) {
+        if(latlon != null && latlon.length == 2) {
+            if (blocks.getTotal() == 0) {
                 lore.add("");
             }
             lore.add(CustomColors.YELLOW.getChatColor() + "Right-Click to teleport");
         }
 
         Item item = new Item(mat).setDisplayName(ChatColor.AQUA + name).setLore(lore);
-        if (status == Status.DONE) {
+        if(status == Status.DONE) {
             item.addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
             item.hideEnchantments(true);
         }
@@ -118,76 +88,36 @@ public class District implements Comparable<District> {
         return item.build();
     }
 
-    public void sendInfoMessage(Player player) {
-        player.sendMessage("");
-        player.sendMessage(ChatColor.GRAY + "------- " + ChatColor.BOLD + "District Overview" + ChatColor.GRAY + " -------");
-        player.sendMessage("");
-        player.sendMessage(ChatColor.GRAY + "Name: " + ChatColor.YELLOW + name);
-        player.sendMessage(ChatColor.GRAY + "Status: " + ChatColor.valueOf(status.getColor()) + status.getName());
-        player.sendMessage(ChatColor.GRAY + "Progress: " + ChatColor.valueOf(status.getColor()) + progress);
-        player.sendMessage(ChatColor.GRAY + "Blocks: " + ChatColor.YELLOW + (blocksDone + blocksLeft) + " (" + blocksDone + " done)");
-        if (progress == 100) {
-            player.sendMessage(ChatColor.GRAY + "Completion Date: " + ChatColor.YELLOW + date);
-        }
-        player.sendMessage("");
-        player.sendMessage(ChatColor.GRAY + "----------------------------");
-        player.sendMessage("");
+    public static District getDistrictById(int id) {
+        return API.getDistricts().stream().filter(d -> d.id == id).findFirst().orElse(null);
+    }
+
+    public static District getDistrictByName(String name) {
+        return API.getDistricts().stream().filter(d -> d.name.equalsIgnoreCase(name)).findFirst().orElse(null);
+    }
+
+    public static ArrayList<District> getChildren(District district) {
+        return API.getDistricts().stream()
+                .filter(d -> d.parentId == district.id)
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     @Override
-    public int compareTo(District d) {
+    public int compareTo(@NotNull District d) {
         if (status.getId() == d.status.getId()) {
             if (progress == d.progress) {
-                if (date == null || d.date == null) {
+                if (completionDate == null || d.completionDate == null) {
                     return 0;
                 }
-                if (date.equals(d.date)) {
+                if (completionDate.equals(d.completionDate)) {
                     return d.name.compareTo(name);
                 }
-                String[] dateSplit = date.split("\\.");
-                String[] dateSplitOther = d.date.split("\\.");
-
-                Date date1 = new Date(Integer.parseInt(dateSplit[2]), Integer.parseInt(dateSplit[1]), Integer.parseInt(dateSplit[0]));
-                Date date2 = new Date(Integer.parseInt(dateSplitOther[2]), Integer.parseInt(dateSplitOther[1]), Integer.parseInt(dateSplitOther[0]));
-                return date2.compareTo(date1);
+                return completionDate.compareTo(d.completionDate);
             }
             return progress > d.progress ? 1 : -1;
         }
         return d.status.getId() - status.getId();
     }
-
-    // -----===== Static Methods =====-----
-
-    public static void loadMissingParents(JsonArray json) {
-        for(District district : API.getDistricts()) {
-            if(!district.name.equals("New York City") && district.parent == null) {
-                District parent = null;
-                for(JsonElement e : json) {
-                    JsonObject o = e.getAsJsonObject();
-                    if(o.get("id").getAsInt() == district.id) {
-                        parent = getDistrictByID(o.get("parent").getAsInt());
-                    }
-                }
-                district.parent = parent;
-            }
-        }
-    }
-
-    public static District getDistrictByID(int id) {
-        return API.getDistricts().stream().filter(d -> d.id == id).findFirst().orElse(null);
-    }
-
-    public static District getDistrictByName(String name) {
-        return API.getDistricts().stream().filter(d -> d.name.replace(" ", "").equalsIgnoreCase(name.replace(" ", ""))).findFirst().orElse(null);
-    }
-
-    public static ArrayList<District> getChildren(String districtName) {
-        return API.getDistricts().stream()
-                .filter(d -> d.parent != null && d.parent.id == getDistrictByName(districtName).id)
-                .collect(Collectors.toCollection(ArrayList::new));
-    }
-
-    // -----===== Sorting Enum =====-----
 
     public enum Sorting implements Comparator<District> {
         PROGRESS {
@@ -211,19 +141,19 @@ public class District implements Comparable<District> {
         TOTAL_BLOCKS_COUNT {
             @Override
             public int compare(District d1, District d2) {
-                return (d2.getBlocksDone() + d2.getBlocksLeft()) - (d1.getBlocksDone() + d1.getBlocksLeft());
+                return (d2.blocks.getDone() + d2.blocks.getLeft()) - (d1.blocks.getDone() + d1.blocks.getLeft());
             }
         },
         BLOCKS_DONE {
             @Override
             public int compare(District d1, District d2) {
-                return d2.getBlocksDone() - d1.getBlocksDone();
+                return d2.blocks.getDone() - d1.blocks.getDone();
             }
         },
         BLOCKS_LEFT {
             @Override
             public int compare(District d1, District d2) {
-                return d2.getBlocksLeft() - d1.getBlocksLeft();
+                return d2.blocks.getLeft() - d1.blocks.getLeft();
             }
         }
     }

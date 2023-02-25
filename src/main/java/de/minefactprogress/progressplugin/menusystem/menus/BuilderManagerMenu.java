@@ -71,14 +71,14 @@ public class BuilderManagerMenu extends PaginatedMenu {
         ArrayList<ItemStack> items = new ArrayList<>();
 
         for(String builder : block.getBuilders()) {
-            User user = User.getByName(builder);
+            User user = User.getUserByName(builder);
 
             ArrayList<String> lore = new ArrayList<>();
             lore.add("");
             lore.add(ChatColor.YELLOW + "Click to remove builder");
 
             if(user != null) {
-                items.add(Item.createPlayerHead(user.getRank().getColor() + user.getName(), user.getName(), lore));
+                items.add(Item.createPlayerHead(user.getRank().getColor() + user.getUsername(), user.getUsername(), lore));
             } else {
                 items.add(Item.createPlayerHead(Rank.PLAYER.getColor() + builder, builder, lore));
             }

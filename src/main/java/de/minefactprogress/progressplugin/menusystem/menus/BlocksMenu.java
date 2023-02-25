@@ -49,8 +49,12 @@ public class BlocksMenu extends PaginatedMenu {
         if (item == null) return;
 
         switch (item.getType()) {
-            case PAPER:
-                int blockID = Integer.parseInt(PlainTextComponentSerializer.plainText().serialize(item.displayName()).replaceAll("\\D+", ""));
+            case PLAYER_HEAD:
+                String itemName = PlainTextComponentSerializer.plainText().serialize(item.displayName());
+
+                if(!itemName.contains("Block #")) break;
+
+                int blockID = Integer.parseInt(itemName.replaceAll("\\D+", ""));
                 Block block = Block.getBlock(menuStorage.getDistrict(), blockID);
                 Location loc = block.getCenter();
                 if (e.getClick().isRightClick() || !Permissions.isTeamMember(p)) {
@@ -98,7 +102,7 @@ public class BlocksMenu extends PaginatedMenu {
         for (Block block : blocks) {
             if (filter != 0 && filter != block.getStatus().ordinal() + 1) continue;
 
-            items.add(block.toItemStack(menuStorage.getOwner(), false));
+            items.add(block.toItemStack(menuStorage.getOwner()));
         }
 
         return items;
