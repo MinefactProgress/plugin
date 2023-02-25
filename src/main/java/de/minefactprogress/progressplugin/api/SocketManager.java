@@ -7,6 +7,7 @@ import de.minefactprogress.progressplugin.Main;
 import de.minefactprogress.progressplugin.entities.city.Block;
 import de.minefactprogress.progressplugin.entities.city.District;
 import de.minefactprogress.progressplugin.entities.users.Rank;
+import de.minefactprogress.progressplugin.entities.users.SettingType;
 import de.minefactprogress.progressplugin.entities.users.User;
 import de.minefactprogress.progressplugin.utils.Constants;
 import de.minefactprogress.progressplugin.utils.Logger;
@@ -89,6 +90,9 @@ public class SocketManager {
 
             JsonArray jsonArray = new JsonArray();
             for(Player p : Bukkit.getOnlinePlayers()) {
+
+                if(User.getUserByUUID(p.getUniqueId()).getSetting(SettingType.MINECRAFT_MAP_VISIBLE).equals("false")) continue;
+
                 JsonObject json = new JsonObject();
                 json.addProperty("username", p.getName());
                 json.addProperty("uuid", p.getUniqueId().toString());

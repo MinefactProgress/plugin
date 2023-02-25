@@ -10,6 +10,7 @@ import java.util.Arrays;
 public enum SettingType {
 
     MINECRAFT_DISTRICT_BAR("District Bar"),
+    MINECRAFT_MAP_VISIBLE("Map Visibility"),
     MINECRAFT_DEBUG_MODE("Debug Mode");
 
     private final String name;

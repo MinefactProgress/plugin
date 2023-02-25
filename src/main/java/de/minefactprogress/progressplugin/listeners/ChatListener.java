@@ -2,6 +2,8 @@ package de.minefactprogress.progressplugin.listeners;
 
 import com.google.gson.JsonObject;
 import de.minefactprogress.progressplugin.Main;
+import de.minefactprogress.progressplugin.entities.users.SettingType;
+import de.minefactprogress.progressplugin.entities.users.User;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.entity.Player;
@@ -15,11 +17,13 @@ public class ChatListener implements Listener {
         String msg = PlainTextComponentSerializer.plainText().serialize(event.message());
 
         // Send chat socket
-        JsonObject joinObj = new JsonObject();
-        joinObj.addProperty("username",p.getName());
-        joinObj.addProperty("uuid",p.getUniqueId().toString());
-        joinObj.addProperty("message",msg);
-        Main.getSocketManager().sendMessage("chat",joinObj);
-        System.out.println("chat");
+
+        if(User.getUserByUUID(p.getUniqueId()).getSetting(SettingType.MINECRAFT_MAP_VISIBLE).equals("true")) {
+            JsonObject joinObj = new JsonObject();
+            joinObj.addProperty("username", p.getName());
+            joinObj.addProperty("uuid", p.getUniqueId().toString());
+            joinObj.addProperty("message", msg);
+            Main.getSocketManager().sendMessage("chat", joinObj);
+        }
     }
 }

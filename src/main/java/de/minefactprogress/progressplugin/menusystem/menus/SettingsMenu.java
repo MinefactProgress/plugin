@@ -66,11 +66,16 @@ public class SettingsMenu extends Menu {
                 Arrays.asList(ChatColor.GRAY+"Displays a BossBar on the",ChatColor.GRAY+"top of the screen showing",ChatColor.GRAY+"the District you are in"))).build());
         inventory.setItem(10 + 9, user.getSetting(SettingType.MINECRAFT_DISTRICT_BAR).equals("true") ?ITEM_ENABLED : ITEM_DISABLED);
 
+        // Show On Map
+        inventory.setItem(11, new Item(Material.WRITABLE_BOOK).setDisplayName(ChatColor.AQUA+SettingType.MINECRAFT_MAP_VISIBLE.getName()).setLore(new ArrayList<>(
+                Arrays.asList(ChatColor.GRAY+"Show your character",ChatColor.GRAY+"on the web-map"))).build());
+        inventory.setItem(11 + 9, user.getSetting(SettingType.MINECRAFT_MAP_VISIBLE).equals("true") ?ITEM_ENABLED : ITEM_DISABLED);
+
         // Debug Mode
         if(user.hasDebugPerms()) {
-            inventory.setItem(12, new Item(Material.REDSTONE_TORCH).setDisplayName(ChatColor.RED+SettingType.MINECRAFT_DEBUG_MODE.getName()).setLore(new ArrayList<>(
+            inventory.setItem(16, new Item(Material.REDSTONE_TORCH).setDisplayName(ChatColor.RED+SettingType.MINECRAFT_DEBUG_MODE.getName()).setLore(new ArrayList<>(
                     List.of(ChatColor.GRAY + "Displays debug messages in the chat"))).build());
-            inventory.setItem(12 + 9, user.getSetting(SettingType.MINECRAFT_DEBUG_MODE).equals("true") ? ITEM_ENABLED : ITEM_DISABLED);
+            inventory.setItem(16 + 9, user.getSetting(SettingType.MINECRAFT_DEBUG_MODE).equals("true") ? ITEM_ENABLED : ITEM_DISABLED);
         }
     }
 }
