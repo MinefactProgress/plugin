@@ -25,8 +25,12 @@ public enum Rank {
     COMMUNICATION(7, "Communication", ChatColor.DARK_PURPLE, Permissions.PermYoutuber),
     @SerializedName("Premium")
     PREMIUM(8, "Premium", ChatColor.GOLD, Permissions.PermPremium),
+    @SerializedName("Professional")
+    PROFESSIONAL(9, "Professional", ChatColor.GREEN, Permissions.PermProfessional),
+    @SerializedName("Advanced")
+    ADVANCED(10, "Advanced", ChatColor.GREEN, Permissions.PermAdvanced),
     @SerializedName("Player")
-    PLAYER(9, "Player", ChatColor.GREEN, "")
+    PLAYER(11, "Player", ChatColor.GREEN, "")
     ;
 
     private final int priority;

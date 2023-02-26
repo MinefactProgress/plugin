@@ -32,9 +32,7 @@ public class User implements Comparable<User> {
     private ArrayList<UserSetting> settings;
 
     public ItemStack toItemStack() {
-        if(rank == null) return null;
-
-        return Item.createPlayerHead(rank.getColor() + username, username, null);
+        return Item.createPlayerHead((rank == null ? Rank.PLAYER : rank).getColor() + username, username, null);
     }
 
     public Player getPlayer() {
