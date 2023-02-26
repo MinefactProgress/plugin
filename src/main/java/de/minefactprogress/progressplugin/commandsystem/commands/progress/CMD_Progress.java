@@ -3,12 +3,16 @@ package de.minefactprogress.progressplugin.commandsystem.commands.progress;
 import de.minefactprogress.progressplugin.Main;
 import de.minefactprogress.progressplugin.commandsystem.BaseCommand;
 import de.minefactprogress.progressplugin.menusystem.menus.NewYorkCityMenu;
+import de.minefactprogress.progressplugin.utils.Permissions;
 import de.minefactprogress.progressplugin.utils.ProgressUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CMD_Progress extends BaseCommand {
 
@@ -31,6 +35,13 @@ public class CMD_Progress extends BaseCommand {
     @Override
     public String[] getParameter() {
         return new String[0];
+    }
+
+    @Override
+    public List<String> getTabCompletion(CommandSender sender) {
+        return getSubCommands().stream()
+                .filter(sub -> !sub.isStaffOnly() || Permissions.isTeamMember(getPlayer(sender)))
+                .map(sub -> sub.getNames()[0]).toList();
     }
 
     @Override

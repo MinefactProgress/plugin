@@ -12,6 +12,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
 public class CMD_Progress_Info extends SubCommand {
 
     public CMD_Progress_Info(BaseCommand baseCommand) {
@@ -34,6 +36,11 @@ public class CMD_Progress_Info extends SubCommand {
     }
 
     @Override
+    public List<String> getTabCompletion(CommandSender sender) {
+        return District.getDistrictsWithoutChildren().stream().map(district -> district.getName().replaceAll(" ", "")).toList();
+    }
+
+    @Override
     public boolean isStaffOnly() {
         return false;
     }
@@ -52,7 +59,7 @@ public class CMD_Progress_Info extends SubCommand {
             return;
         }
 
-        District district = District.getDistrictByName(args[0]);
+        District district = District.getDistrictByName(args[0], false);
         if(district == null) {
             p.sendMessage(Main.getPREFIX() + ChatColor.RED + "District " + ChatColor.YELLOW + args[0] + ChatColor.RED + " not found");
             return;

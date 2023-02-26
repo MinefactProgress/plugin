@@ -26,6 +26,8 @@ package de.minefactprogress.progressplugin.commandsystem;
 
 import org.bukkit.command.CommandSender;
 
+import java.util.List;
+
 public interface ICommand {
     /**
      * @return Command Name(s)
@@ -41,6 +43,8 @@ public interface ICommand {
      * @return Command Parameter(s)
      */
     String[] getParameter();
+
+    List<String> getTabCompletion(CommandSender sender);
 
     /**
      * @return Command Permission

@@ -6,6 +6,8 @@ import de.minefactprogress.progressplugin.commandsystem.BaseCommand;
 import de.minefactprogress.progressplugin.commandsystem.SubCommand;
 import org.bukkit.command.CommandSender;
 
+import java.util.List;
+
 public class CMD_Progress_Debuginfo extends SubCommand {
 
     public CMD_Progress_Debuginfo(BaseCommand baseCommand) {
@@ -25,6 +27,11 @@ public class CMD_Progress_Debuginfo extends SubCommand {
     @Override
     public String[] getParameter() {
         return new String[0];
+    }
+
+    @Override
+    public List<String> getTabCompletion(CommandSender sender) {
+        return null;
     }
 
     @Override

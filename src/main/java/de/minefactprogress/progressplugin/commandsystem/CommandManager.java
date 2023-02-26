@@ -49,6 +49,7 @@ public class CommandManager {
         for(BaseCommand cmd : baseCommands) {
             for(String name : cmd.getNames()) {
                 Objects.requireNonNull(Main.getInstance().getCommand(name)).setExecutor(cmd);
+                Objects.requireNonNull(Main.getInstance().getCommand(name)).setTabCompleter(cmd);
             }
         }
     }

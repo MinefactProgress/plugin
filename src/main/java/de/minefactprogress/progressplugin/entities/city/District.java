@@ -93,7 +93,13 @@ public class District implements Comparable<District> {
     }
 
     public static District getDistrictByName(String name) {
-        return API.getDistricts().stream().filter(d -> d.name.equalsIgnoreCase(name)).findFirst().orElse(null);
+        return getDistrictByName(name, true);
+    }
+
+    public static District getDistrictByName(String name, boolean spaces) {
+        return API.getDistricts().stream()
+                .filter(d -> spaces ? d.name.equalsIgnoreCase(name) : d.name.replaceAll(" ", "").equalsIgnoreCase(name))
+                .findFirst().orElse(null);
     }
 
     public static ArrayList<District> getChildren(District district) {

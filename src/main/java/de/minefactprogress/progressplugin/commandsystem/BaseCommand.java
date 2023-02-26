@@ -29,16 +29,17 @@ import de.minefactprogress.progressplugin.utils.Constants;
 import de.minefactprogress.progressplugin.utils.Permissions;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public abstract class BaseCommand implements CommandExecutor, ICommand {
+public abstract class BaseCommand implements TabExecutor, ICommand {
     private final List<SubCommand> subCommands = new ArrayList<>();
 
     /**
@@ -83,6 +84,30 @@ public abstract class BaseCommand implements CommandExecutor, ICommand {
             }
         }
         return true;
+    }
+
+    @Override
+    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String s, @NotNull String[] args) {
+        SubCommand subCommand = subCommands.stream()
+                .filter(subCmd -> Arrays.stream(subCmd.getNames()).anyMatch(sub -> sub.equalsIgnoreCase(args[0])))
+                .findFirst()
+                .orElse(null);
+        if(subCommand == null && args.length <= 1) {
+            return getTabCompletion(sender).stream().filter(str -> str.toLowerCase().startsWith(args[args.length-1].toLowerCase())).sorted().toList();
+        }
+        for(int i = 0; i < args.length; i++) {
+            if(subCommand == null) break;
+            int finalI = i;
+            if(args.length == i+2 && Arrays.stream(subCommand.getNames()).anyMatch(arg -> arg.equalsIgnoreCase(args[finalI]))) {
+                break;
+            }
+
+            subCommand = subCommand.getSubCommand();
+        }
+        return subCommand != null && subCommand.getTabCompletion(sender) != null
+                ? subCommand.getTabCompletion(sender).stream()
+                    .filter(str -> str.toLowerCase().startsWith(args[args.length-1].toLowerCase()))
+                    .sorted().toList() : new ArrayList<>();
     }
 
     /**
