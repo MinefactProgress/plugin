@@ -20,7 +20,7 @@ import java.util.HashMap;
 public final class Main extends JavaPlugin {
 
     @Getter
-    private static final String PREFIX = "§7[§bProgress§7] §r";
+    private static final String PREFIX = "§7[§bProgress§7] §7";
     @Getter
     private static final String PREFIX_SERVER = ChatColor.GOLD + "Server >> " + ChatColor.RESET;
     @Getter

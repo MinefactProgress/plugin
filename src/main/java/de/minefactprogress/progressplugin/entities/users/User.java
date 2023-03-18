@@ -89,6 +89,15 @@ public class User implements Comparable<User> {
         return null;
     }
 
+    public static User getUserById(int name) {
+        for(User user : API.getUsers()) {
+            if(user.uid == name) {
+                return user;
+            }
+        }
+        return null;
+    }
+
     @Override
     public int compareTo(@NotNull User u) {
         if(rank.equals(u.rank)) {
