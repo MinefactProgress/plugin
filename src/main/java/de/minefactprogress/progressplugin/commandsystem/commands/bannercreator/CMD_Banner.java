@@ -9,6 +9,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 public class CMD_Banner extends BaseCommand {
 
     @Override
@@ -24,6 +26,11 @@ public class CMD_Banner extends BaseCommand {
     @Override
     public String[] getParameter() {
         return new String[0];
+    }
+
+    @Override
+    public List<String> getTabCompletion(CommandSender sender) {
+        return null;
     }
 
     @Override

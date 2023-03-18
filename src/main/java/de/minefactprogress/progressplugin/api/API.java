@@ -67,24 +67,16 @@ public class API {
                 .build();
 
         JsonObject res = sendRequest(req);
-        String errorMessage = res == null || res.get("error") == null ? "An unknown error occurred" : res.get("error").getAsString();
-        if(res != null && res.get("error") == null) {
-            onSuccess.accept(res);
-        } else {
-            if(p != null) {
-                p.sendMessage(Constants.PREFIX + errorMessage);
-            }
-        }
-
-        return errorMessage;
+        return handleResponse(res, onSuccess, p);
     }
 
-    public static JsonObject PUT(String path, JsonElement body) {
+    public static String PUT(String path, JsonElement body, Consumer<JsonObject> onSuccess, Player p) {
         HttpRequest req = defaultRequest(path)
                 .PUT(HttpRequest.BodyPublishers.ofString(body.toString()))
                 .build();
 
-        return sendRequest(req);
+        JsonObject res = sendRequest(req);
+        return handleResponse(res, onSuccess, p);
     }
 
     public static JsonObject DELETE(String path) {
@@ -93,6 +85,18 @@ public class API {
                 .build();
 
         return sendRequest(req);
+    }
+
+    private static String handleResponse(JsonObject res, Consumer<JsonObject> onSuccess, Player player) {
+        String errorMessage = res == null || res.get("error") == null ? "An unknown error occurred" : res.get("error").getAsString();
+        if(onSuccess != null && res != null && res.get("error") == null) {
+            onSuccess.accept(res);
+        } else {
+            if(player != null) {
+                player.sendMessage(Constants.PREFIX + errorMessage);
+            }
+        }
+        return errorMessage;
     }
 
     // -----===== Progress Data =====-----

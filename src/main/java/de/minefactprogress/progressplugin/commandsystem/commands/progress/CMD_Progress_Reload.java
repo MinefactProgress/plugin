@@ -10,6 +10,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
 public class CMD_Progress_Reload extends SubCommand {
 
     public CMD_Progress_Reload(BaseCommand baseCommand) {
@@ -29,6 +31,11 @@ public class CMD_Progress_Reload extends SubCommand {
     @Override
     public String[] getParameter() {
         return new String[0];
+    }
+
+    @Override
+    public List<String> getTabCompletion(CommandSender sender) {
+        return null;
     }
 
     @Override
