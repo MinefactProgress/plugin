@@ -42,7 +42,7 @@ public class DistrictBossbar {
 
             District district = getCurrentDistrict(p);
 
-            bars.get(p.getUniqueId()).name(Component.text( ChatColor.GRAY+district.getName()+ " (" + district.getStatus().getChatColor()+district.getProgress() +ChatColor.GRAY+ "%)"));
+            bars.get(p.getUniqueId()).name(Component.text( ChatColor.GRAY+district.getName()+ " (" + district.getStatus().getChatColor()+(Math.round(district.getProgress()*10)/10) +ChatColor.GRAY+ "%)"));
             bars.get(p.getUniqueId()).progress((float)(district.getProgress()/100));
             bars.get(p.getUniqueId()).color(BossBar.Color.valueOf(district.getStatus().getColor().replace("GOLD","YELLOW")));
         }
