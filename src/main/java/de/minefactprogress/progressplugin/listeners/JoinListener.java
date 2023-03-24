@@ -45,15 +45,15 @@ public class JoinListener implements Listener {
                 Main.getSocketManager().sendMessage("playerJoin", playerJson);
             });
         }
+        // Register district bossbar
+        if(user == null || user.getSetting(SettingType.MINECRAFT_DISTRICT_BAR).equals("true")) {
+            if(!Main.getDistrictBossbar().getBars().containsKey(p.getUniqueId())) {
+                Main.getDistrictBossbar().addPlayer(p);
+            }
+            Main.getDistrictBossbar().updatePlayer(p);
+        }
 
         if(user != null) {
-            // Register district bossbar
-            if(user.getSetting(SettingType.MINECRAFT_DISTRICT_BAR).equals("true")) {
-                if(!Main.getDistrictBossbar().getBars().containsKey(p.getUniqueId())) {
-                    Main.getDistrictBossbar().addPlayer(p);
-                }
-                Main.getDistrictBossbar().updatePlayer(p);
-            }
             if(!user.getUsername().equals(p.getName())) {
                 // Name changed
                 Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {

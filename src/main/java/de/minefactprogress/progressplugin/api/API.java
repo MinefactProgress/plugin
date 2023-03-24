@@ -5,6 +5,7 @@ import com.google.gson.*;
 import de.minefactprogress.progressplugin.Main;
 import de.minefactprogress.progressplugin.entities.city.Block;
 import de.minefactprogress.progressplugin.entities.city.District;
+import de.minefactprogress.progressplugin.entities.users.SettingType;
 import de.minefactprogress.progressplugin.entities.users.User;
 import de.minefactprogress.progressplugin.utils.Constants;
 import de.minefactprogress.progressplugin.utils.Logger;
@@ -13,6 +14,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.awt.geom.Point2D;
@@ -93,7 +95,7 @@ public class API {
             onSuccess.accept(res);
         } else {
             if(player != null) {
-                player.sendMessage(Constants.PREFIX + errorMessage);
+                player.sendMessage(Constants.PREFIX + ChatColor.RED + errorMessage);
             }
         }
         return errorMessage;
@@ -107,6 +109,17 @@ public class API {
             loadAll();
 
             if (!loadedOnce) {
+                // Register district bossbars
+                for(Player p : Bukkit.getOnlinePlayers()) {
+                    User user = User.getUserByUUID(p.getUniqueId());
+                    if(user == null || user.getSetting(SettingType.MINECRAFT_DISTRICT_BAR).equals("true")) {
+                        if(!Main.getDistrictBossbar().getBars().containsKey(p.getUniqueId())) {
+                            Main.getDistrictBossbar().addPlayer(p);
+                        }
+                        Main.getDistrictBossbar().updatePlayer(p);
+                    }
+                }
+
                 Logger.info(String.format("Loaded %d Districts, %d Blocks and %d Users (%dms)",
                         districts.size(),
                         blocks.size(),

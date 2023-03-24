@@ -11,7 +11,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class CMD_Progress extends BaseCommand {
@@ -20,6 +19,7 @@ public class CMD_Progress extends BaseCommand {
         registerSubCommand(new CMD_Progress_Debuginfo(this));
         registerSubCommand(new CMD_Progress_Info(this));
         registerSubCommand(new CMD_Progress_Reload(this));
+        registerSubCommand(new CMD_Progress_Verify(this));
     }
 
     @Override

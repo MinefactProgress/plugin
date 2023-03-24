@@ -41,6 +41,7 @@ public class DistrictBossbar {
             if(p == null) continue;
 
             District district = getCurrentDistrict(p);
+            if(district == null) district = District.getDistrictByName("New York City");
 
             bars.get(p.getUniqueId()).name(Component.text( ChatColor.GRAY+district.getName()+ " (" + district.getStatus().getChatColor()+(Math.round(district.getProgress()*10)/10) +ChatColor.GRAY+ "%)"));
             bars.get(p.getUniqueId()).progress((float)(district.getProgress()/100));

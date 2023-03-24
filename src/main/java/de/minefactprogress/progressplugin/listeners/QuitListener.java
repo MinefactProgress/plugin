@@ -18,10 +18,10 @@ public class QuitListener implements Listener {
     @EventHandler
     public void onQuit(PlayerQuitEvent e) {
         Player p = e.getPlayer();
-
+        User user = User.getUserByUUID(p.getUniqueId());
 
         // Send socket message
-        if(User.getUserByUUID(p.getUniqueId()).getSetting(SettingType.MINECRAFT_MAP_VISIBLE).equals("true")) {
+        if(user == null || user.getSetting(SettingType.MINECRAFT_MAP_VISIBLE).equals("true")) {
             Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
                 JsonObject playerJson = new JsonObject();
                 playerJson.addProperty("username", p.getName());
