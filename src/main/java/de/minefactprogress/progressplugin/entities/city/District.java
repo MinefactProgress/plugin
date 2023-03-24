@@ -13,6 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.geom.Point2D;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -66,7 +67,8 @@ public class District implements Comparable<District> {
         lore.add(ChatColor.GRAY + "Blocks Left: " + ChatColor.YELLOW + blocks.getLeft());
 
         if(completionDate != null) {
-            lore.add(ChatColor.GRAY + "Completion Date: " + ChatColor.YELLOW + completionDate);
+            SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
+            lore.add(ChatColor.GRAY + "Completion Date: " + ChatColor.YELLOW + sdf.format(completionDate));
         }
         if(blocks.getTotal() > 0) {
             lore.add("");

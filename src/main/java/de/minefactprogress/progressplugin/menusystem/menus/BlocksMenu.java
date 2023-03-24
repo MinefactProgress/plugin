@@ -100,16 +100,12 @@ public class BlocksMenu extends PaginatedMenu {
 
         blocks.sort(EnumUtils.getByID(Block.Sorting.class, sorting));
 
-        long sum = 0;
         for (Block block : blocks) {
             if (filter != 0 && filter != block.getStatus().ordinal() + 1) continue;
 
-            long time = System.currentTimeMillis();
             items.add(block.toItemStack(menuStorage.getOwner()));
-            sum += (System.currentTimeMillis() - time);
         }
 
-        Bukkit.broadcastMessage("Time for calculation: " + sum + "ms");
         return items;
     }
 }

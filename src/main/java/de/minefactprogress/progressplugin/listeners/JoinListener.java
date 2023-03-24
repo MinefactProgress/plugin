@@ -30,8 +30,13 @@ public class JoinListener implements Listener {
         User user = User.getUserByUUID(p.getUniqueId());
         Rank rank = Rank.getByPermission(p);
 
+        // Add progress item
+        ArrayList<String> progressLore = new ArrayList<>();
+        progressLore.add(ChatColor.GRAY + "Check out the progress of New York City.");
+        p.getInventory().setItem(4, new Item(Material.EMERALD).setDisplayName(CustomColors.BLUE.getChatColor() + "Progress").setLore(progressLore).build());
+
         // Send socket message
-        if(User.getUserByUUID(p.getUniqueId()).getSetting(SettingType.MINECRAFT_MAP_VISIBLE).equals("true")) {
+        if(user == null || user.getSetting(SettingType.MINECRAFT_MAP_VISIBLE).equals("true")) {
             Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
                 JsonObject playerJson = new JsonObject();
                 playerJson.addProperty("username", p.getName());
@@ -40,11 +45,6 @@ public class JoinListener implements Listener {
                 Main.getSocketManager().sendMessage("playerJoin", playerJson);
             });
         }
-
-        // Add progress item
-        ArrayList<String> progressLore = new ArrayList<>();
-        progressLore.add(ChatColor.GRAY + "Check out the progress of New York City.");
-        p.getInventory().setItem(4, new Item(Material.EMERALD).setDisplayName(CustomColors.BLUE.getChatColor() + "Progress").setLore(progressLore).build());
 
         if(user != null) {
             // Register district bossbar

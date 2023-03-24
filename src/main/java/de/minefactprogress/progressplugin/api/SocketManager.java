@@ -61,7 +61,9 @@ public class SocketManager {
 
                 if(block == null) return;
 
-                MessageHandler.sendToAllPlayers(ChatColor.YELLOW + block.toString() + ChatColor.GRAY + " updated by " + user);
+                if (user != null && !user.getUsername().equals("root")) {
+                    MessageHandler.sendToAllPlayers(ChatColor.YELLOW + block.toString() + ChatColor.GRAY + " updated by " + user);
+                }
 
                 // TODO: update blocks directly instead of requesting again
                 Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), API::loadAll);

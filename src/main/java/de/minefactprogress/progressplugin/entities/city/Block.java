@@ -19,6 +19,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -77,7 +78,8 @@ public class Block {
             }
         }
         if(completionDate != null) {
-            lore.add(ChatColor.GRAY + "Completion Date: " + ChatColor.YELLOW + completionDate);
+            SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
+            lore.add(ChatColor.GRAY + "Completion Date: " + ChatColor.YELLOW + sdf.format(completionDate));
         }
 
         if(Permissions.isTeamMember(p)) {
@@ -115,6 +117,10 @@ public class Block {
                 p.sendMessage(Constants.PREFIX + ChatColor.GRAY + "Successfully set progress of "
                         + ChatColor.YELLOW + getDistrict().getName() + " #" + id + ChatColor.GRAY
                         + " to " + ProgressUtils.progressToColor(progress) + progress + "%");
+                User user = User.getUserByName(p.getName());
+                if(user != null) {
+                    MessageHandler.sendToAllPlayers(ChatColor.YELLOW + this.toString() + ChatColor.GRAY + " updated by " + user);
+                }
             }, p);
         });
     }
@@ -130,6 +136,10 @@ public class Block {
                 p.sendMessage(Constants.PREFIX + ChatColor.GRAY + "Successfully set details of "
                         + ChatColor.YELLOW + getDistrict().getName() + " #" + id + ChatColor.GRAY
                         + " to " + (details ? ChatColor.GREEN + "true" : ChatColor.RED + "false"));
+                User user = User.getUserByName(p.getName());
+                if(user != null) {
+                    MessageHandler.sendToAllPlayers(ChatColor.YELLOW + this.toString() + ChatColor.GRAY + " updated by " + user);
+                }
             }, p);
         });
     }
@@ -159,6 +169,10 @@ public class Block {
                 p.sendMessage(Constants.PREFIX + ChatColor.GRAY + "Successfully " + (add ? "added " : "removed ")
                         + (user != null ? user.getRank().getColor() : Rank.PLAYER.getColor()) + name + ChatColor.GRAY
                         + " as a builder of " + ChatColor.YELLOW + getDistrict().getName() + " #" + id + ChatColor.GRAY);
+                User editor = User.getUserByName(p.getName());
+                if(editor != null) {
+                    MessageHandler.sendToAllPlayers(ChatColor.YELLOW + this.toString() + ChatColor.GRAY + " updated by " + editor);
+                }
             }, p);
         });
     }
