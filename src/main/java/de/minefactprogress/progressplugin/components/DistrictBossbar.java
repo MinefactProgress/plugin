@@ -3,6 +3,7 @@ package de.minefactprogress.progressplugin.components;
 import de.minefactprogress.progressplugin.Main;
 import de.minefactprogress.progressplugin.api.API;
 import de.minefactprogress.progressplugin.entities.city.District;
+import de.minefactprogress.progressplugin.utils.MathUtils;
 import de.minefactprogress.progressplugin.utils.Utils;
 import de.minefactprogress.progressplugin.utils.conversion.CoordinateConversion;
 import lombok.Getter;
@@ -43,7 +44,7 @@ public class DistrictBossbar {
             District district = getCurrentDistrict(p);
             if(district == null) district = District.getDistrictByName("New York City");
 
-            bars.get(p.getUniqueId()).name(Component.text( ChatColor.GRAY+district.getName()+ " (" + district.getStatus().getChatColor()+(Math.round(district.getProgress()*10)/10) +ChatColor.GRAY+ "%)"));
+            bars.get(p.getUniqueId()).name(Component.text( ChatColor.GRAY+district.getName()+ " (" + district.getStatus().getChatColor()+MathUtils.roundTo2Decimals(district.getProgress()) +ChatColor.GRAY+ "%)"));
             bars.get(p.getUniqueId()).progress((float)(district.getProgress()/100));
             bars.get(p.getUniqueId()).color(BossBar.Color.valueOf(district.getStatus().getColor().replace("GOLD","YELLOW")));
         }

@@ -162,11 +162,6 @@ public class API {
                     }
                     return jsonElement.getAsInt();
                 })
-                .registerTypeAdapter(double[].class, (JsonDeserializer<double[]>) (jsonElement, type, jsonDeserializationContext) -> {
-                    JsonArray array = jsonElement.getAsJsonArray();
-                    if(array.isEmpty()) return new double[0];
-                    return CoordinateConversion.convertFromGeo(array.get(0).getAsDouble(), array.get(1).getAsDouble());
-                })
                 .create();
         JsonObject res = GET(Routes.BLOCKS);
 
