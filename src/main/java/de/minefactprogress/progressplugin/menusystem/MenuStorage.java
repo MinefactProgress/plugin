@@ -22,6 +22,7 @@ public class MenuStorage {
     private District district;
     private Block block;
     private boolean editDetails;
+    private User claimsUser;
 
     // BannerCreator
     private ItemStack banner;

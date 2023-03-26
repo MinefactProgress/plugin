@@ -9,7 +9,7 @@ import de.minefactprogress.progressplugin.menusystem.PaginatedMenu;
 import de.minefactprogress.progressplugin.utils.CustomColors;
 import de.minefactprogress.progressplugin.utils.EnumUtils;
 import net.kyori.adventure.text.Component;
-import org.bukkit.entity.Player;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -38,12 +38,16 @@ public class UsersMenu extends PaginatedMenu {
 
     @Override
     public void handleMenu(InventoryClickEvent e) {
-        Player p = menuStorage.getOwner();
         ItemStack item = e.getCurrentItem();
 
         if(item == null) return;
 
         switch (item.getType()) {
+            case PLAYER_HEAD:
+                String playerName = PlainTextComponentSerializer.plainText().serialize(item.displayName()).replaceAll("[\\[|\\]]", "");
+                menuStorage.setClaimsUser(User.getUserByName(playerName));
+                new ClaimsMenu(menuStorage, this).open();
+                break;
             case HOPPER:
                 if(e.getClick().isLeftClick()) {
                     new UsersMenu(menuStorage, previousMenu, EnumUtils.getNextID(Rank.class, filter, 1), sorting).open();

@@ -38,6 +38,8 @@ public class User implements Comparable<User> {
         lore.add("");
         lore.add(ChatColor.GRAY + "Rank: " + rank);
         lore.add(ChatColor.GRAY + "Claims: " + ChatColor.AQUA + countClaims());
+        lore.add("");
+        lore.add(ChatColor.YELLOW + "Click to view claims");
 
         return Item.createPlayerHead((rank == null ? Rank.PLAYER : rank).getColor() + username, username, lore);
     }

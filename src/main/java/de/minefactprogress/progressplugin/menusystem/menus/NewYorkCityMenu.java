@@ -1,7 +1,9 @@
 package de.minefactprogress.progressplugin.menusystem.menus;
 
 import de.minefactprogress.progressplugin.api.API;
+import de.minefactprogress.progressplugin.entities.city.Block;
 import de.minefactprogress.progressplugin.entities.city.District;
+import de.minefactprogress.progressplugin.entities.city.Status;
 import de.minefactprogress.progressplugin.entities.users.Rank;
 import de.minefactprogress.progressplugin.menusystem.Menu;
 import de.minefactprogress.progressplugin.menusystem.MenuStorage;
@@ -21,6 +23,7 @@ import java.util.List;
 
 public class NewYorkCityMenu extends Menu {
 
+    private static final String NAME_CLAIMS = ChatColor.GOLD + "Your Claims";
     private static final String NAME_SETTINGS = ChatColor.GOLD + "Settings";
     private static final String NAME_STAFF_TEAM = CustomColors.BLUE.getChatColor() + "Builders";
 
@@ -60,6 +63,9 @@ public class NewYorkCityMenu extends Menu {
             }
         } else if (item.getType() == Material.PLAYER_HEAD && itemName.equals(ChatColor.stripColor(NAME_STAFF_TEAM))) {
             new UsersMenu(menuStorage, this, 0, 0).open();
+        } else if (item.getType() == Material.PLAYER_HEAD && itemName.equals(ChatColor.stripColor(NAME_CLAIMS))) {
+            menuStorage.setClaimsUser(menuStorage.getUser());
+            new ClaimsMenu(menuStorage, this).open();
         }
     }
 
@@ -79,11 +85,23 @@ public class NewYorkCityMenu extends Menu {
             index += steps;
         }
 
+        ArrayList<String> claimsLore = new ArrayList<>(Collections.singleton(""));
+
+        Status[] statusValues = Status.values();
+        List<Block> userBlocks = API.getBlocks().stream().filter(block -> block.getBuilders().contains(menuStorage.getOwner().getName())).toList();
+        for(int i = statusValues.length - 1; i >= 0; i--) {
+            int finalI = i;
+            claimsLore.add(statusValues[i] + "" + ChatColor.GRAY + ": " + ChatColor.AQUA + "" + userBlocks.stream().filter(block -> block.getStatus().getId() == statusValues[finalI].getId()).count());
+        }
+        claimsLore.add("");
+        claimsLore.add(ChatColor.YELLOW + "Click to view");
+
+        inventory.setItem(slots() - 9, Item.createPlayerHead(ChatColor.GOLD + NAME_CLAIMS, menuStorage.getOwner().getName(), claimsLore));
         inventory.setItem(slots() - 4, Item.createCustomHead("26110", NAME_SETTINGS, null));
 
         ArrayList<String> buildersLore = new ArrayList<>(Collections.singleton(""));
         for(Rank rank : Rank.values()) {
-            long count = API.getUsers().stream().filter(user -> user.getRank() != null && user.getRank().equals(rank)).count();
+            long count = API.getUsers().stream().filter(user -> user.getRank() != null && (user.isStaff() || user.countClaims() > 0) && user.getRank().equals(rank)).count();
             buildersLore.add(rank + "" + ChatColor.GRAY + ": " + ChatColor.AQUA + "" + count);
         }
 
