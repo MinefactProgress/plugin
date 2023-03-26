@@ -1,6 +1,8 @@
 package de.minefactprogress.progressplugin.menusystem.menus;
 
+import de.minefactprogress.progressplugin.api.API;
 import de.minefactprogress.progressplugin.entities.city.District;
+import de.minefactprogress.progressplugin.entities.users.Rank;
 import de.minefactprogress.progressplugin.menusystem.Menu;
 import de.minefactprogress.progressplugin.menusystem.MenuStorage;
 import de.minefactprogress.progressplugin.utils.Constants;
@@ -13,11 +15,14 @@ import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class NewYorkCityMenu extends Menu {
 
     private static final String NAME_SETTINGS = ChatColor.GOLD + "Settings";
+    private static final String NAME_STAFF_TEAM = CustomColors.BLUE.getChatColor() + "Builders";
 
     public NewYorkCityMenu(MenuStorage menuStorage, Menu previousMenu) {
         super(menuStorage, previousMenu);
@@ -41,18 +46,20 @@ public class NewYorkCityMenu extends Menu {
 
         String itemName = PlainTextComponentSerializer.plainText().serializeOrNull(item.getItemMeta().displayName());
 
+        if(itemName == null) return;
+
         if (item.getType() == Material.BOOKSHELF) {
             menuStorage.setBorough(District.getDistrictByName(PlainTextComponentSerializer.plainText().serializeOrNull(item.getItemMeta().displayName())));
             new BoroughsMenu(menuStorage, this).open();
-        } else if (item.getType() == Material.PLAYER_HEAD && itemName != null && itemName.equals(ChatColor.stripColor(NAME_SETTINGS))) {
+        } else if (item.getType() == Material.PLAYER_HEAD && itemName.equals(ChatColor.stripColor(NAME_SETTINGS))) {
             if(menuStorage.getUser() != null) {
                 new SettingsMenu(menuStorage, this).open();
             } else {
                 menuStorage.getOwner().sendMessage(Constants.PREFIX + ChatColor.RED + "You need to link your Minecraft account with the Website account to change the settings.");
                 menuStorage.getOwner().sendMessage(Constants.PREFIX + ChatColor.RED + "To do this visit " + ChatColor.YELLOW + "https://progress.minefact.de/link");
             }
-        } else if (item.getType() == Material.NETHERITE_INGOT) {
-            new UsersMenu(menuStorage, this).open();
+        } else if (item.getType() == Material.PLAYER_HEAD && itemName.equals(ChatColor.stripColor(NAME_STAFF_TEAM))) {
+            new UsersMenu(menuStorage, this, 0, 0).open();
         }
     }
 
@@ -73,6 +80,15 @@ public class NewYorkCityMenu extends Menu {
         }
 
         inventory.setItem(slots() - 4, Item.createCustomHead("26110", NAME_SETTINGS, null));
-        inventory.setItem(slots() - 1, Item.create(Material.NETHERITE_INGOT, ChatColor.YELLOW + "Builders"));
+
+        ArrayList<String> buildersLore = new ArrayList<>(Collections.singleton(""));
+        for(Rank rank : Rank.values()) {
+            long count = API.getUsers().stream().filter(user -> user.getRank() != null && user.getRank().equals(rank)).count();
+            buildersLore.add(rank + "" + ChatColor.GRAY + ": " + ChatColor.AQUA + "" + count);
+        }
+
+        buildersLore.add("");
+        buildersLore.add(ChatColor.YELLOW + "Click for more info");
+        inventory.setItem(slots() - 1, Item.createCustomHead("2669", NAME_STAFF_TEAM, buildersLore));
     }
 }

@@ -10,33 +10,34 @@ import org.bukkit.entity.Player;
 public enum Rank {
 
     @SerializedName("Owner")
-    OWNER(1, "Owner", ChatColor.DARK_RED, Permissions.PermOwner),
+    OWNER(1, "Owner", ChatColor.DARK_RED, Permissions.PermOwner, true),
     @SerializedName("Administrator")
-    ADMINISTRATOR(2, "Administrator", ChatColor.RED, Permissions.PermAdmin),
+    ADMINISTRATOR(2, "Administrator", ChatColor.RED, Permissions.PermAdmin, true),
     @SerializedName("Moderator")
-    MODERATOR(3, "Moderator", ChatColor.DARK_AQUA, Permissions.PermModerator),
+    MODERATOR(3, "Moderator", ChatColor.DARK_AQUA, Permissions.PermModerator, true),
     @SerializedName("Developer")
-    DEVELOPER(4, "Developer", ChatColor.AQUA, Permissions.PermDeveloper),
+    DEVELOPER(4, "Developer", ChatColor.AQUA, Permissions.PermDeveloper, true),
     @SerializedName("Supporter")
-    SUPPORTER(5, "Supporter", ChatColor.BLUE, Permissions.PermSupporter),
+    SUPPORTER(5, "Supporter", ChatColor.BLUE, Permissions.PermSupporter, true),
     @SerializedName("Architect")
-    ARCHITECT(6, "Architect", ChatColor.DARK_BLUE, Permissions.PermBuilder),
+    ARCHITECT(6, "Architect", ChatColor.DARK_BLUE, Permissions.PermBuilder, true),
     @SerializedName("Communication")
-    COMMUNICATION(7, "Communication", ChatColor.DARK_PURPLE, Permissions.PermYoutuber),
+    COMMUNICATION(7, "Communication", ChatColor.DARK_PURPLE, Permissions.PermYoutuber, false),
     @SerializedName("Premium")
-    PREMIUM(8, "Premium", ChatColor.GOLD, Permissions.PermPremium),
+    PREMIUM(8, "Premium", ChatColor.GOLD, Permissions.PermPremium, false),
     @SerializedName("Professional")
-    PROFESSIONAL(9, "Professional", ChatColor.GREEN, Permissions.PermProfessional),
+    PROFESSIONAL(9, "Professional", ChatColor.GREEN, Permissions.PermProfessional, false),
     @SerializedName("Advanced")
-    ADVANCED(10, "Advanced", ChatColor.GREEN, Permissions.PermAdvanced),
+    ADVANCED(10, "Advanced", ChatColor.GREEN, Permissions.PermAdvanced, false),
     @SerializedName("Player")
-    PLAYER(11, "Player", ChatColor.GREEN, "")
+    PLAYER(11, "Player", ChatColor.GREEN, "", false)
     ;
 
     private final int priority;
     private final String name;
     private final ChatColor color;
     private final String permission;
+    private final boolean isStaff;
 
     public int getPriority() {
         return priority;
@@ -48,6 +49,10 @@ public enum Rank {
 
     public ChatColor getColor() {
         return color;
+    }
+
+    public boolean isStaff() {
+        return isStaff;
     }
 
     public static Rank getByPriority(int priority) {

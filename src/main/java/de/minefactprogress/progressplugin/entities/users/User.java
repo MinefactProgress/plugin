@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import de.minefactprogress.progressplugin.Main;
 import de.minefactprogress.progressplugin.api.API;
 import de.minefactprogress.progressplugin.api.Routes;
+import de.minefactprogress.progressplugin.entities.city.Block;
 import de.minefactprogress.progressplugin.utils.Constants;
 import de.minefactprogress.progressplugin.utils.Item;
 import lombok.Getter;
@@ -32,11 +33,31 @@ public class User implements Comparable<User> {
     private ArrayList<UserSetting> settings;
 
     public ItemStack toItemStack() {
-        return Item.createPlayerHead((rank == null ? Rank.PLAYER : rank).getColor() + username, username, null);
+        ArrayList<String> lore = new ArrayList<>();
+
+        lore.add("");
+        lore.add(ChatColor.GRAY + "Rank: " + rank);
+        lore.add(ChatColor.GRAY + "Claims: " + ChatColor.AQUA + countClaims());
+
+        return Item.createPlayerHead((rank == null ? Rank.PLAYER : rank).getColor() + username, username, lore);
     }
 
     public Player getPlayer() {
         return Bukkit.getPlayer(uuid);
+    }
+
+    public boolean isStaff() {
+        return rank != null && rank.isStaff();
+    }
+
+    public int countClaims() {
+        int claims = 0;
+        for(Block block : API.getBlocks()) {
+            if(block.getBuilders().contains(this.username)) {
+                claims++;
+            }
+        }
+        return claims;
     }
 
     public boolean hasDebugPerms() {
@@ -123,7 +144,7 @@ public class User implements Comparable<User> {
         CLAIMS {
             @Override
             public int compare(User u1, User u2) {
-                return 0;
+                return u2.countClaims() - u1.countClaims();
             }
         }
     }
