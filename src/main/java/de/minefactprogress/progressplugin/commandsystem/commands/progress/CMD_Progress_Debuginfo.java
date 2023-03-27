@@ -4,6 +4,7 @@ import de.minefactprogress.progressplugin.Main;
 import de.minefactprogress.progressplugin.api.API;
 import de.minefactprogress.progressplugin.commandsystem.BaseCommand;
 import de.minefactprogress.progressplugin.commandsystem.SubCommand;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
@@ -44,5 +45,6 @@ public class CMD_Progress_Debuginfo extends SubCommand {
         sender.sendMessage(Main.getPREFIX() + "Users: " + API.getUsers().size());
         sender.sendMessage(Main.getPREFIX() + "Districts: " + API.getDistricts().size());
         sender.sendMessage(Main.getPREFIX() + "Blocks: " + API.getBlocks().size());
+        sender.sendMessage(Main.getPREFIX() + "Socket: " + (Main.getSocketManager().isConnected() ? ChatColor.GREEN + "Connected" : ChatColor.RED + "Disconnected"));
     }
 }

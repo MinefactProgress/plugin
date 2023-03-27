@@ -24,7 +24,6 @@ import org.bukkit.entity.Player;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -72,14 +71,20 @@ public class SocketManager {
         listenEvent("playerTeleport", (Object... args) -> {
                 JsonObject json = (JsonObject) JsonParser.parseString(args[0].toString());
                 if(!(json.get("user")!=null&&json.get("coordinates")!=null&&(json.get("coordinates").getAsJsonArray().size()>=2))) return;
-                double[] coords = CoordinateConversion.convertFromGeo(new Double(json.get("coordinates").getAsJsonArray().get(0).toString()),new Double(json.get("coordinates").getAsJsonArray().get(1).toString()));
-                Player player = User.getUserById(Integer.parseInt(json.get("user").toString())).getPlayer();
+                double[] coords = CoordinateConversion.convertFromGeo(json.get("coordinates").getAsJsonArray().get(0).getAsDouble(),json.get("coordinates").getAsJsonArray().get(1).getAsDouble());
+                User user = User.getUserById(Integer.parseInt(json.get("user").toString()));
+                if(user == null) return;
+                Player player = user.getPlayer();
                 Location loc = player.getWorld().getHighestBlockAt((int)coords[0],(int)coords[1]).getLocation();
                 loc.setY(loc.getY()+1);
             Bukkit.getScheduler().runTask(Main.getInstance(), () ->
                     player.teleport(loc));
             player.sendMessage(Main.getPREFIX()+"Teleported to "+ChatColor.GOLD+coords[0]+", "+coords[1]);
         });
+    }
+
+    public boolean isConnected() {
+        return socket.connected();
     }
 
     public void sendMessage(String event, Object... message) {
