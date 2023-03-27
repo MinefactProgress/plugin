@@ -48,6 +48,10 @@ public class User implements Comparable<User> {
         return Bukkit.getPlayer(uuid);
     }
 
+    public Rank getRank() {
+        return this.rank != null ? this.rank : Rank.PLAYER;
+    }
+
     public boolean isStaff() {
         return rank != null && rank.isStaff();
     }
