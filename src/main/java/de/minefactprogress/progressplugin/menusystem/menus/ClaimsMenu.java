@@ -72,7 +72,9 @@ public class ClaimsMenu extends PaginatedMenu {
 
     @Override
     public void setMenuItems() {
-
+        if(menuStorage.getClaimsUser().countClaims() == 0) {
+            inventory.setItem(22, Item.create(Material.BARRIER, ChatColor.RED + "No claims"));
+        }
     }
 
     @Override

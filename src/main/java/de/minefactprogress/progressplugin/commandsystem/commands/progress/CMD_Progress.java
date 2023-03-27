@@ -19,6 +19,7 @@ public class CMD_Progress extends BaseCommand {
         registerSubCommand(new CMD_Progress_Debuginfo(this));
         registerSubCommand(new CMD_Progress_Info(this));
         registerSubCommand(new CMD_Progress_Reload(this));
+        registerSubCommand(new CMD_Progress_User(this));
         registerSubCommand(new CMD_Progress_Verify(this));
     }
 
