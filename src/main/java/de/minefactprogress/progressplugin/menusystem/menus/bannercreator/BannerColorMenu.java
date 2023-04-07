@@ -61,7 +61,7 @@ public class BannerColorMenu extends Menu {
                 p.sendMessage(Main.getPREFIX_SERVER() + ChatColor.GRAY + "Banner created successfully");
             }
         } else if(item.getType().name().contains("DYE")) {
-            menuStorage.setPatternColor(BannerHandler.getDyeColorByName(itemName));
+            menuStorage.setPatternColor(BannerHandler.getDyeColorByName(itemName.replace(" ", "_")));
             new BannerPatternMenu(menuStorage, this).open();
         }
     }
@@ -70,7 +70,9 @@ public class BannerColorMenu extends Menu {
     public void setMenuItems() {
         for(DyeColor dyeColor : DyeColor.values()) {
             Color color = dyeColor.getColor();
-            inventory.addItem(BannerHandler.createDye(Component.text(dyeColor.name(), CustomColors.of(String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue()))), dyeColor));
+            inventory.addItem(BannerHandler.createDye(
+                    Component.text(dyeColor.name().charAt(0) + dyeColor.name().substring(1).replace("_", " ").toLowerCase(),
+                            CustomColors.of(String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue()))), dyeColor));
         }
 
         inventory.setItem(2, Item.createCustomHead("9382", resetName, null));

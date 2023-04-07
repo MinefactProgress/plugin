@@ -3,6 +3,7 @@ package de.minefactprogress.progressplugin.menusystem.menus.bannercreator;
 import de.minefactprogress.progressplugin.components.BannerHandler;
 import de.minefactprogress.progressplugin.menusystem.Menu;
 import de.minefactprogress.progressplugin.menusystem.MenuStorage;
+import de.minefactprogress.progressplugin.utils.CustomColors;
 import de.minefactprogress.progressplugin.utils.Item;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -49,7 +50,8 @@ public class BannerBaseMenu extends Menu {
     @Override
     public void setMenuItems() {
         for(DyeColor color : DyeColor.values()) {
-            inventory.addItem(BannerHandler.createBanner(null, color, new ArrayList<>()));
+            inventory.addItem(BannerHandler.createBanner(Component.text(color.name().charAt(0) + color.name().substring(1).replace("_", " ").toLowerCase() + " Banner",
+                    CustomColors.of(String.format("#%02x%02x%02x", color.getColor().getRed(), color.getColor().getGreen(), color.getColor().getBlue()))), color, new ArrayList<>()));
         }
     }
 }
