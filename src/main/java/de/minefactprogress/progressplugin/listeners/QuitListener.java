@@ -27,7 +27,7 @@ public class QuitListener implements Listener {
                 playerJson.addProperty("username", p.getName());
                 playerJson.addProperty("uuid", p.getUniqueId().toString());
                 playerJson.addProperty("rank", Rank.getByPermission(p).getName());
-                Main.getSocketManager().sendMessage("playerLeave", playerJson);
+                Main.getSocketManager().sendMessage("nyc_server_player_quit", playerJson);
             });
         }
 

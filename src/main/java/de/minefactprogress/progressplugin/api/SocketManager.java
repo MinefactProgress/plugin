@@ -44,10 +44,6 @@ public class SocketManager {
             return;
         }
 
-        // Join socket rooms
-        joinRoom("nyc_server");
-        joinRoom("block_updates");
-
         // Listen to events
         listenEvent("block_updates", (Object... args) -> {
             for(Object obj : args) {
@@ -125,7 +121,7 @@ public class SocketManager {
 
                 jsonArray.add(json);
             }
-            sendMessage("players", jsonArray);
+            sendMessage("nyc_server_player_info", jsonArray);
         }, 0L, 20L * INTERVAL);
     }
 

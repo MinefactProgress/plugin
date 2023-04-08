@@ -59,7 +59,7 @@ public class NewYorkCityMenu extends Menu {
                 new SettingsMenu(menuStorage, this).open();
             } else {
                 menuStorage.getOwner().sendMessage(Constants.PREFIX + ChatColor.RED + "You need to link your Minecraft account with the Website account to change the settings.");
-                menuStorage.getOwner().sendMessage(Constants.PREFIX + ChatColor.RED + "To do this visit " + ChatColor.YELLOW + "https://progress.minefact.de/link");
+                menuStorage.getOwner().sendMessage(Constants.PREFIX + ChatColor.RED + "To do this visit " + ChatColor.YELLOW + "https://progress.minefact.de/account");
             }
         } else if (item.getType() == Material.PLAYER_HEAD && itemName.equals(ChatColor.stripColor(NAME_STAFF_TEAM))) {
             new UsersMenu(menuStorage, this, 0, 0).open();

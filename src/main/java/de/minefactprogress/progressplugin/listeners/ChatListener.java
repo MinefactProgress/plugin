@@ -14,16 +14,18 @@ public class ChatListener implements Listener {
     @EventHandler
     public void onAsyncChat(AsyncChatEvent event) {
         Player p = event.getPlayer();
+        User user = User.getUserByUUID(p.getUniqueId());
         String msg = PlainTextComponentSerializer.plainText().serialize(event.message());
 
-        // Send chat socket
+        if(user == null) return;
 
-        if(User.getUserByUUID(p.getUniqueId()).getSetting(SettingType.MINECRAFT_MAP_VISIBLE).equals("true")) {
+        // Send chat socket
+        if(user.getSetting(SettingType.MINECRAFT_MAP_VISIBLE).equals("true")) {
             JsonObject joinObj = new JsonObject();
             joinObj.addProperty("username", p.getName());
             joinObj.addProperty("uuid", p.getUniqueId().toString());
             joinObj.addProperty("message", msg);
-            Main.getSocketManager().sendMessage("chat", joinObj);
+            Main.getSocketManager().sendMessage("nyc_server_player_chat", joinObj);
         }
     }
 }

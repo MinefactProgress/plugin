@@ -107,44 +107,56 @@ public class Block {
     }
 
     public void setProgress(double progress, Player p) {
+        User user = User.getUserByUUID(p.getUniqueId());
+        if(user == null) {
+            p.sendMessage(Main.getPREFIX() + ChatColor.RED + "You need to link your website account in order " +
+                    "to update blocks. To do this type " + ChatColor.YELLOW + "/progress verify");
+            return;
+        }
         p.sendMessage(Constants.PREFIX + ChatColor.GRAY + "Updating block...");
         Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
             JsonObject json = new JsonObject();
             json.addProperty("progress", progress);
+            json.addProperty("editor", user.getUid());
 
             API.PUT(Routes.BLOCKS + "/" + uid, json, res -> {
                 this.progress = progress;
                 p.sendMessage(Constants.PREFIX + ChatColor.GRAY + "Successfully set progress of "
                         + ChatColor.YELLOW + getDistrict().getName() + " #" + id + ChatColor.GRAY
                         + " to " + ProgressUtils.progressToColor(progress) + progress + "%");
-                User user = User.getUserByName(p.getName());
-                if(user != null) {
-                    MessageHandler.sendToAllPlayers(ChatColor.YELLOW + this.toString() + ChatColor.GRAY + " updated by " + user);
-                }
             }, p);
         });
     }
 
     public void setDetails(boolean details, Player p) {
+        User user = User.getUserByUUID(p.getUniqueId());
+        if(user == null) {
+            p.sendMessage(Main.getPREFIX() + ChatColor.RED + "You need to link your website account in order " +
+                    "to update blocks. To do this type " + ChatColor.YELLOW + "/progress verify");
+            return;
+        }
         p.sendMessage(Constants.PREFIX + ChatColor.GRAY + "Updating block...");
         Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
             JsonObject json = new JsonObject();
             json.addProperty("details", details);
+            json.addProperty("editor", user.getUid());
 
             API.PUT(Routes.BLOCKS + "/" + uid, json, res -> {
                 this.details = details;
                 p.sendMessage(Constants.PREFIX + ChatColor.GRAY + "Successfully set details of "
                         + ChatColor.YELLOW + getDistrict().getName() + " #" + id + ChatColor.GRAY
                         + " to " + (details ? ChatColor.GREEN + "true" : ChatColor.RED + "false"));
-                User user = User.getUserByName(p.getName());
-                if(user != null) {
-                    MessageHandler.sendToAllPlayers(ChatColor.YELLOW + this.toString() + ChatColor.GRAY + " updated by " + user);
-                }
             }, p);
         });
     }
 
     public void setBuilder(String name, Player p, boolean add) {
+        User editor = User.getUserByUUID(p.getUniqueId());
+        if(editor == null) {
+            p.sendMessage(Main.getPREFIX() + ChatColor.RED + "You need to link your website account in order " +
+                    "to update blocks. To do this type " + ChatColor.YELLOW + "/progress verify");
+            return;
+        }
         if(add && builders.contains(name)) {
             p.sendMessage(Constants.PREFIX + ChatColor.RED + "This builder has already claimed this block");
             return;
@@ -169,10 +181,6 @@ public class Block {
                 p.sendMessage(Constants.PREFIX + ChatColor.GRAY + "Successfully " + (add ? "added " : "removed ")
                         + (user != null ? user.getRank().getColor() : Rank.PLAYER.getColor()) + name + ChatColor.GRAY
                         + " as a builder of " + ChatColor.YELLOW + getDistrict().getName() + " #" + id + ChatColor.GRAY);
-                User editor = User.getUserByName(p.getName());
-                if(editor != null) {
-                    MessageHandler.sendToAllPlayers(ChatColor.YELLOW + this.toString() + ChatColor.GRAY + " updated by " + editor);
-                }
             }, p);
         });
     }
