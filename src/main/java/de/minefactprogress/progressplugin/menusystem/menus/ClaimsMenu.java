@@ -31,6 +31,9 @@ public class ClaimsMenu extends PaginatedMenu {
 
     @Override
     public Component menuName() {
+        if (menuStorage.getClaimsUser() == null) {
+            return Component.text("Claims", CustomColors.BLUE.getComponentColor());
+        }
         return Component.text("Claims by " + menuStorage.getClaimsUser().getRank().getColor() + menuStorage.getClaimsUser().getUsername(), CustomColors.BLUE.getComponentColor());
     }
 

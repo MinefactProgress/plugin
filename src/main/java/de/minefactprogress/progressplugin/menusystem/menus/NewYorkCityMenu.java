@@ -64,8 +64,13 @@ public class NewYorkCityMenu extends Menu {
         } else if (item.getType() == Material.PLAYER_HEAD && itemName.equals(ChatColor.stripColor(NAME_STAFF_TEAM))) {
             new UsersMenu(menuStorage, this, 0, 0).open();
         } else if (item.getType() == Material.PLAYER_HEAD && itemName.equals(ChatColor.stripColor(NAME_CLAIMS))) {
-            menuStorage.setClaimsUser(menuStorage.getUser());
-            new ClaimsMenu(menuStorage, this).open();
+            if (menuStorage.getUser() != null) {
+                menuStorage.setClaimsUser(menuStorage.getUser());
+                new ClaimsMenu(menuStorage, this).open();
+            } else {
+                menuStorage.getOwner().sendMessage(Constants.PREFIX + ChatColor.RED + "You need to link your Minecraft account with the Website account to view your claims.");
+                menuStorage.getOwner().sendMessage(Constants.PREFIX + ChatColor.RED + "To do this visit " + ChatColor.YELLOW + "https://progress.minefact.de/account");
+            }
         }
     }
 
