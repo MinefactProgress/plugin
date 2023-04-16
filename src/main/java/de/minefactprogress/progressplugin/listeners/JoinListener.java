@@ -71,7 +71,7 @@ public class JoinListener implements Listener {
             }
             if(!user.getRank().equals(rank)) {
                 // Rank changed
-                Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
+                /* Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
                     user.setRank(rank);
 
                     JsonObject json = new JsonObject();
@@ -80,7 +80,7 @@ public class JoinListener implements Listener {
                     API.PUT(Routes.USERS + "/" + user.getUid(), json,res -> {
                         Logger.info("Rank of " + p.getName() + " successfully changed to " + rank.getName());
                     }, p);
-                });
+                });*/
             }
         } else {
             if(Permissions.isTeamMember(p)) {
