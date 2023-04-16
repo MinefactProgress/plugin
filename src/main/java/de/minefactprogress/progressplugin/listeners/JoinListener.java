@@ -10,6 +10,7 @@ import de.minefactprogress.progressplugin.entities.users.User;
 import de.minefactprogress.progressplugin.utils.CustomColors;
 import de.minefactprogress.progressplugin.utils.Item;
 import de.minefactprogress.progressplugin.utils.Logger;
+import de.minefactprogress.progressplugin.utils.Permissions;
 import lombok.SneakyThrows;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -56,7 +57,7 @@ public class JoinListener implements Listener {
         if(user != null) {
             if(!user.getUsername().equals(p.getName())) {
                 // Name changed
-                Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
+                /*Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
                     String oldName = user.getUsername();
                     user.setUsername(p.getName());
 
@@ -66,7 +67,7 @@ public class JoinListener implements Listener {
                     API.PUT(Routes.USERS + "/" + user.getUid(), json, res -> {
                         Logger.info("Username of " + oldName + " successfully changed to " + p.getName());
                     }, p);
-                });
+                });*/
             }
             if(!user.getRank().equals(rank)) {
                 // Rank changed
@@ -76,10 +77,14 @@ public class JoinListener implements Listener {
                     JsonObject json = new JsonObject();
                     json.addProperty("rank", rank.getName());
 
-                    // TODO: enable route when plugin is done
-//                    API.PUT(Routes.USERS + "/" + user.getUid(), json);
-                    Logger.info("Rank of " + p.getName() + " successfully changed to " + rank.getName());
+                    API.PUT(Routes.USERS + "/" + user.getUid(), json,res -> {
+                        Logger.info("Rank of " + p.getName() + " successfully changed to " + rank.getName());
+                    }, p);
                 });
+            }
+        } else {
+            if(Permissions.isTeamMember(p)) {
+                p.sendMessage(Main.getPREFIX()+"Please link your account to your website account! https://progress.minefact.de/account");
             }
         }
     }
