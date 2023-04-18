@@ -185,6 +185,10 @@ public class Block {
         });
     }
 
+    public static Block getBlockById(int id) {
+        return API.getBlocks().stream().filter(b -> b.uid == id).findFirst().orElse(null);
+    }
+
     public static Block getBlock(District district, int id) {
         return API.getBlocks().stream().filter(b -> b.districtId == district.getId() && b.id == id).findFirst().orElse(null);
     }

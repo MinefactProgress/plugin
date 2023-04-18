@@ -93,6 +93,9 @@ public abstract class BaseCommand implements TabExecutor, ICommand {
                 .findFirst()
                 .orElse(null);
         if(subCommand == null && args.length <= 1) {
+            if(getTabCompletion(sender) == null) {
+                return new ArrayList<>();
+            }
             return getTabCompletion(sender).stream().filter(str -> str.toLowerCase().startsWith(args[args.length-1].toLowerCase())).sorted().toList();
         }
         for(int i = 0; i < args.length; i++) {

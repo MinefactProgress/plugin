@@ -7,6 +7,7 @@ import de.minefactprogress.progressplugin.api.API;
 import de.minefactprogress.progressplugin.api.Routes;
 import de.minefactprogress.progressplugin.entities.city.Block;
 import de.minefactprogress.progressplugin.utils.Constants;
+import de.minefactprogress.progressplugin.utils.CustomColors;
 import de.minefactprogress.progressplugin.utils.Item;
 import lombok.Getter;
 import lombok.Setter;
@@ -36,10 +37,15 @@ public class User implements Comparable<User> {
         ArrayList<String> lore = new ArrayList<>();
 
         lore.add("");
+        lore.add(ChatColor.GRAY + "Status: " + (!isOnline() ? ChatColor.RED + "Offline" : ChatColor.GREEN + "Online"));
         lore.add(ChatColor.GRAY + "Rank: " + rank);
         lore.add(ChatColor.GRAY + "Claims: " + ChatColor.AQUA + countClaims());
         lore.add("");
         lore.add(ChatColor.YELLOW + "Click to view claims");
+
+        if(isOnline()) {
+            lore.add(CustomColors.YELLOW.getChatColor() + "Right-Click to teleport to player");
+        }
 
         return Item.createPlayerHead((rank == null ? Rank.PLAYER : rank).getColor() + username, username, lore);
     }
@@ -54,6 +60,10 @@ public class User implements Comparable<User> {
 
     public boolean isStaff() {
         return rank != null && rank.isStaff();
+    }
+
+    public boolean isOnline() {
+        return Bukkit.getPlayer(username) != null;
     }
 
     public int countClaims() {
