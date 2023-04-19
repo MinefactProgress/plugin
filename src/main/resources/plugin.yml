@@ -10,8 +10,9 @@ commands:
     usage: <show|hide|toggle|info>
   progress:
     usage: /progress
-  banner:
+  bannercreator:
     usage: /banner
+    aliases: [bc]
   noclip:
     usage: /noclip
     aliases: [nc]

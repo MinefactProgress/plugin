@@ -15,7 +15,7 @@ public class CMD_Banner extends BaseCommand {
 
     @Override
     public String[] getNames() {
-        return new String[] { "banner" };
+        return new String[] { "bannercreator" };
     }
 
     @Override
