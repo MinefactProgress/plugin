@@ -82,6 +82,9 @@ public class JoinListener implements Listener {
                     }, p);
                 });*/
             }
+            if(Permissions.isTeamMember(p)) {
+                p.sendMessage(Main.getPREFIX()+"Logged in as "+user.getUsername());
+            }
         } else {
             if(Permissions.isTeamMember(p)) {
                 p.sendMessage(Main.getPREFIX()+"Please link your account to your website account! https://progress.minefact.de/account");
