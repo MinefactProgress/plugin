@@ -3,6 +3,7 @@ package de.minefactprogress.progressplugin.components;
 import de.minefactprogress.progressplugin.Main;
 import de.minefactprogress.progressplugin.api.API;
 import de.minefactprogress.progressplugin.entities.city.District;
+import de.minefactprogress.progressplugin.utils.LocationUtils;
 import de.minefactprogress.progressplugin.utils.MathUtils;
 import de.minefactprogress.progressplugin.utils.Utils;
 import de.minefactprogress.progressplugin.utils.conversion.CoordinateConversion;
@@ -64,17 +65,7 @@ public class DistrictBossbar {
 
     public District getCurrentDistrict(Player player) {
         if(bars.containsKey(player.getUniqueId())) {
-            HashMap<Integer, ArrayList<Point2D.Double>> areas = convertToAreas(API.getDistricts());
-
-            double x = player.getLocation().getX();
-            double y = player.getLocation().getZ();
-            double[] playerPos = CoordinateConversion.convertToGeo(x,y);
-            for(int i = areas.size(); i >= 1;i--) {
-                if(areas.get(i).isEmpty()) continue;
-                if(Utils.inside(new Point2D.Double(playerPos[0],playerPos[1]),areas.get(i))) {
-                    return District.getDistrictById(i);
-                }
-            }
+            return LocationUtils.getCurrentDistrict(player.getLocation());
         }
         return null;
     }

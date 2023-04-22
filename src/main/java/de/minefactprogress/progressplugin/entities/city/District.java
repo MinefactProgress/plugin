@@ -6,7 +6,6 @@ import de.minefactprogress.progressplugin.utils.*;
 import de.minefactprogress.progressplugin.utils.conversion.CoordinateConversion;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
@@ -21,7 +20,6 @@ import java.util.stream.Collectors;
 
 @Getter
 @Setter
-@ToString
 public class District implements Comparable<District> {
 
     private int id;
@@ -118,6 +116,11 @@ public class District implements Comparable<District> {
             }
         }
         return districts;
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 
     @Override

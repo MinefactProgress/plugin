@@ -7,7 +7,13 @@ import de.minefactprogress.progressplugin.entities.city.Block;
 import de.minefactprogress.progressplugin.entities.city.District;
 import de.minefactprogress.progressplugin.menusystem.menus.BlocksMenu;
 import de.minefactprogress.progressplugin.menusystem.menus.EditBlockMenu;
+import de.minefactprogress.progressplugin.utils.LocationUtils;
+import de.minefactprogress.progressplugin.utils.Permissions;
 import de.minefactprogress.progressplugin.utils.ProgressUtils;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -54,8 +60,28 @@ public class CMD_Progress_Info extends SubCommand {
             return;
         }
 
-        if(args.length == 0 || args.length > 2) {
-            p.sendMessage(Main.getPREFIX() + ChatColor.RED + "Wrong usage: /progress info <District> [<Block>]");
+        if(args.length > 2) {
+            p.sendMessage(Main.getPREFIX() + ChatColor.RED + "Wrong usage: /progress info [<District>] [<Block>]");
+            return;
+        }
+
+        if(args.length == 0) {
+            Block currentBlock = LocationUtils.getCurrentBlock(p.getLocation());
+            if (currentBlock != null) {
+                TextComponent message = Component.text(Main.getPREFIX() + "You are currently in " + ChatColor.YELLOW + currentBlock + " ");
+                TextComponent click = Component.text(ChatColor.GREEN + "[Open]")
+                        .hoverEvent(HoverEvent.showText(
+                                Component.text(ChatColor.GRAY + "View " + (Permissions.isTeamMember(p) ? "block" : "district") + " details"))
+                        )
+                        .clickEvent(ClickEvent.runCommand(
+                                "/progress info " + currentBlock.getDistrict().getName().replace(" ", "")
+                                        + (Permissions.isTeamMember(p) ? " " + currentBlock.getId() : "")
+                        ));
+
+                p.sendMessage(message.append(click));
+            } else {
+                p.sendMessage(Main.getPREFIX() + ChatColor.RED + "No block was found for your current location");
+            }
             return;
         }
 

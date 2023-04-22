@@ -9,7 +9,6 @@ import de.minefactprogress.progressplugin.entities.users.SettingType;
 import de.minefactprogress.progressplugin.entities.users.User;
 import de.minefactprogress.progressplugin.utils.Constants;
 import de.minefactprogress.progressplugin.utils.Logger;
-import de.minefactprogress.progressplugin.utils.conversion.CoordinateConversion;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -161,6 +160,10 @@ public class API {
                         return json.get("id").getAsInt();
                     }
                     return jsonElement.getAsInt();
+                })
+                .registerTypeAdapter(Point2D.Double.class, (JsonDeserializer<Point2D.Double>) (jsonElement, type, jsonDeserializationContext) -> {
+                    JsonArray array = jsonElement.getAsJsonArray();
+                    return new Point2D.Double(array.get(0).getAsDouble(), array.get(1).getAsDouble());
                 })
                 .create();
         JsonObject res = GET(Routes.BLOCKS);

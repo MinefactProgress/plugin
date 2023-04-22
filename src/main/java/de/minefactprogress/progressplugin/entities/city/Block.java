@@ -19,11 +19,11 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.awt.geom.Point2D;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Getter
@@ -41,7 +41,7 @@ public class Block {
     private Date completionDate;
     @SerializedName("center")
     private double[] latlon;
-    private ArrayList<double[]> area;
+    private ArrayList<Point2D.Double> area;
     private transient Location center = null;
 
     public District getDistrict() {
