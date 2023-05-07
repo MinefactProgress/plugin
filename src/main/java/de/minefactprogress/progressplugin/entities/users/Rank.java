@@ -75,7 +75,7 @@ public enum Rank {
 
     public static Rank getByPermission(Player p) {
         for(Rank rank : Rank.values()) {
-            if(p.hasPermission(rank.permission)) {
+            if(Permissions.hasPermission(p, rank.permission)) {
                 return rank;
             }
         }
