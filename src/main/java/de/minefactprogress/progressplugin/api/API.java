@@ -36,7 +36,7 @@ import java.util.function.Consumer;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class API {
 
-    private static final int TIMEOUT = 10;
+    private static final int TIMEOUT = 20;
 
     private static final HttpClient client = HttpClient.newBuilder().build();
     @Getter

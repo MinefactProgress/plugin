@@ -13,10 +13,10 @@ public enum Rank {
     OWNER(1, "Owner", ChatColor.DARK_RED, Permissions.PermOwner, true),
     @SerializedName("Administrator")
     ADMINISTRATOR(2, "Administrator", ChatColor.RED, Permissions.PermAdmin, true),
-    @SerializedName("Moderator")
-    MODERATOR(3, "Moderator", ChatColor.DARK_AQUA, Permissions.PermModerator, true),
     @SerializedName("Developer")
-    DEVELOPER(4, "Developer", ChatColor.AQUA, Permissions.PermDeveloper, true),
+    DEVELOPER(3, "Developer", ChatColor.AQUA, Permissions.PermDeveloper, true),
+    @SerializedName("Moderator")
+    MODERATOR(4, "Moderator", ChatColor.DARK_AQUA, Permissions.PermModerator, true),
     @SerializedName("Supporter")
     SUPPORTER(5, "Supporter", ChatColor.BLUE, Permissions.PermSupporter, true),
     @SerializedName("Architect")
