@@ -4,11 +4,13 @@ import de.minefactprogress.progressplugin.api.API;
 import de.minefactprogress.progressplugin.api.SocketManager;
 import de.minefactprogress.progressplugin.commandsystem.CommandManager;
 import de.minefactprogress.progressplugin.commandsystem.commands.DistrictCommand;
+import de.minefactprogress.progressplugin.components.ConfigManager;
 import de.minefactprogress.progressplugin.components.DistrictBossbar;
 import de.minefactprogress.progressplugin.components.LocationEditor;
 import de.minefactprogress.progressplugin.entities.users.User;
 import de.minefactprogress.progressplugin.listeners.*;
 import de.minefactprogress.progressplugin.menusystem.MenuStorage;
+import de.minefactprogress.progressplugin.utils.Config;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -36,6 +38,9 @@ public final class Main extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
+
+        ConfigManager.setStandard();
+
         registerListeners();
         registerCommands();
 
@@ -87,5 +92,9 @@ public final class Main extends JavaPlugin {
             menuStorages.put(p, new MenuStorage(p, User.getUserByUUID(p.getUniqueId())));
         }
         return menuStorages.get(p);
+    }
+
+    public boolean isProductionMode() {
+        return Config.getBoolean("config", "productionMode");
     }
 }

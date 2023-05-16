@@ -7,10 +7,7 @@ import de.minefactprogress.progressplugin.api.Routes;
 import de.minefactprogress.progressplugin.entities.users.Rank;
 import de.minefactprogress.progressplugin.entities.users.SettingType;
 import de.minefactprogress.progressplugin.entities.users.User;
-import de.minefactprogress.progressplugin.utils.CustomColors;
-import de.minefactprogress.progressplugin.utils.Item;
-import de.minefactprogress.progressplugin.utils.Logger;
-import de.minefactprogress.progressplugin.utils.Permissions;
+import de.minefactprogress.progressplugin.utils.*;
 import lombok.SneakyThrows;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -37,7 +34,7 @@ public class JoinListener implements Listener {
         p.getInventory().setItem(4, new Item(Material.EMERALD).setDisplayName(CustomColors.BLUE.getChatColor() + "Progress").setLore(progressLore).build());
 
         // Send socket message
-        if(user == null || user.getSetting(SettingType.MINECRAFT_MAP_VISIBLE).equals("true")) {
+        if(Main.getInstance().isProductionMode() && (user == null || user.getSetting(SettingType.MINECRAFT_MAP_VISIBLE).equals("true"))) {
             Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
                 JsonObject playerJson = new JsonObject();
                 playerJson.addProperty("username", p.getName());
@@ -55,8 +52,9 @@ public class JoinListener implements Listener {
         }
 
         if(user != null) {
-            if(!user.getUsername().equals(p.getName())) {
-                // Name changed
+            if(Main.getInstance().isProductionMode()) {
+                if(!user.getUsername().equals(p.getName())) {
+                    // Name changed
                 /*Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
                     String oldName = user.getUsername();
                     user.setUsername(p.getName());
@@ -68,19 +66,20 @@ public class JoinListener implements Listener {
                         Logger.info("Username of " + oldName + " successfully changed to " + p.getName());
                     }, p);
                 });*/
-            }
-            if(!user.getRank().equals(rank)) {
-                // Rank changed
-                Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
-                    user.setRank(rank);
+                }
+                if(!user.getRank().equals(rank)) {
+                    // Rank changed
+                    Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
+                        user.setRank(rank);
 
-                    JsonObject json = new JsonObject();
-                    json.addProperty("rank", rank.getName());
+                        JsonObject json = new JsonObject();
+                        json.addProperty("rank", rank.getName());
 
-                    API.PUT(Routes.USERS + "/" + user.getUid(), json,res -> {
-                        Logger.info("Rank of " + p.getName() + " successfully changed to " + rank.getName());
-                    }, p);
-                });
+                        API.PUT(Routes.USERS + "/" + user.getUid(), json,res -> {
+                            Logger.info("Rank of " + p.getName() + " successfully changed to " + rank.getName());
+                        }, p);
+                    });
+                }
             }
             if(Permissions.isTeamMember(p)) {
                 p.sendMessage(Main.getPREFIX()+"Logged in as "+user.getUsername());

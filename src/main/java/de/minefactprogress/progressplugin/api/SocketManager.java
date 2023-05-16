@@ -101,28 +101,30 @@ public class SocketManager {
     }
 
     public void startSchedulers() {
-        Bukkit.getScheduler().runTaskTimerAsynchronously(Main.getInstance(), () -> {
-            if(Bukkit.getOnlinePlayers().isEmpty()) return;
+        if(Main.getInstance().isProductionMode()) {
+            Bukkit.getScheduler().runTaskTimerAsynchronously(Main.getInstance(), () -> {
+                if(Bukkit.getOnlinePlayers().isEmpty()) return;
 
-            JsonArray jsonArray = new JsonArray();
-            for(Player p : Bukkit.getOnlinePlayers()) {
-                User user = User.getUserByUUID(p.getUniqueId());
+                JsonArray jsonArray = new JsonArray();
+                for(Player p : Bukkit.getOnlinePlayers()) {
+                    User user = User.getUserByUUID(p.getUniqueId());
 
-                if(user != null && user.getSetting(SettingType.MINECRAFT_MAP_VISIBLE).equals("false")) continue;
+                    if(user != null && user.getSetting(SettingType.MINECRAFT_MAP_VISIBLE).equals("false")) continue;
 
-                JsonObject json = new JsonObject();
-                json.addProperty("username", p.getName());
-                json.addProperty("uuid", p.getUniqueId().toString());
-                json.addProperty("rank", Rank.getByPermission(p).getName());
-                json.addProperty("location", Reflections.convertLocationToString(p.getLocation(), false, false));
-                json.addProperty("latlon", Arrays.stream(CoordinateConversion.convertToGeo(p.getLocation().getX(), p.getLocation().getZ()))
-                        .mapToObj(String::valueOf)
-                        .collect(Collectors.joining(",")));
+                    JsonObject json = new JsonObject();
+                    json.addProperty("username", p.getName());
+                    json.addProperty("uuid", p.getUniqueId().toString());
+                    json.addProperty("rank", Rank.getByPermission(p).getName());
+                    json.addProperty("location", Reflections.convertLocationToString(p.getLocation(), false, false));
+                    json.addProperty("latlon", Arrays.stream(CoordinateConversion.convertToGeo(p.getLocation().getX(), p.getLocation().getZ()))
+                            .mapToObj(String::valueOf)
+                            .collect(Collectors.joining(",")));
 
-                jsonArray.add(json);
-            }
-            sendMessage("nyc_server_player_info", jsonArray);
-        }, 0L, 20L * INTERVAL);
+                    jsonArray.add(json);
+                }
+                sendMessage("nyc_server_player_info", jsonArray);
+            }, 0L, 20L * INTERVAL);
+        }
     }
 
     public void disconnect() {
