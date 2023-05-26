@@ -29,6 +29,7 @@ import de.minefactprogress.progressplugin.commandsystem.commands.bannercreator.C
 import de.minefactprogress.progressplugin.commandsystem.commands.locationeditor.CMD_LocationEditor;
 import de.minefactprogress.progressplugin.commandsystem.commands.noclip.CMD_NoClip;
 import de.minefactprogress.progressplugin.commandsystem.commands.progress.CMD_Progress;
+import de.minefactprogress.progressplugin.commandsystem.commands.worldedit.CMD_Side;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -43,6 +44,7 @@ public class CommandManager {
         add(new CMD_Banner());
         add(new CMD_NoClip());
         add(new CMD_LocationEditor());
+        add(new CMD_Side());
     }};
 
     public void init() {

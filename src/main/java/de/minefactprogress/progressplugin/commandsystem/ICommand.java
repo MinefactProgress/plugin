@@ -27,6 +27,7 @@ package de.minefactprogress.progressplugin.commandsystem;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ICommand {
     /**
@@ -55,5 +56,5 @@ public interface ICommand {
      * Lists all relevant commands to the player
      * @param sender player or console
      */
-    void sendInfo(CommandSender sender);
+    void sendInfo(CommandSender sender, String usage, Map<String, String> arguments);
 }

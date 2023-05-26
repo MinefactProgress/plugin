@@ -38,6 +38,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public abstract class BaseCommand implements TabExecutor, ICommand {
     private final List<SubCommand> subCommands = new ArrayList<>();
@@ -74,7 +75,7 @@ public abstract class BaseCommand implements TabExecutor, ICommand {
             }
 
             if (subCommand == null) {
-                sendInfo(sender);
+                sendInfo(sender, null, null);
             } else {
                 if (subCommand.isStaffOnly() && sender instanceof Player p && !Permissions.isTeamMember(p)) {
                     sender.sendMessage(Main.getPREFIX() + ChatColor.RED + "You don't have permission to execute this command!");
@@ -137,9 +138,30 @@ public abstract class BaseCommand implements TabExecutor, ICommand {
         subCommands.add(subCommand);
     }
 
+    protected String getPrefix() {
+        return Constants.PREFIX;
+    }
+
     @Override
-    public void sendInfo(CommandSender sender) {
-        // TODO
-        sender.sendMessage(Constants.PREFIX + getDescription());
+    public void sendInfo(CommandSender sender, String usage, Map<String, String> arguments) {
+        StringBuilder line = new StringBuilder();
+
+        int lineSegmentsPerSide = (66 - (11 + getPrefix().length() + getNames()[0].length())) / 2;
+
+        line.append("-".repeat(Math.max(0, lineSegmentsPerSide)));
+        line.append(ChatColor.YELLOW).append(" Help for /").append(getNames()[0]).append(" ").append(ChatColor.YELLOW).append(ChatColor.STRIKETHROUGH);
+        line.append("-".repeat(Math.max(0, lineSegmentsPerSide)));
+
+        sender.sendMessage(getPrefix() + ChatColor.YELLOW + ChatColor.STRIKETHROUGH + line);
+        sender.sendMessage(ChatColor.GRAY + getDescription());
+        if (usage != null) {
+            sender.sendMessage(ChatColor.GRAY + "Usage: " + ChatColor.GOLD + usage);
+        }
+        if (arguments != null) {
+            sender.sendMessage(ChatColor.GRAY + "Arguments: ");
+            for (Map.Entry<String, String> entry : arguments.entrySet()) {
+                sender.sendMessage("  " + ChatColor.GOLD + entry.getKey() + ChatColor.YELLOW + ": " + entry.getValue());
+            }
+        }
     }
 }

@@ -13,6 +13,11 @@ public class Constants {
 
     // Prefixes
     public static final String PREFIX = "§7[§bProgress§7] §r";
+    public static final String PREFIX_WORLDEDIT = "§8(§b§lFAWEUtils§8) §r";
     public static final String PREFIX_DEBUG = "§7[§4Progress§7] §c";
     public static final String PREFIX_SERVER = ChatColor.GOLD + "Server >> " + ChatColor.RESET;
+
+    // Messages
+    public static final String NO_PERMISSION = ChatColor.RED + "You don't have permission to execute this command!";
+    public static final String NO_PLAYER = ChatColor.RED + "You have to be a player to execute this command!";
 }

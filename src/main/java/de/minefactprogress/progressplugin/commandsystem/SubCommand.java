@@ -29,6 +29,7 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public abstract class SubCommand implements ICommand {
 
@@ -92,7 +93,7 @@ public abstract class SubCommand implements ICommand {
     }
 
     @Override
-    public void sendInfo(CommandSender sender) {
+    public void sendInfo(CommandSender sender, String usage, Map<String, String> arguments) {
         // TODO
         sender.sendMessage("TODO");
     }

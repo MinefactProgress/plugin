@@ -133,6 +133,18 @@
 
     </repositories>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.intellectualsites.bom</groupId>
+                <artifactId>bom-1.18.x</artifactId>
+                <version>1.27</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
         <dependency>
             <groupId>io.papermc.paper</groupId>
@@ -164,11 +176,15 @@
             <version>1.5.3-SNAPSHOT</version>
         </dependency>
 
-        <!-- FAWE Bukkit API
+        <!-- FAWE Bukkit API -->
+        <dependency>
+            <groupId>com.fastasyncworldedit</groupId>
+            <artifactId>FastAsyncWorldEdit-Core</artifactId>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>com.fastasyncworldedit</groupId>
             <artifactId>FastAsyncWorldEdit-Bukkit</artifactId>
-            <version>2.0.1</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -176,7 +192,7 @@
                     <groupId>*</groupId>
                 </exclusion>
             </exclusions>
-        </dependency> -->
+        </dependency>
 
         <!-- Custom Heads !-->
         <dependency>

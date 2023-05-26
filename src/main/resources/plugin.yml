@@ -18,3 +18,5 @@ commands:
   locationeditor:
     usage: /locationeditor
     aliases: [le]
+  /side:
+    usage: //side
