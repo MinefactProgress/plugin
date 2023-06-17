@@ -88,6 +88,7 @@ public final class Main extends JavaPlugin {
     }
 
     public MenuStorage getMenuStorage(Player p) {
+        // TODO: if loaded before users are loaded from api, user is null and never updated again
         if (!menuStorages.containsKey(p)) {
             menuStorages.put(p, new MenuStorage(p, User.getUserByUUID(p.getUniqueId())));
         }

@@ -9,4 +9,5 @@ public class Routes {
     public static final String DISTRICTS = "/districts";
     public static final String BLOCKS = "/blocks";
     public static final String USERS = "/users";
+    public static final String BANNERS = "/banners";
 }

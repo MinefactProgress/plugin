@@ -24,6 +24,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 public class EditBlockMenu extends Menu {
 
@@ -73,21 +74,21 @@ public class EditBlockMenu extends Menu {
             case SMITHING_TABLE:
                 // Progress
                 new AnvilGUI.Builder()
-                        .onComplete((player, text) -> {
+                        .onClick((slot, state) -> {
                             try {
-                                double progress = Double.parseDouble(text);
+                                double progress = Double.parseDouble(state.getText());
 
                                 if(progress > 100 || progress < 0) {
                                     p.sendMessage(Main.getPREFIX() + ChatColor.RED + "The progress must be between 0 and 100");
-                                    return AnvilGUI.Response.text(block.getProgress() + "");
+                                    return Collections.singletonList(AnvilGUI.ResponseAction.replaceInputText(String.valueOf(block.getProgress())));
                                 }
 
                                 block.setProgress(progress, p);
 
-                                return AnvilGUI.Response.close();
+                                return Collections.singletonList(AnvilGUI.ResponseAction.close());
                             } catch (NumberFormatException ex) {
                                 p.sendMessage(Main.getPREFIX() + ChatColor.RED + "Please enter a valid number");
-                                return AnvilGUI.Response.text(block.getProgress() + "");
+                                return Collections.singletonList(AnvilGUI.ResponseAction.replaceInputText(String.valueOf(block.getProgress())));
                             }
                         })
                         .text(String.valueOf(block.getProgress()))

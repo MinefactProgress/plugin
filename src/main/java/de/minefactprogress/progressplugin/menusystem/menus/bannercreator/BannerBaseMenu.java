@@ -6,15 +6,19 @@ import de.minefactprogress.progressplugin.menusystem.MenuStorage;
 import de.minefactprogress.progressplugin.utils.CustomColors;
 import de.minefactprogress.progressplugin.utils.Item;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class BannerBaseMenu extends Menu {
+
+    private final String BANNER_BROWSER_NAME = ChatColor.AQUA + "Browse Banners";
 
     public BannerBaseMenu(MenuStorage menuStorage, Menu previousMenu) {
         super(menuStorage, previousMenu);
@@ -45,10 +49,19 @@ public class BannerBaseMenu extends Menu {
             menuStorage.setBanner(item);
             new BannerColorMenu(menuStorage, null).open();
         }
+
+        String itemName = PlainTextComponentSerializer.plainText().serializeOrNull(item.getItemMeta().displayName());
+
+        if (itemName == null) return;
+
+        if (item.getType() == Material.PLAYER_HEAD && itemName.equals(ChatColor.stripColor(BANNER_BROWSER_NAME))) {
+            new BannerListMenu(menuStorage, this).open();
+        }
     }
 
     @Override
     public void setMenuItems() {
+        inventory.setItem(8, Item.createCustomHead("2669", BANNER_BROWSER_NAME, new ArrayList<>(Arrays.asList("", ChatColor.YELLOW + "Click to open banner browser"))));
         for(DyeColor color : DyeColor.values()) {
             inventory.addItem(BannerHandler.createBanner(Component.text(color.name().charAt(0) + color.name().substring(1).replace("_", " ").toLowerCase() + " Banner",
                     CustomColors.of(String.format("#%02x%02x%02x", color.getColor().getRed(), color.getColor().getGreen(), color.getColor().getBlue()))), color, new ArrayList<>()));

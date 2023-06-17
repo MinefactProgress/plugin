@@ -3,18 +3,21 @@ package de.minefactprogress.progressplugin.api;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.*;
 import de.minefactprogress.progressplugin.Main;
+import de.minefactprogress.progressplugin.entities.Banner;
 import de.minefactprogress.progressplugin.entities.city.Block;
 import de.minefactprogress.progressplugin.entities.city.District;
 import de.minefactprogress.progressplugin.entities.users.SettingType;
 import de.minefactprogress.progressplugin.entities.users.User;
 import de.minefactprogress.progressplugin.utils.Constants;
 import de.minefactprogress.progressplugin.utils.Logger;
+import de.minefactprogress.progressplugin.utils.Reflections;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.awt.geom.Point2D;
 import java.io.IOException;
@@ -45,6 +48,8 @@ public class API {
     private static List<Block> blocks = new ArrayList<>();
     @Getter
     private static List<User> users = new ArrayList<>();
+    @Getter
+    private static List<Banner> banners = new ArrayList<>();
 
     private static boolean loadedOnce = false;
 
@@ -133,6 +138,7 @@ public class API {
         loadDistricts();
         loadBlocks();
         loadUsers();
+        loadBanners();
     }
 
     public static void loadDistricts() {
@@ -189,6 +195,21 @@ public class API {
 
         Type userType = new TypeToken<ArrayList<User>>(){}.getType();
         users = gson.fromJson(json, userType);
+    }
+
+    public static void loadBanners() {
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(ItemStack.class, (JsonDeserializer<Object>) (jsonElement, type, jsonDeserializationContext) -> Reflections.itemStackFromBase64(jsonElement.getAsString()))
+                .registerTypeAdapter(User.class, (JsonDeserializer<Object>) (jsonElement, type, jsonDeserializationContext) -> User.getUserById(jsonElement.getAsInt()))
+                .create();
+        JsonObject res = GET(Routes.BANNERS);
+
+        if(res == null) return;
+
+        JsonArray json = res.get("data").getAsJsonArray();
+
+        Type bannerType = new TypeToken<ArrayList<Banner>>(){}.getType();
+        banners = gson.fromJson(json, bannerType);
     }
 
     // -----===== Helper Methods =====-----

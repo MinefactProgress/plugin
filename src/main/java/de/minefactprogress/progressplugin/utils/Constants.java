@@ -5,7 +5,6 @@ import org.bukkit.ChatColor;
 public class Constants {
 
     // API
-    // TODO
      public static final String BASE_URL = "https://progressbackend.minefact.de";
 //    public static final String BASE_URL = "http://localhost:8080";
     public static final String API_URL = BASE_URL + "/v1";

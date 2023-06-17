@@ -173,7 +173,7 @@
         <dependency>
             <groupId>net.wesjd</groupId>
             <artifactId>anvilgui</artifactId>
-            <version>1.5.3-SNAPSHOT</version>
+            <version>1.6.5-SNAPSHOT</version>
         </dependency>
 
         <!-- FAWE Bukkit API -->

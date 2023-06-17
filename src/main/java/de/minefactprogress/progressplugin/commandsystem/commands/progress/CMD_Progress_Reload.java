@@ -51,9 +51,7 @@ public class CMD_Progress_Reload extends SubCommand {
 
         Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
             sender.sendMessage(Main.getPREFIX() + ChatColor.GRAY + "Reloading data...");
-            API.loadUsers();
-            API.loadDistricts();
-            API.loadBlocks();
+            API.loadAll();
             sender.sendMessage(Main.getPREFIX() + ChatColor.GREEN + "Data reloaded successfully");
         });
     }
