@@ -18,6 +18,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -222,9 +223,10 @@ public class LocationEditor {
 
                 // Spawn new Armorstands
                 for(Block block : API.getBlocks()) {
-                    for(double[] coords : block.getArea()) {
-                        if(coords.length != 2) continue;
-                        Location loc = new Location(p.getWorld(), coords[0], fixedHeight != null ? fixedHeight : (p.getLocation().getY() + HEIGHT_OFFSET), coords[1]);
+                    for(Point2D.Double coords : block.getArea()) {
+                        Location loc = new Location(p.getWorld(), coords.getX(), fixedHeight != null ? fixedHeight : (p.getLocation().getY() + HEIGHT_OFFSET), coords.getY());
+
+                        // TODO: Problem ist, dass getArea lat lon zurückliefert statt mc coords
 
                         if(loc.distance(p.getLocation()) <= RADIUS && !entry.getValue().isOccupied(loc)) {
                             ArmorStand as = createArmorstand(loc);

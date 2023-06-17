@@ -53,7 +53,7 @@ public final class Main extends JavaPlugin {
         socketManager = new SocketManager();
         socketManager.startSchedulers();
 
-        LocationEditor.startScheduler();
+        // LocationEditor.startScheduler();
 
         API.loadProgress();
 

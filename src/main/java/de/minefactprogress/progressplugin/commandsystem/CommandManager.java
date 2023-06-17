@@ -43,7 +43,7 @@ public class CommandManager {
         add(new CMD_Progress());
         add(new CMD_Banner());
         add(new CMD_NoClip());
-        add(new CMD_LocationEditor());
+//        add(new CMD_LocationEditor());
         add(new CMD_Side());
     }};
 
