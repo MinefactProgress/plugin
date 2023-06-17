@@ -5,6 +5,7 @@ import de.minefactprogress.progressplugin.Main;
 import de.minefactprogress.progressplugin.api.API;
 import de.minefactprogress.progressplugin.api.Routes;
 import de.minefactprogress.progressplugin.components.BannerHandler;
+import de.minefactprogress.progressplugin.entities.Banner;
 import de.minefactprogress.progressplugin.menusystem.Menu;
 import de.minefactprogress.progressplugin.menusystem.MenuStorage;
 import de.minefactprogress.progressplugin.utils.Constants;
@@ -86,7 +87,10 @@ public class BannerColorMenu extends Menu {
                                     json.addProperty("data", Reflections.itemStackToBase64(this.menuStorage.getBanner()));
                                     json.addProperty("user", this.menuStorage.getUser().getUid());
 
-                                    API.POST(Routes.BANNERS, json, res -> state.getPlayer().sendMessage(Constants.PREFIX_SERVER + ChatColor.GREEN + "Banner saved successfully"), state.getPlayer());
+                                    API.POST(Routes.BANNERS, json, res -> {
+                                        API.loadBanners();
+                                        state.getPlayer().sendMessage(Constants.PREFIX_SERVER + ChatColor.GREEN + "Banner saved successfully");
+                                    }, state.getPlayer());
                                 });
                                 return Collections.singletonList(AnvilGUI.ResponseAction.close());
                             })
