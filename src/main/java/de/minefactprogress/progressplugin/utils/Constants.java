@@ -19,4 +19,5 @@ public class Constants {
     // Messages
     public static final String NO_PERMISSION = ChatColor.RED + "You don't have permission to execute this command!";
     public static final String NO_PLAYER = ChatColor.RED + "You have to be a player to execute this command!";
+    public static final String LINK_ACCOUNT = ChatColor.RED + "To do this visit " + ChatColor.YELLOW + "https://progress.minefact.de/account";
 }
