@@ -29,13 +29,20 @@ public class BannerColorMenu extends Menu {
     private final String resetName = ChatColor.RED + "Reset Banner";
     private final String createName = ChatColor.GREEN + "Create Banner";
 
+    private final Boolean letterBaseColor;
+
     public BannerColorMenu(MenuStorage menuStorage, Menu previousMenu) {
+        this(menuStorage, previousMenu, null);
+    }
+
+    public BannerColorMenu(MenuStorage menuStorage, Menu previousMenu, Boolean letterBaseColor) {
         super(menuStorage, previousMenu);
+        this.letterBaseColor =  letterBaseColor;
     }
 
     @Override
     public Component menuName() {
-        return Component.text("Select Pattern Color");
+        return Component.text(letterBaseColor == null ? "Select Pattern Color" : "Select " + (letterBaseColor ? "Base" : "Letter") + " Color");
     }
 
     @Override
@@ -102,8 +109,18 @@ public class BannerColorMenu extends Menu {
                 }
             }
         } else if (item.getType().name().contains("DYE")) {
-            menuStorage.setPatternColor(BannerHandler.getDyeColorByName(itemName.replace(" ", "_")));
-            new BannerPatternMenu(menuStorage, this).open();
+            if (letterBaseColor == null) {
+                menuStorage.setPatternColor(BannerHandler.getDyeColorByName(itemName.replace(" ", "_")));
+                new BannerPatternMenu(menuStorage, this).open();
+            } else {
+                if (letterBaseColor) {
+                    menuStorage.setLetterBaseColor(BannerHandler.getDyeColorByName(itemName.replace(" ", "_")));
+                } else {
+                    menuStorage.setLetterPatternColor(BannerHandler.getDyeColorByName(itemName.replace(" ", "_")));
+                }
+                new BannerLetterSelectionMenu(menuStorage, null).open();
+            }
+
         }
     }
 
@@ -116,7 +133,9 @@ public class BannerColorMenu extends Menu {
                             CustomColors.of(String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue()))), dyeColor));
         }
 
-        inventory.setItem(2, Item.createCustomHead("9382", resetName, null));
-        inventory.setItem(6, Item.createCustomHead("21771", createName, new ArrayList<>(Arrays.asList("", CustomColors.YELLOW.getChatColor() + "Right-Click to save banner"))));
+        if (letterBaseColor == null) {
+            inventory.setItem(2, Item.createCustomHead("9382", resetName, null));
+            inventory.setItem(6, Item.createCustomHead("21771", createName, new ArrayList<>(Arrays.asList("", CustomColors.YELLOW.getChatColor() + "Right-Click to save banner"))));
+        }
     }
 }

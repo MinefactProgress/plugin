@@ -27,4 +27,6 @@ public class MenuStorage {
     // BannerCreator
     private ItemStack banner;
     private DyeColor patternColor;
+    private DyeColor letterBaseColor;
+    private DyeColor letterPatternColor;
 }

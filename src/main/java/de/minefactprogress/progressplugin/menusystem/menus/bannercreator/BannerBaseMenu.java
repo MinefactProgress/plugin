@@ -19,6 +19,7 @@ import java.util.Arrays;
 public class BannerBaseMenu extends Menu {
 
     private final String BANNER_BROWSER_NAME = ChatColor.AQUA + "Browse Banners";
+    private final String BANNER_LETTER_GENERATOR_NAME = ChatColor.GOLD + "Letter Generator";
 
     public BannerBaseMenu(MenuStorage menuStorage, Menu previousMenu) {
         super(menuStorage, previousMenu);
@@ -54,13 +55,22 @@ public class BannerBaseMenu extends Menu {
 
         if (itemName == null) return;
 
-        if (item.getType() == Material.PLAYER_HEAD && itemName.equals(ChatColor.stripColor(BANNER_BROWSER_NAME))) {
-            new BannerListMenu(menuStorage, this).open();
+        if (item.getType() == Material.PLAYER_HEAD) {
+            if (itemName.equals(ChatColor.stripColor(BANNER_BROWSER_NAME))) {
+                new BannerListMenu(menuStorage, this).open();
+            } else if (itemName.equals(ChatColor.stripColor(BANNER_LETTER_GENERATOR_NAME))) {
+                if (menuStorage.getLetterBaseColor() == null)
+                    menuStorage.setLetterBaseColor(DyeColor.WHITE);
+                if (menuStorage.getLetterPatternColor() == null)
+                    menuStorage.setLetterPatternColor(DyeColor.BLACK);
+                new BannerLetterSelectionMenu(menuStorage, this).open();
+            }
         }
     }
 
     @Override
     public void setMenuItems() {
+        inventory.setItem(0, Item.createCustomHead("9297", BANNER_LETTER_GENERATOR_NAME, new ArrayList<>(Arrays.asList("", ChatColor.YELLOW + "Click to open letter generator"))));
         inventory.setItem(8, Item.createCustomHead("2669", BANNER_BROWSER_NAME, new ArrayList<>(Arrays.asList("", ChatColor.YELLOW + "Click to open banner browser"))));
         for(DyeColor color : DyeColor.values()) {
             inventory.addItem(BannerHandler.createBanner(Component.text(color.name().charAt(0) + color.name().substring(1).replace("_", " ").toLowerCase() + " Banner",
