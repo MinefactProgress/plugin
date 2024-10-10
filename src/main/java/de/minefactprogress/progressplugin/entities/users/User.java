@@ -9,6 +9,7 @@ import de.minefactprogress.progressplugin.entities.city.Block;
 import de.minefactprogress.progressplugin.utils.Constants;
 import de.minefactprogress.progressplugin.utils.CustomColors;
 import de.minefactprogress.progressplugin.utils.Item;
+import de.minefactprogress.progressplugin.utils.Permissions;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
@@ -33,7 +34,7 @@ public class User implements Comparable<User> {
     private Rank rank;
     private ArrayList<UserSetting> settings;
 
-    public ItemStack toItemStack() {
+    public ItemStack toItemStack(boolean hasTeleportPermission) {
         ArrayList<String> lore = new ArrayList<>();
 
         lore.add("");
@@ -44,7 +45,11 @@ public class User implements Comparable<User> {
         lore.add(ChatColor.YELLOW + "Click to view claims");
 
         if(isOnline()) {
-            lore.add(CustomColors.YELLOW.getChatColor() + "Right-Click to teleport to player");
+            if (hasTeleportPermission) {
+                lore.add(CustomColors.YELLOW.getChatColor() + "Right-Click to teleport to player");
+            } else {
+                lore.add(CustomColors.YELLOW.getChatColor() + "Right-Click to request teleport to player");
+            }
         }
 
         return Item.createPlayerHead((rank == null ? Rank.PLAYER : rank).getColor() + username, username, lore);

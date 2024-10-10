@@ -9,6 +9,7 @@ import de.minefactprogress.progressplugin.menusystem.PaginatedMenu;
 import de.minefactprogress.progressplugin.utils.Constants;
 import de.minefactprogress.progressplugin.utils.CustomColors;
 import de.minefactprogress.progressplugin.utils.EnumUtils;
+import de.minefactprogress.progressplugin.utils.Permissions;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
@@ -60,8 +61,12 @@ public class UsersMenu extends PaginatedMenu {
                         p.sendMessage(Constants.PREFIX + ChatColor.RED + "You cannot teleport to yourself!");
                         return;
                     }
-                    p.teleport(target.getLocation());
-                    p.playSound(p.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1f, 1f);
+                    if (Permissions.isTeamMember(p)) {
+                        p.teleport(target.getLocation());
+                        p.playSound(p.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1f, 1f);
+                    } else {
+                        p.performCommand("tpa " + target.getName());
+                    }
                 }
                 break;
             case HOPPER:
@@ -105,7 +110,7 @@ public class UsersMenu extends PaginatedMenu {
         for(User user : users) {
             if(filter != 0 && filter != user.getRank().ordinal() + 1) continue;
 
-            items.add(user.toItemStack());
+            items.add(user.toItemStack(Permissions.isTeamMember(menuStorage.getOwner())));
         }
 
         return items;
